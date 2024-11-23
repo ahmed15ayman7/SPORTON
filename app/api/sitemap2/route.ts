@@ -5,11 +5,7 @@ import { sitemap2 } from "@/lib/sitemap2"; // Assuming this function is defined 
 export async function GET() {
   try {
     const sitemap = await sitemap2(); // Fetch your sitemap data
-
-    // Generate XML for the sitemap
     const sitemapXML = generateXML(sitemap);
-
-    // Return the sitemap XML response
     return NextResponse.json(sitemapXML, {
       headers: {
         "Content-Type": "application/xml",
@@ -17,12 +13,12 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error generating sitemap2:", error);
-    return NextResponse.json("Error generating sitemap", { status: 500 });
+    return NextResponse.json("Error generating sitemap2", { status: 500 });
   }
 }
 
 // Helper function to generate the sitemap XML
-function generateXML(sitemap: any) {
+function generateXML(sitemap: any[]) {
   return `
     <?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -35,7 +31,7 @@ function generateXML(sitemap: any) {
           <changefreq>${entry.changeFrequency || "weekly"}</changefreq>
           <priority>${entry.priority || 0.5}</priority>
           ${entry.images
-            .map(
+            ?.map(
               (img: string) =>
                 `<image:image><image:loc>${img}</image:loc></image:image>`
             )

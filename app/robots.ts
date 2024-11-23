@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         // allow: "/",
       },
     ],
-    sitemap: "https://sporton.website/sitemap.xml",
+    sitemap: "https://www.sporton.website/api/sitemap2",
     host: "https://sporton.website",
   };
 }
