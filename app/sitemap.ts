@@ -4,6 +4,7 @@ import { fetchUsers } from "@/lib/actions/user.actions";
 type Sitemap = Array<{
   url: string;
   images: string[];
+
   lastModified?: string | Date;
   changeFrequency?:
     | "always"
