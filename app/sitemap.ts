@@ -1,3 +1,4 @@
+// sitemap.ts
 import { MetadataRoute } from "next";
 import { fetchPostsSiteMap } from "@/lib/actions/post.actions";
 import { fetchUsers } from "@/lib/actions/user.actions";
