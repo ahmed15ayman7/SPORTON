@@ -2,10 +2,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 body {
   @apply bg-dark-1;
   font-family: "Rubik", sans-serif;
 }
+
 :root {
   --white: #000;
   --light-1: #000000;
@@ -19,6 +21,7 @@ body {
 }
 
 @layer components {
+
   /* main */
   .main-container {
     @apply flex min-h-screen flex-1 flex-col items-center bg-dark-1 px-6 pb-10 pt-28 max-md:pb-32 max-sm:px-4;
@@ -31,8 +34,9 @@ body {
 
   /* Activity */
   .activity-card {
-    @apply flex items-center gap-2 border-b hover:bg-[#f6f6f6]  bg-dark-2 px-7 max-sm:px-2 py-4;
+    @apply flex items-center gap-2 border-b hover:bg-[#f6f6f6] bg-dark-2 px-7 max-sm:px-2 py-4;
   }
+
   /* No Result */
   .no-result {
     @apply text-center !text-base-regular text-light-3;
@@ -64,12 +68,13 @@ body {
   .user-card_btn {
     @apply h-auto min-w-[74px] rounded-lg bg-primary-500 text-[12px] text-[#ffffff] !important;
   }
+
   .community-card {
-    @apply flex flex-col justify-between w-2/5  max-sm:w-full bg-dark-2 rounded-3xl gap-4 max-xs:rounded-xl max-xs:bg-dark-3  xs:items-start;
+    @apply flex flex-col justify-between w-2/5 max-sm:w-full bg-dark-2 rounded-3xl gap-4 max-xs:rounded-xl max-xs:bg-dark-3 xs:items-start;
   }
 
   .community-card_avatar {
-    @apply flex flex-1  justify-start gap-3 items-start;
+    @apply flex flex-1 justify-start gap-3 items-start;
   }
 
   .community-card_btn {
@@ -115,6 +120,7 @@ body {
   .rightsidebar {
     @apply sticky right-0 top-0 z-20 flex h-screen w-fit flex-col justify-between gap-12 overflow-auto border-l border-l-dark-4 bg-dark-2 px-10 pb-6 pt-28;
   }
+
   .file_uploader-img {
     @apply h-80 lg:h-[480px] w-full rounded-[24px] object-cover object-top;
   }
@@ -124,6 +130,7 @@ body {
   .css-invert {
     @apply invert-[50%] brightness-200;
   }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 3px;
     height: 3px;
@@ -143,6 +150,7 @@ body {
     background: #7878a3;
   }
 }
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -161,14 +169,13 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #7878a3;
 }
+
 /* Clerk Responsive fix */
 .cl-organizationSwitcherTrigger .cl-userPreview .cl-userPreviewTextContainer {
   @apply max-sm:hidden;
 }
 
-.cl-organizationSwitcherTrigger
-  .cl-organizationPreview
-  .cl-organizationPreviewTextContainer {
+.cl-organizationSwitcherTrigger .cl-organizationPreview .cl-organizationPreviewTextContainer {
   @apply max-sm:hidden;
 }
 
@@ -176,13 +183,15 @@ body {
 
 /* Tab */
 .tab {
-  @apply flex min-h-[50px] flex-1 items-center gap-3  text-light-2 data-[state=active]:bg-dark-1 bg-[#eaf3ff] data-[state=active]:text-light-2 !important;
+  @apply flex min-h-[50px] flex-1 items-center gap-3 text-light-2 data-[state=active]:bg-dark-1 bg-[#eaf3ff] data-[state=active]:text-light-2 !important;
 }
+
 .tab1 {
-  @apply flex min-h-[50px] flex-1 items-center gap-3  text-light-2 data-[state=active]:bg-[#FFFFFF] bg-[#eaf3ff] data-[state=active]:text-light-2 !important;
+  @apply flex min-h-[50px] flex-1 items-center gap-3 text-light-2 data-[state=active]:bg-[#FFFFFF] bg-[#eaf3ff] data-[state=active]:text-light-2 !important;
 }
+
 .tab2 {
-  @apply flex min-h-[50px]  items-center  text-light-2 data-[state=active]:bg-dark-2 data-[state=active]:text-light-2 !important;
+  @apply flex min-h-[50px] items-center text-light-2 data-[state=active]:bg-dark-2 data-[state=active]:text-light-2 !important;
 }
 
 .no-focus {
@@ -209,6 +218,31 @@ body {
 
 .comment-form_btn {
   @apply rounded-3xl bg-primary-500 px-8 py-2 !text-small-regular text-[#ffffff] max-xs:w-full !important;
+}
+
+.shape::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  transform: translateX(-100%) translateY(-2px);
+  clip-path: polygon(49% 3%, 79% 6%, 100% 8%, 100% 43%, 100% 90%, 84% 46%, 63% 33%, 40% 21%, 0 0, 19% 0);
+  background-color: #ff971d
+}
+
+.shape-2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  transform: translateX(100%) translateY(-2px);
+  clip-path: polygon(49% 3%, 79% 1%, 100% 0, 70% 14%, 51% 22%, 24% 35%, 0 82%, 0 43%, 0 11%, 23% 6%);
+
+  background-color: #867dfe
 }
 
 /* .ul:has(li:active){

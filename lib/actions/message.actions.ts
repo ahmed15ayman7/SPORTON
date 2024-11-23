@@ -1,17 +1,17 @@
-"use server"
-import User from '../models/user.models';
-import Message from '../models/messages.models';
-import { pusherServer } from '../pusher';
+"use server";
+import User from "../models/user.models";
+import Message from "../models/messages.models";
+import { pusherServer } from "../pusher";
 import Room from "../models/room.model";
-import { connectDB } from '@/mongoose';
+import { connectDB } from "@/mongoose";
 interface Message {
   content: string;
   sender: {
-    _id:string|undefined,
-    id:string|undefined,
-    name:string|undefined,
-    image:string|undefined,
-    sport:string|undefined,
+    _id: string | undefined;
+    id: string | undefined;
+    name: string | undefined;
+    image: string | undefined;
+    sport: string | undefined;
   };
   timestamp: Date;
   recipient: string;
@@ -22,25 +22,25 @@ export const createMessage = async (
   recipientId: string,
   content: string | null, // المحتوى النصي
   mediaUrl: string | null, // رابط الوسائط
-  messageType: 'text' | 'image' | 'video' | 'audio' | 'file', // نوع الرسالة
+  messageType: "text" | "image" | "video" | "audio" | "file", // نوع الرسالة
   RoomName: string | undefined,
   replyToMessageId?: string // دعم الرد على الرسائل
 ): Promise<void> => {
-  let sender = await User.findById(senderId).select('name id image sport'); // الحصول على بيانات المرسل من قاعدة البيانات
-  let recipient = await User.findById(recipientId).select('name id image'); // الحصول على بيانات المستلم
+  let sender = await User.findById(senderId).select("name _id image sport"); // الحصول على بيانات المرسل من قاعدة البيانات
+  let recipient = await User.findById(recipientId).select("name _id image"); // الحصول على بيانات المستلم
 
   if (!sender || !recipient) {
-    throw new Error('Sender or recipient not found');
+    throw new Error("Sender or recipient not found");
   }
-
+  let timestamp = new Date();
   // إنشاء الرسالة بناءً على النوع
   const messageData = {
-    content: messageType === 'text' ? content : null,
-    mediaUrl: messageType !== 'text' ? mediaUrl : null,
+    content: messageType === "text" ? content : null,
+    mediaUrl: messageType !== "text" ? mediaUrl : null,
     type: messageType,
     sender: sender._id,
     recipient: recipient._id,
-    timestamp: new Date(),
+    timestamp,
     replyTo: replyToMessageId ? replyToMessageId : null, // ربط الرد بالرسالة الأصلية
     isDelivered: false,
     isRead: false,
@@ -53,11 +53,15 @@ export const createMessage = async (
   if (RoomName) {
     await pusherServer.trigger("chat", RoomName, {
       ...messageData,
-      sender: { id: sender.id, name: sender.name, image: sender.image },
-      recipient: { id: recipient.id, name: recipient.name, image: recipient.image }
+      sender: { _id: sender._id, name: sender.name, image: sender.image },
+      recipient: {
+        _id: recipient._id,
+        name: recipient.name,
+        image: recipient.image,
+      },
     });
   }
-
+  console.log(messageData);
   // حفظ الرسالة في قاعدة البيانات
   try {
     const savedMessage = await message.save();
@@ -66,15 +70,14 @@ export const createMessage = async (
     if (RoomName) {
       await Room.findOneAndUpdate(
         { name: RoomName },
-        { $push: { messages: savedMessage._id } }
+        { $push: { messages: savedMessage._id }, updatedAt: timestamp }
       );
     }
   } catch (error) {
-    console.error('Error creating message:', error);
+    console.error("Error creating message:", error);
     throw error;
   }
 };
-
 
 // export const createMessage = async (
 //   senderId: string,

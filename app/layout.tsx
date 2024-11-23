@@ -53,7 +53,7 @@ export default function RootLayout({
       <InfintyProvider>
         <ReduxProvider>
           <html lang="en">
-            <body>
+            <body className={inter.className}>
               <div className=" w-full">
                 {children}
                 <ToastContainer />
