@@ -11,7 +11,10 @@ export async function GET() {
     // إرجاع السايت ماب مع تحديد نوع المحتوى بشكل صحيح
     return new Response(sitemapXML, {
       headers: {
-        "Content-Type": "application/xml", // تحديد نوع المحتوى كـ XML
+        "Content-Type": "application/xml",
+        "Access-Control-Allow-Origin": "*", // السماح لجميع المصادر بالوصول (no-cors)
+        "Access-Control-Allow-Methods": "GET", // السماح باستخدام GET فقط
+        "Access-Control-Allow-Headers": "Content-Type",
       },
     });
   } catch (error) {
