@@ -32,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const postEntries: Sitemap = posts.map((post: any) => ({
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/post/${post._id}`,
-      lastModified: post.updatedAt || post.createdAt,
+      lastModified: new Date(post.updatedAt || post.createdAt).toISOString(),
       changeFrequency: "weekly",
       images: [post?.image],
       priority: 0.5,
@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const userEntries: Sitemap = users.map((user: any) => ({
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${user._id}`,
-      lastModified: user.updatedAt || user.createdAt,
+      lastModified: new Date(user.updatedAt || user.createdAt).toISOString(),
       changeFrequency: "weekly",
       images: [user?.image],
       priority: 0.5,
@@ -51,49 +51,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...userEntries,
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "yearly",
         priority: 1,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/activity`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/search`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/new-post`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/store`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/about`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/contact-us`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: "weekly",
         priority: 0.5,
       },
       //   {
       //   url: `${process.env.NEXT_PUBLIC_SITE_URL}/messaging`,
-      //   lastModified: new Date(),
+      //   lastModified: new Date().toISOString(),
       // },
     ];
   } catch (error) {
