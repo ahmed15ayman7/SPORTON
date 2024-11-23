@@ -1,6 +1,6 @@
 "use client";
 
-import { uploadToS3 } from "@/lib/aws"; 
+import { uploadToS3 } from "@/lib/aws";
 import { createMessage } from "@/lib/actions/message.actions";
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
@@ -17,34 +17,34 @@ import ReplySection from "../chatbox/ReplySection";
 import MessageInput from "../chatbox/MessageInput";
 import MessageItem from "../chatbox/MessageItem";
 interface Message {
-  _id:string;
-    content?: string;
-    mediaUrl?: string;
-    type: 'text' | 'image' | 'video' | 'audio' | 'file';
-    sender: {
-      _id: string | undefined;
-      id: string | undefined;
-      name: string | undefined;
-      image: string | undefined;
-      sport: string | undefined;
-    };
-    recipient: {
-      _id: string | undefined;
-      id: string | undefined;
-      name: string | undefined;
-      image: string | undefined;
-      sport: string | undefined;
-    };
-    timestamp: Date;
-    isRead: boolean;
-    isDelivered: boolean;
-    reactions: Array<{
-      emoji: string;
-      userId: string;
-    }>;
-    replyTo?: string; //  يدعم الردود على الرسائل
-  }
-const ChatBox: React.FC<{ Ids?: string }> = ({ Ids }) => {
+  _id: string;
+  content?: string;
+  mediaUrl?: string;
+  type: 'text' | 'image' | 'video' | 'audio' | 'file';
+  sender: {
+    _id: string | undefined;
+    id: string | undefined;
+    name: string | undefined;
+    image: string | undefined;
+    sport: string | undefined;
+  };
+  recipient: {
+    _id: string | undefined;
+    id: string | undefined;
+    name: string | undefined;
+    image: string | undefined;
+    sport: string | undefined;
+  };
+  timestamp: Date;
+  isRead: boolean;
+  isDelivered: boolean;
+  reactions: Array<{
+    emoji: string;
+    userId: string;
+  }>;
+  replyTo?: string; //  يدعم الردود على الرسائل
+}
+const ChatBox: React.FC<{ Ids?: string, setRefetchData: (_: number) => void }> = ({ Ids, setRefetchData }) => {
   const [replyToMessageId, setReplyToMessageId] = useState<string | null>(null);
   const userId = Ids?.split("-")[0];
   const friendId = Ids?.split("-")[1];
@@ -105,12 +105,12 @@ const ChatBox: React.FC<{ Ids?: string }> = ({ Ids }) => {
     };
   }, [chat]);
   const handleReplyClick = (message: Message) => {
-    setReplyToMessageId(message._id); 
-    setInputValue(`@${message.sender.name}: `); 
+    setReplyToMessageId(message._id);
+    setInputValue(`@${message.sender.name}: `);
   };
   const showNotification = (msg: Message) => {
-    toast.info(<CardToster content={msg.content||''} image={msg.sender.image!} name={msg.sender.name!} link={`https://sporton.website/messaging?ids=${userId + "-" + friendId}`} />);
-    
+    toast.info(<CardToster content={msg.content || ''} image={msg.sender.image!} name={msg.sender.name!} link={`https://sporton.website/messaging?ids=${userId + "-" + friendId}`} />);
+
     const notification = new Notification(`New message from ${msg.sender.name}`, {
       body: msg.content,
       icon: msg.sender.image,
@@ -127,13 +127,13 @@ const ChatBox: React.FC<{ Ids?: string }> = ({ Ids }) => {
     }
   }, [messages]);
   const handleMessageSend = async () => {
-    if (inputValue.trim() === "") return; 
+    if (inputValue.trim() === "") return;
     if (!userInfo) return;
 
     try {
       if (friendId && userInfo && chat) {
-        const messageType = replyToMessageId ? "text" : "text"; 
-        const mediaUrl = null; 
+        const messageType = replyToMessageId ? "text" : "text";
+        const mediaUrl = null;
 
         await createMessage(
           userInfo._id,
@@ -142,54 +142,56 @@ const ChatBox: React.FC<{ Ids?: string }> = ({ Ids }) => {
           mediaUrl,
           messageType,
           chat?.chat?.name,
-          replyToMessageId! 
+          replyToMessageId!
         );
 
-        setReplyToMessageId(null); 
+        setReplyToMessageId(null);
+        setRefetchData(Math.random())
       }
     } catch (error) {
       console.error("Error sending message:", error);
       return;
     }
 
-    setInputValue(""); 
+    setInputValue("");
     inputRef.current?.focus();
   };
 
-const startRecording = async () => {
-  setRecording(true);
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  mediaRecorderRef.current = new MediaRecorder(stream);
-  const audioChunks: BlobPart[] = [];
+  const startRecording = async () => {
+    setRecording(true);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    const audioChunks: BlobPart[] = [];
 
-  mediaRecorderRef.current.ondataavailable = (event) => {
-    audioChunks.push(event.data);
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorderRef.current.onstop = async () => {
+      const audioBlob = new Blob(audioChunks);
+      const audioFileName = `audio_${Date.now()}.wav`;
+
+      try {
+        await uploadToS3(audioBlob, audioFileName, `audio-${Ids}`);
+        const audioUrl = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/audio-${Ids}/${audioFileName}`; // رابط الملف المرفوع
+
+        await createMessage(
+          userInfo?._id!,
+          friendId!,
+          null,
+          audioUrl,
+          "audio",
+          chat?.chat?.name,
+          undefined
+        );
+        setRefetchData(Math.random())
+      } catch (error) {
+        console.error("Error uploading audio to S3:", error);
+      }
+    };
+
+    mediaRecorderRef.current.start();
   };
-
-  mediaRecorderRef.current.onstop = async () => {
-    const audioBlob = new Blob(audioChunks);
-    const audioFileName = `audio_${Date.now()}.wav`; 
-    
-    try {
-      await uploadToS3(audioBlob , audioFileName,`audio-${Ids}`);
-      const audioUrl = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/audio-${Ids}/${audioFileName}`; // رابط الملف المرفوع
-      
-      await createMessage(
-        userInfo?._id!,
-        friendId!,
-        null,
-        audioUrl,
-        "audio",
-        chat?.chat?.name,
-        undefined
-      );
-    } catch (error) {
-      console.error("Error uploading audio to S3:", error);
-    }
-  };
-
-  mediaRecorderRef.current.start();
-};
 
   const stopRecording = () => {
     console.log("Stopping recording...");
@@ -199,44 +201,43 @@ const startRecording = async () => {
 
   if (userInfo && chat) {
     const result = chat.chat.users.filter((user: { _id: string }) => user._id !== userId)[0];
-
     return (
       <div className="bottom-0 p-4 pb-10 relative rounded-lg w-full h-full flex flex-col">
-      <div className="bg-dark-1 flex z-50 absolute top-0 left-0 right-0">
-        <Link
-          href={"/messenger"}
-          className="flex items-center gap-2 hover:bg-dark-2 transition-colors rounded-md p-2">
-          <Image
-            src={result?.image!}
-            alt=""
-            className="h-10 w-10 rounded-full object-cover"
-            width={50}
-            height={50}
-          />
-          <span className="font-semibold">{result?.name}</span>
-        </Link>
+        <div className="bg-dark-1 flex z-50 absolute top-0 left-0 right-0">
+          <Link
+            href={"/messenger"}
+            className="flex items-center gap-2 hover:bg-dark-2 transition-colors rounded-md p-2">
+            <Image
+              src={result?.image!}
+              alt=""
+              className="h-10 w-10 rounded-full object-cover"
+              width={50}
+              height={50}
+            />
+            <span className="font-semibold">{result?.name}</span>
+          </Link>
+        </div>
+        <div className="overflow-y-auto h-full pb-20 mt-12 z-10">
+          {messages.length > 0 ? (
+            messages.map((message, index) => (message.content || message.mediaUrl) && <MessageItem totalMessages={messages.length} index={index} key={message._id} message={message} userId={userId!} openMenuId={openMenuId} setOpenMenuId={setOpenMenuId} />)
+          ) : (
+            <></>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        <ReplySection replyToMessageId={replyToMessageId} messages={messages} setReplyToMessageId={setReplyToMessageId} />
+        <MessageInput
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleMessageSend={handleMessageSend}
+          recording={recording}
+          startRecording={startRecording}
+          stopRecording={stopRecording}
+        />
       </div>
-      <div className="overflow-y-auto h-full pb-20 mt-12 z-10">
-        {messages.length > 0 ? (
-          messages.map((message,index) => <MessageItem totalMessages={messages.length} index={index} key={message._id} message={message} userId={userId!} openMenuId={openMenuId} setOpenMenuId={setOpenMenuId} /> )
-        ) : (
-          <Loader />
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      <ReplySection replyToMessageId={replyToMessageId} messages={messages} setReplyToMessageId={setReplyToMessageId} />
-      <MessageInput
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleMessageSend={handleMessageSend}
-        recording={recording}
-        startRecording={startRecording}
-        stopRecording={stopRecording}
-      />
-    </div>
-  );
-}
-return <Loader />;
+    );
+  }
+  return <Loader is />;
 }
 
 
