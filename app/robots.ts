@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         // allow: "/",
+        disallow: ["/sitmap_index.xml", "/api/sitemap2", "/api/sitemap3"],
       },
     ],
     sitemap: "https://www.sporton.website/api/sitemap2",
