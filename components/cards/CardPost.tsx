@@ -558,7 +558,7 @@ const CardPost = ({
                     href={"/profile/" + author.id}
                     className=" cursor-pointer w-full flex gap-4 ">
                     <div className=" cursor-pointer w-full flex gap-[3px]">
-                      <h5>{author.name}</h5>
+                      <h2>{author.name}</h2>
                       <Image
                         src={"/golden.svg"}
                         alt={"golden"}

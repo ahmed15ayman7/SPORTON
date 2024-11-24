@@ -12,10 +12,12 @@ import InfintyProvider from "@/components/providers/InfintyProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 export const metadata: Metadata = {
   title: {
-    default:
-      "SPORTON | Home - Player Posts, Achievements, and Contact Players ",
-    template: "%s - SPORTON ",
+    default: "SPORTON | Player Posts, Achievements & Connect with Players",
+    template: "%s - SPORTON",
   },
+  description:
+    "SPORTON connects Egyptian athletes, agents, and clubs to showcase talent and foster opportunities. Join the ultimate sports community today!",
+
   keywords: [
     "SPORTON",
     "Home",
@@ -27,8 +29,6 @@ export const metadata: Metadata = {
     "Gain Recognition",
     "Sports Platform",
   ],
-  description:
-    "SPORTON is a sports community platform that includes all athletes from Egypt in various sports, and on the other hand, player agents and clubs and institutions that will receive their talents will be present.",
   openGraph: {
     type: "website",
     url: "https://www.sporton.website/",
@@ -42,6 +42,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  metadataBase: new URL("https://www.sporton.website/"),
 };
 export default function RootLayout({
   children,
@@ -49,16 +50,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider >
+    <ClerkProvider>
       <InfintyProvider>
         <ReduxProvider>
           <html lang="en">
+            <head>
+              <link rel="canonical" href="https://www.sporton.website/" />
+            </head>
             <body className={inter.className}>
               <div className=" w-full">
                 {children}
                 <ToastContainer />
               </div>
               <Analytics />
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                  __html: `
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "SPORTON",
+                "url": "https://www.sporton.website/",
+                "logo": "https://www.sporton.website/logo.png",
+                "sameAs": [
+                  "https://facebook.com/sporton",
+                  "https://twitter.com/sporton"
+                ]
+              }
+            `,
+                }}
+              />
             </body>
           </html>
         </ReduxProvider>
