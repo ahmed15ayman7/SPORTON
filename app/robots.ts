@@ -9,7 +9,11 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/sitmap_index.xml", "/api/sitemap2", "/api/sitemap3"],
       },
     ],
-    sitemap: "https://www.sporton.website/api/sitemap2",
-    host: "https://sporton.website",
+    sitemap: [
+      "https://www.sporton.website/api/sitemap2",
+      "https://www.sporton.website/api/sitemap3",
+      "https://www.sporton.website/sitemap.xml",
+      "https://www.sporton.website/sitmap_index.xml",
+    ],
   };
 }
