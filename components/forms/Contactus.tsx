@@ -77,9 +77,9 @@ const Contact = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl w-full space-y-8">
         <div>
-          <h2 className="text-center text-4xl font-extrabold text-gray-800">
+          <h1 className="text-center text-4xl font-extrabold text-gray-800">
             Contact Us
-          </h2>
+          </h1>
           <p className="mt-4 text-center text-md text-gray-600">
             Fill out the form below, and we’ll get back to you as soon as
             possible.
@@ -95,7 +95,8 @@ const Contact = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700">
+                className="block text-sm font-medium text-gray-700"
+              >
                 Name
               </label>
               <input
@@ -115,7 +116,8 @@ const Contact = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700">
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -135,7 +137,8 @@ const Contact = () => {
             <div>
               <label
                 htmlFor="subject"
-                className="block text-sm font-medium text-gray-700">
+                className="block text-sm font-medium text-gray-700"
+              >
                 Subject
               </label>
               <select
@@ -144,7 +147,8 @@ const Contact = () => {
                 required
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 text-gray-900 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 value={formData.subject}
-                onChange={handleChange}>
+                onChange={handleChange}
+              >
                 <option value="" disabled>
                   Select a Subject
                 </option>
@@ -158,7 +162,8 @@ const Contact = () => {
             <div>
               <label
                 htmlFor="message"
-                className="block text-sm font-medium text-gray-700">
+                className="block text-sm font-medium text-gray-700"
+              >
                 Message
               </label>
               <textarea
@@ -169,7 +174,8 @@ const Contact = () => {
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 text-gray-900 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 placeholder="Your Message"
                 value={formData.message}
-                onChange={handleChange}></textarea>
+                onChange={handleChange}
+              ></textarea>
               {errors.message && (
                 <p className="text-red-500 text-xs mt-2">{errors.message}</p>
               )}
@@ -183,7 +189,8 @@ const Contact = () => {
                 isSubmitting
                   ? "bg-[rgb(135_126_255/var(--tw-bg-opacity))]"
                   : "bg-[rgb(135_126_255/var(--tw-bg-opacity))] hover:bg-[rgb(100_90_200/var(--tw-bg-opacity))]"
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500`}>
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500`}
+            >
               {isSubmitting ? "Submitting......." : "Send Message"}
             </button>
           </div>

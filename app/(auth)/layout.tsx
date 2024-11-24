@@ -3,28 +3,28 @@ import "../globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "SPORTON | Auth - Login and Sign-up for Sports Enthusiasts",
+    default: "SPORTON | Login & Sign-up for Sports Enthusiasts",
     template: "%s - SPORTON",
   },
   keywords: [
     "SPORTON",
-    "Auth",
     "Login",
     "Sign-up",
-    "Sports Enthusiasts",
-    "Talent Showcase",
+    "Sports Platform",
+    "Athletes",
     "Sports Clubs",
+    "Talent Showcase",
     "Sports Networking",
     "Athlete Recognition",
   ],
   description:
-    "SPORTON is a sports community platform that includes all athletes from Egypt in various sports, and on the other hand, player agents and clubs and institutions that will receive their talents will be present.",
+  "Join SPORTON, the ultimate platform for athletes, agents, and clubs. Login or sign-up to showcase talent, connect with clubs, and gain recognition in sports.",
   openGraph: {
     type: "website",
     url: "https://www.sporton.website/",
-    title: "SPORTON",
+    title: "SPORTON | Login & Sign-up for Sports Enthusiasts",
     description:
-      "SPORTON is a sports community platform that includes all athletes from Egypt in various sports, and on the other hand, player agents and clubs and institutions that will receive their talents will be present.",
+      "Join SPORTON, the ultimate platform for athletes, agents, and clubs. Login or sign-up to showcase talent, connect with clubs, and gain recognition in sports.",
     images: [
       {
         url: "https://www.sporton.website/logo.png",
@@ -32,6 +32,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  metadataBase: new URL("https://www.sporton.website/sign-in"),
 };
 
 export default function RootLayout({
@@ -41,7 +42,7 @@ export default function RootLayout({
 }) {
   return (
     <div
-    style={{direction:"rtl"}}
+      style={{ direction: "rtl" }}
       className="
         min-h-screen flex w-full items-center justify-center
         bg-cover bg-center bg-no-repeat
