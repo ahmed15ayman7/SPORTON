@@ -1,11 +1,13 @@
 "use client";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
-import { PostData,
+import {
+  PostData,
   //  deletePost,
-   reactToPost } from "@/lib/actions/post.actions";
+  reactToPost,
+} from "@/lib/actions/post.actions";
 import { formatDateString } from "@/lib/utils";
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -49,10 +51,10 @@ import {
 import FriendCarousel from "./FriendCarousel";
 import { Button } from "@/components/ui/button";
 import ReactionIcons from "./ReactionIcons";
-import { Howl } from 'howler';
+import { Howl } from "howler";
 interface parms {
-  isGuest:boolean;
-  isRepost?:boolean,
+  isGuest: boolean;
+  isRepost?: boolean;
   isAchievement?: string;
   id: string;
   Team: any[];
@@ -84,8 +86,8 @@ interface parms {
       name: string;
     };
   }[];
-  repost?:PostData;
-    isComment?: boolean;
+  repost?: PostData;
+  isComment?: boolean;
   setAction?: any;
 }
 
@@ -107,19 +109,22 @@ const CardPost = ({
   isComment,
   video,
   image,
-  setAction,repost
+  setAction,
+  repost,
 }: parms) => {
-  const secretKey = process.env.SecretKey ? Buffer.from(process.env.SecretKey, 'base64') : randomBytes(32);
+  const secretKey = process.env.SecretKey
+    ? Buffer.from(process.env.SecretKey, "base64")
+    : randomBytes(32);
   const iv = randomBytes(16); // نقطة البداية (initialization vector)
-  
+
   // تشفير
- function encryptId(text: string): string {
-    const cipher = createCipheriv('aes-256-cbc', secretKey, iv);
-    let encrypted = cipher.update(text, 'utf-8', 'hex');
-    encrypted += cipher.final('hex');
-    return `${iv.toString('hex')}555abc666def${text}555abc666def${encrypted}`
-}
-  
+  function encryptId(text: string): string {
+    const cipher = createCipheriv("aes-256-cbc", secretKey, iv);
+    let encrypted = cipher.update(text, "utf-8", "hex");
+    encrypted += cipher.final("hex");
+    return `${iv.toString("hex")}555abc666def${text}555abc666def${encrypted}`;
+  }
+
   const date = new Date(createdAt);
   const formattedDate = formatDistanceToNow(date, { addSuffix: true });
   const [isHovering, setIsHovering] = useState(false);
@@ -128,31 +133,35 @@ const CardPost = ({
   let isFriend = Team?.filter((friend) => friend.id === author.id).length === 1;
   let commentsFilter = comments.filter((e) => e.author._id !== undefined);
   let isReplay =
-  commentsFilter.filter((e) => e.author.id === currentId).length >= 1;
+    commentsFilter.filter((e) => e.author.id === currentId).length >= 1;
   let commLen = isReplay ? commentsFilter.length - 1 : commentsFilter.length;
   let isReact2 =
-  react !== undefined &&
-  react.filter((e: any) => e?.user?._id === userId).length >= 1;
-  const [LenReact, setLenReact] = useState(react?react.length:0);
+    react !== undefined &&
+    react.filter((e: any) => e?.user?._id === userId).length >= 1;
+  const [LenReact, setLenReact] = useState(react ? react.length : 0);
   const [isReact, setIsReact] = useState(isReact2);
   const [reactionImg, setReactionImage] = useState("/assets/heart-filled.svg");
   const sounds = {
-    like: new Howl({ src: ['/sounds/like.wav'] }),
-    love: new Howl({ src: ['/sounds/love.mp3'] }),
-    support: new Howl({ src: ['/sounds/like.wav'] }),
-    wow: new Howl({ src: ['/sounds/wow.wav'] }),
-    haha: new Howl({ src: ['/sounds/haha.wav'] }),
-    sad: new Howl({ src: ['/sounds/sad.wav'] }),
-    angry: new Howl({ src: ['/sounds/angry.wav'] }),
+    like: new Howl({ src: ["/sounds/like.wav"] }),
+    love: new Howl({ src: ["/sounds/love.mp3"] }),
+    support: new Howl({ src: ["/sounds/like.wav"] }),
+    wow: new Howl({ src: ["/sounds/wow.wav"] }),
+    haha: new Howl({ src: ["/sounds/haha.wav"] }),
+    sad: new Howl({ src: ["/sounds/sad.wav"] }),
+    angry: new Howl({ src: ["/sounds/angry.wav"] }),
     // click: new Howl({ src: ['/sounds/click.mp3'] }),
   };
-  let handleHeart = async (reaction:string,img:string,isClick?:boolean) => {
-    if(isGuest) return
+  let handleHeart = async (
+    reaction: string,
+    img: string,
+    isClick?: boolean
+  ) => {
+    if (isGuest) return;
     //@ts-ignore
     sounds[`${reaction}`].play();
     setReactionImage(img);
-    isClick&& setIsReact(!isReact)
-    setLenReact(isReact===true?LenReact-1:LenReact+1)
+    isClick && setIsReact(!isReact);
+    setLenReact(isReact === true ? LenReact - 1 : LenReact + 1);
     console.log(react);
     await reactToPost({
       postId: id,
@@ -164,7 +173,7 @@ const CardPost = ({
   };
   let handelDeletePost = async () => {
     try {
-      if(isGuest) return
+      if (isGuest) return;
       // await deletePost(id, author._id, parentId, isComment, pathname);
     } catch (e) {
       console.log(e);
@@ -210,7 +219,8 @@ const CardPost = ({
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+              >
                 <Image
                   src={`/assets/facebook.svg`}
                   alt="facebook"
@@ -231,7 +241,8 @@ const CardPost = ({
               <a
                 href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+              >
                 <Image
                   src={`/assets/twitter.svg`}
                   alt="twitter"
@@ -252,7 +263,8 @@ const CardPost = ({
               <a
                 href={`https://api.whatsapp.com/send?text=${encodedMessage}`}
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+              >
                 <Image
                   src={`/assets/whatsapp.svg`}
                   alt="whatsapp"
@@ -279,7 +291,6 @@ const CardPost = ({
     isMessenger?: boolean;
     isWhite?: boolean;
   }) => (
-    
     <div className={`${isComment && "mb-10"} flex flex-col `}>
       <div className="flex flex-row-reverse items-center justify-between">
         {LenReact && LenReact > 0 ? (
@@ -287,7 +298,8 @@ const CardPost = ({
             <p
               className={` text-subtle-medium  ${
                 isWhite ? " text-[#ffffff]" : "text-gray-1"
-              }`}>
+              }`}
+            >
               {LenReact}
             </p>
             <Image
@@ -305,7 +317,8 @@ const CardPost = ({
               <p
                 className={`mt-1 text-subtle-medium  ${
                   isWhite ? " text-[#ffffff]" : "text-gray-1"
-                }`}>
+                }`}
+              >
                 {isReplay && "you and "}
                 {commLen} repl{commLen > 1 ? "ies" : "y"}
               </p>
@@ -314,20 +327,30 @@ const CardPost = ({
         )}
       </div>
       <div className="mt-3 flex flex-row items-center gap-6">
-      <div
+        <div
           className="relative"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
           <Image
-            src={isReact ? reactionImg : `/assets/heart${isWhite ? '-white' : '-gray'}.svg`}
+            src={
+              isReact
+                ? reactionImg
+                : `/assets/heart${isWhite ? "-white" : "-gray"}.svg`
+            }
             alt="heart"
             height={20}
             width={20}
             className="hover:scale-125 cursor-pointer object-contain"
-            onClick={()=>handleHeart("love","/assets/heart-filled.svg",true)}
+            onClick={() =>
+              handleHeart("love", "/assets/heart-filled.svg", true)
+            }
           />
-          <ReactionIcons isVisible={isHovering} onReact={handleHeart} isWhite={isWhite} />
+          <ReactionIcons
+            isVisible={isHovering}
+            onReact={handleHeart}
+            isWhite={isWhite}
+          />
         </div>
         {/* <Image
           src={
@@ -362,9 +385,7 @@ const CardPost = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Link
-                href={`/new-post?repost=${id}`}
-                className="">
+              <Link href={`/new-post?repost=${id}`} className="">
                 <Image
                   src={`/assets/repost${isWhite ? "-white" : ""}.svg`}
                   alt="repost"
@@ -386,7 +407,8 @@ const CardPost = ({
               <TooltipTrigger>
                 <Link
                   href={"/messaging/" + userId + "-" + author._id}
-                  className="">
+                  className=""
+                >
                   <Image
                     src={`/assets/messnger${isWhite ? "-white" : ""}.svg`}
                     alt="repost"
@@ -491,7 +513,8 @@ const CardPost = ({
               className={
                 "w-full mx-0 flex outline-none gap-4 border-none justify-start text-start"
               }
-              onClick={() => handelDeletePost()}>
+              onClick={() => handelDeletePost()}
+            >
               <AiFillDelete color="#ff0000" /> delete
             </Button>
           </DropdownMenuItem>
@@ -505,13 +528,16 @@ const CardPost = ({
   return (
     <article
       className={` flex w-full flex-col rounded-xl ${
-        isComment  ? " px-0 xs:px-7" : "bg-dark-2 p-5"
-      } ${
-       isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""
-      }`}>
+        isComment ? " px-0 xs:px-7" : "bg-dark-2 p-5"
+      } ${isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""}`}
+    >
       <div className=" flex items-start justify-between">
         <div className=" flex w-full flex-1 flex-row gap-4 ">
-          <div className={` text-white flex-col items-center ${isRepost?"":"lg:flex"} hidden `}>
+          <div
+            className={` text-white flex-col items-center ${
+              isRepost ? "" : "lg:flex"
+            } hidden `}
+          >
             <Link href={"/profile/" + author.id} className="relative w-11 h-11">
               <div className="relative   aspect-square h-10 w-10  ">
                 <img
@@ -528,15 +554,19 @@ const CardPost = ({
               /> */}
             </Link>
             {!isRepost && <div className="thread-card_bar" />}
-            
           </div>
           <div className=" text-white flex flex-col gap-4 w-full  ">
             <div className="flex w-full flex-1 flex-row gap-4 ">
               <div className="flex w-full flex-1 flex-row gap-4 ">
-                <div className={` text-white flex flex-col items-center ${isRepost?"":"lg:hidden"}  `}>
+                <div
+                  className={` text-white flex flex-col items-center ${
+                    isRepost ? "" : "lg:hidden"
+                  }  `}
+                >
                   <Link
                     href={"/profile/" + author.id}
-                    className="relative w-11 h-11">
+                    className="relative w-11 h-11"
+                  >
                     <Image
                       src={author.image}
                       alt={author.name}
@@ -556,7 +586,8 @@ const CardPost = ({
                   />
                   <Link
                     href={"/profile/" + author.id}
-                    className=" cursor-pointer w-full flex gap-4 ">
+                    className=" cursor-pointer w-full flex gap-4 "
+                  >
                     <div className=" cursor-pointer w-full flex gap-[3px]">
                       <h2>{author.name}</h2>
                       <Image
@@ -594,7 +625,7 @@ const CardPost = ({
             {image && (
               <AlertDialog>
                 <AlertDialogTrigger>
-                  <div className={`max-sm:px-0 ${isRepost ?"":"px-16"} `}>
+                  <div className={`max-sm:px-0 ${isRepost ? "" : "px-16"} `}>
                     <div className="relative max-sm:aspect-square max-md:aspect-video aspect-square  mb-5">
                       <img
                         src={image}
@@ -609,7 +640,8 @@ const CardPost = ({
                     <div className=" flex justify-between">
                       {author._id === userId ? <DropDown /> : <div></div>}
                       <AlertDialogTitle
-                        className={"text-[#ffffff] text-center"}>
+                        className={"text-[#ffffff] text-center"}
+                      >
                         <h5>@{author.name}</h5>
                       </AlertDialogTitle>
                       <AlertDialogCancel>
@@ -633,7 +665,8 @@ const CardPost = ({
                       </div>
                     </AlertDialogDescription>
                     <AlertDialogDescription
-                      className={"text-[#ffffff] text-center"}>
+                      className={"text-[#ffffff] text-center"}
+                    >
                       {content}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -654,25 +687,27 @@ const CardPost = ({
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            {repost &&repost?.createdAt && <CardPost
-            isGuest={isGuest}
-            isRepost
-                   setAction={()=>{}}
-                   Team={[]}
-                   isAchievement={repost?.isAchievement}
-                   id={repost?._id}
-                   repost={repost?.repost}
-                   video={repost?.video}
-                   image={repost?.image}
-                   parentId={repost?.parentId}
-                   react={[]}
-                   currentId={currentId}
-                   userId={userId}
-                   author={repost?.author}
-                   content={repost?.text}
-                   createdAt={repost?.createdAt}
-                   comments={[]}
-            />}
+            {repost && repost?.createdAt && (
+              <CardPost
+                isGuest={isGuest}
+                isRepost
+                setAction={() => {}}
+                Team={[]}
+                isAchievement={repost?.isAchievement}
+                id={repost?._id}
+                repost={repost?.repost}
+                video={repost?.video}
+                image={repost?.image}
+                parentId={repost?.parentId}
+                react={[]}
+                currentId={currentId}
+                userId={userId}
+                author={repost?.author}
+                content={repost?.text}
+                createdAt={repost?.createdAt}
+                comments={[]}
+              />
+            )}
             {video && (
               <video
                 src={video}
@@ -685,7 +720,7 @@ const CardPost = ({
           </div>
         </div>
       </div>
-      
+
       {/* {!isComment && community?.name && (
         <Link
           href={`/communities/${community.id}`}
@@ -722,7 +757,8 @@ const CardPost = ({
             return (
               <div
                 key={index}
-                className="relative aspect-square   w-10 h-10  shadow-2xl rounded-full">
+                className="relative aspect-square   w-10 h-10  shadow-2xl rounded-full"
+              >
                 <img
                   src={comment?.author.image}
                   alt={`user_${index}`}
