@@ -120,7 +120,7 @@ export default function HOME() {
   if (!user) router.replace("/sign-in");
   return (
     <>
-      <div>
+      <div >
         <Home
           FPosts2={JSON.stringify(posts)}
           userInfo2={JSON.stringify(userInfo)}

@@ -1,5 +1,5 @@
 "use server";
-import {  connectDB } from "@/mongoose";
+import { connectDB } from "@/mongoose";
 import { revalidatePath } from "next/cache";
 import Post from "../models/post.models";
 import User from "../models/user.models";
@@ -13,7 +13,7 @@ interface props {
 }
 export interface PostData {
   isAchievement: string;
-  repost:PostData;
+  repost: PostData;
   _id: string;
   parentId: string | null;
   currentId: String | undefined;
@@ -50,7 +50,7 @@ export async function createPost({
   video,
   author,
   isAchievement,
-  repost
+  repost,
 }: props) {
   connectDB();
   try {
@@ -367,46 +367,46 @@ export async function fetchPosts(
   }
 }
 
-export async function fetchPostsSiteMap(){
-
+export async function fetchPostsSiteMap() {
   connectDB();
   try {
     return await Post.find();
-  }catch(e:any){
+  } catch (e: any) {
     console.log(`Failed to delete post: ${e.message}`);
-
   }
 }
-// export async function deletePost(
-//   postId: string,
-//   authorId: string,
-//   parentId: string | null,
-//   isComment: boolean | undefined,
-//   path: string
-// ) {
-//   connectDB();
-//   try {
-//     // Find and delete the post by its ID
-//     const post = await Post.findByIdAndDelete(postId);
-//     if (post) {
-//       if (isComment) {
-//         await User.findByIdAndUpdate(authorId, {
-//           $pull: { comments: parentId },
-//         });
-//       } else {
-//         await User.findByIdAndUpdate(authorId, {
-//           $pull: { posts: postId },
-//         });
-//       }
-//       console.log("Post deleted successfully 💥");
-//       revalidatePath(path);
-//       return true;
-//     } else {
-//       console.log("Post not found 😢");
-//       return false;
-//     }
-//   } catch (error: any) {
-//     console.log(`Failed to delete post: ${error.message}`);
-//     return false;
-//   }
-// }
+export async function deletePost(
+  postId: string,
+  authorId: string,
+  parentId: string | null,
+  isComment: boolean | undefined,
+  path: string
+) {
+  connectDB();
+  try {
+    // Find and delete the post by its ID
+    console.log(postId);
+    const post = await Post.findByIdAndDelete(postId);
+    console.log(post);
+    if (post) {
+      if (isComment) {
+        await User.findByIdAndUpdate(authorId, {
+          $pull: { comments: parentId },
+        });
+      } else {
+        await User.findByIdAndUpdate(authorId, {
+          $pull: { posts: postId },
+        });
+      }
+      console.log("Post deleted successfully 💥");
+      revalidatePath(path);
+      return true;
+    } else {
+      console.log("Post not found 😢");
+      return false;
+    }
+  } catch (error: any) {
+    console.log(`Failed to delete post: ${error.message}`);
+    return false;
+  }
+}

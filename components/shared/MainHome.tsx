@@ -18,23 +18,23 @@ export default function Home({
   setAction: any;
 }) {
   const userInfo: UserData = JSON.parse(userInfo2);
-  const FPosts:PostData[]  = JSON.parse(FPosts2);
+  const FPosts: PostData[] = JSON.parse(FPosts2);
   let friends = userInfo.friends;
 
   useEffect(() => {
     userInfo && sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
   }, [userInfo]);
-  let isGuest=(userInfo as UserData).email === GuestEmail
+  let isGuest = (userInfo as UserData).email === GuestEmail;
   return friends && userInfo && FPosts ? (
-    <main>
+    <main >
       <h1 className="hidden">SPORTON Home</h1>
       <PostButtonHome />
       <section className="p-16 pt-0 flex flex-col gap-8 max-sm:p-0">
         <LocalStore {...userInfo} />
-        {FPosts?.map((post,i) => (
+        {FPosts?.map((post, i) => (
           <CardPost
-          isGuest={isGuest}
-          repost={post.repost}
+            isGuest={isGuest}
+            repost={post.repost}
             setAction={setAction}
             Team={friends}
             key={i}

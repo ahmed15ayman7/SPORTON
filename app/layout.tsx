@@ -58,11 +58,12 @@ export default function RootLayout({
               <link rel="canonical" href="https://www.sporton.website/" />
             </head>
             <body className={inter.className}>
-              <div className=" w-full">
+              <div className=" w-full" >
                 {children}
                 <ToastContainer />
               </div>
               <Analytics />
+
               <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{

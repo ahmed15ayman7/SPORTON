@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import "../globals.css";
 import Topbar from "@/components/shared/Topbar";
 import BottomSidebar from "@/components/shared/Bottombar";
@@ -12,6 +12,9 @@ import Loader from "@/components/shared/Loader";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
+import TakeTour from "@/components/shared/TakeTour";
+import { useDispatch, useSelector } from "react-redux";
+import { selectLoad, setLoad } from "@/lib/redux/loadSlice";
 interface redirectType {
   redirect: string;
 }
@@ -20,12 +23,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [size, setSize] = useState<number>()
+  const [size, setSize] = useState<number>();
   const router = useRouter();
   useEffect(() => {
-    setSize(window.innerWidth)
-    window.addEventListener('resize',()=>{setSize(window.innerWidth)})
-}, [size])
+    setSize(window.innerWidth);
+    window.addEventListener("resize", () => {
+      setSize(window.innerWidth);
+    });
+  }, [size]);
   const {
     data: userInfo,
     error: userError,
@@ -34,27 +39,31 @@ export default function RootLayout({
     queryKey: ["user"],
     queryFn: () => fetchUser(),
   });
-  if ((userInfo as redirectType )?.redirect) {
-    router.replace((userInfo as redirectType ).redirect);
+  let load = useSelector(selectLoad);
+  let dispatch = useDispatch();
+  if ((userInfo as redirectType)?.redirect) {
+    router.replace((userInfo as redirectType).redirect);
     return null; // تأكد من عدم إرجاع أي محتوى أثناء التوجيه
   }
-  if(userError) return <ReloadButton/>;
-  if(userLoading) return <Loader is/>;
-
+  if (userError) return <ReloadButton />;
+  if (userLoading) {
+    return <Loader is />;
+  }
   return (
     <>
-     {userInfo &&<Topbar userInfo={userInfo} />}
+      {userInfo && <Topbar userInfo={userInfo} />}
       <main className=" flex flex-row w-full">
-      {userInfo &&<LeftSidebar />}
+        {userInfo && <LeftSidebar />}
+        {userInfo && <TakeTour />}
         <section className="main-container">
-          <div className=" w-full max-w-4xl">
-            {children}
-            </div>
+          <div className=" w-full max-w-4xl">{children}</div>
         </section>
-        { size&&size>=1280&&userInfo &&  <RightSidebar  userInfo={(userInfo as UserData)}  />}
-     <ToastContainer />
+        {size && size >= 1280 && userInfo && (
+          <RightSidebar userInfo={userInfo as UserData} />
+        )}
+        <ToastContainer />
       </main>
-      { size&&size<1280&&userInfo && <BottomSidebar userInfo={userInfo} />}
+      {size && size < 1280 && userInfo && <BottomSidebar userInfo={userInfo} />}
     </>
   );
 }

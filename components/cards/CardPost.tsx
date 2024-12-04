@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import {
@@ -52,6 +53,7 @@ import FriendCarousel from "./FriendCarousel";
 import { Button } from "@/components/ui/button";
 import ReactionIcons from "./ReactionIcons";
 import { Howl } from "howler";
+import axios from "axios";
 interface parms {
   isGuest: boolean;
   isRepost?: boolean;
@@ -140,6 +142,7 @@ const CardPost = ({
     react.filter((e: any) => e?.user?._id === userId).length >= 1;
   const [LenReact, setLenReact] = useState(react ? react.length : 0);
   const [isReact, setIsReact] = useState(isReact2);
+  const [isDelete, setIsDelete] = useState(false);
   const [reactionImg, setReactionImage] = useState("/assets/heart-filled.svg");
   const sounds = {
     like: new Howl({ src: ["/sounds/like.wav"] }),
@@ -172,13 +175,39 @@ const CardPost = ({
     setAction && setAction(Math.random());
   };
   let handelDeletePost = async () => {
+    if (isGuest) return;
+  
+    let toastId = toast.loading("Deleting post...");
     try {
-      if (isGuest) return;
-      // await deletePost(id, author._id, parentId, isComment, pathname);
+      // Display a loading message
+  
+      // Ensure only the author can delete the post
+      if (author._id === userId) {
+        const response = await axios.delete(`/api/posts/${id}`, {
+          data: { authorId: author._id, parentId, isComment, path: pathname },
+        });
+        setIsDelete(true)
+  console.log(id)
+        // Update the toast to success
+        toast.update(toastId, {
+          render: "Post deleted successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000, // Auto close after 3 seconds
+        });
+      }
     } catch (e) {
-      console.log(e);
+      // Update the toast to error
+      toast.update(toastId, {
+        render: "Failed to delete post. Try again!",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000, // Auto close after 3 seconds
+      });
+      console.error(e);
     }
   };
+  
   //!!!!!!!! SocialShare
   //?????????? SocialShare
   const SocialShare = ({ url, title }: { url: string; title: string }) => {
@@ -527,9 +556,10 @@ const CardPost = ({
 
   return (
     <article
+      id="post"
       className={` flex w-full flex-col rounded-xl ${
         isComment ? " px-0 xs:px-7" : "bg-dark-2 p-5"
-      } ${isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""}`}
+      } ${isDelete?"hidden":""} ${isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""}`}
     >
       <div className=" flex items-start justify-between">
         <div className=" flex w-full flex-1 flex-row gap-4 ">

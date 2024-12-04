@@ -1,16 +1,16 @@
 "use client";
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { UserData, fetchAllUser } from '@/lib/actions/user.actions';
-import { SugCard } from '../cards/sugCard';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { UserData, fetchAllUser } from "@/lib/actions/user.actions";
+import { SugCard } from "../cards/sugCard";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import UserCardSkeleton from "../cards/UserCardSkeleton";
-import { GuestEmail } from '@/constants/data';
-import { fetchAllRooms } from '@/lib/actions/room.actions';
+import { GuestEmail } from "@/constants/data";
+import { fetchAllRooms } from "@/lib/actions/room.actions";
 
 const useFetchUsers = () => {
   return useInfiniteQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: ({ pageParam = 1 }) =>
       fetchAllUser({
         searchString: "",
@@ -21,11 +21,12 @@ const useFetchUsers = () => {
       return lastPage.isNext ? lastPage.pageNum + 1 : undefined;
     },
     initialPageParam: 1, // Start from the first page
-  })
+  });
 };
 const useFetchUsersChat = (userId: string) => {
   return useQuery({
-    queryKey: ['users'], queryFn: () =>
+    queryKey: ["users"],
+    queryFn: () =>
       fetchAllRooms({
         searchString: "",
         pageNum: 1,
@@ -33,7 +34,7 @@ const useFetchUsersChat = (userId: string) => {
         sortBy: -1,
         userId,
       }),
-  })
+  });
 };
 interface Props {
   isChat?: boolean;
@@ -45,30 +46,34 @@ interface Props {
   userInfo: UserData;
 }
 
-const RightSidebar = ({ isChat, userInfo, Ids, isxl, islg, setChat, refetchData }: Props) => {
+const RightSidebar = ({
+  isChat,
+  userInfo,
+  Ids,
+  isxl,
+  islg,
+  setChat,
+  refetchData,
+}: Props) => {
   const router = useRouter();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = isChat ? {
-    data: undefined,
-    fetchNextPage: undefined,
-    hasNextPage: undefined,
-    isFetchingNextPage: undefined,
-    refetch: undefined,
-  } : useFetchUsers();
-  const {
-    data: usersDataChat,
-    refetch: refetch2,
-  } = isChat ? useFetchUsersChat(userInfo._id) : { data: undefined, refetch: undefined };
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+    isChat
+      ? {
+          data: undefined,
+          fetchNextPage: undefined,
+          hasNextPage: undefined,
+          isFetchingNextPage: undefined,
+          refetch: undefined,
+        }
+      : useFetchUsers();
+  const { data: usersDataChat, refetch: refetch2 } = isChat
+    ? useFetchUsersChat(userInfo._id)
+    : { data: undefined, refetch: undefined };
   useEffect(() => {
-    refetch2 && refetch2()
-  }, [refetchData])
+    refetch2 && refetch2();
+  }, [refetchData]);
   useEffect(() => {
     if (!hasNextPage) return; // Stop observing if there's no more pages
 
@@ -80,7 +85,7 @@ const RightSidebar = ({ isChat, userInfo, Ids, isxl, islg, setChat, refetchData 
       },
       {
         root: null, // Use the viewport as the root
-        rootMargin: '0px',
+        rootMargin: "0px",
         threshold: 1.0, // Trigger when 100% of the element is visible
       }
     );
@@ -96,54 +101,63 @@ const RightSidebar = ({ isChat, userInfo, Ids, isxl, islg, setChat, refetchData 
     };
   }, [fetchNextPage, hasNextPage]);
 
-  if ('redirect' in userInfo!) {
+  if ("redirect" in userInfo!) {
     router.replace(userInfo.redirect);
     return null; // Ensure no content is returned during redirection
   }
 
-
   const users = data?.pages.flatMap((page) => page.users) || [];
-  let isGuest = (userInfo as UserData).email === GuestEmail
-  let usersChat: UserData[] = []
+  let isGuest = (userInfo as UserData).email === GuestEmail;
+  let usersChat: UserData[] = [];
   if (usersDataChat) {
-    usersDataChat.Rooms.forEach(e => e.users.forEach(
-      (a: UserData) => {
+    usersDataChat.Rooms.forEach((e) =>
+      e.users.forEach((a: UserData) => {
         if (a._id !== (userInfo as UserData)._id) {
-          usersChat.push(a)
+          usersChat.push(a);
         }
-      }
-    ))
+      })
+    );
   }
   return (
     <section
-      className={`rightsidebar custom-scrollbar ${isxl ? "w-full" : "max-xl:hidden"
-        } ${isChat ? ` p-0 ${!Ids && " px-1"} w-96` : "p-3 pt-28 w-72"}`}>
+      className={`rightsidebar custom-scrollbar ${
+        isxl ? "w-full" : "max-xl:hidden"
+      } ${isChat ? ` p-0 ${!Ids && " px-1"} w-96` : "p-3 pt-28 w-72"}`}
+    >
       <div className="flex flex-1 flex-col justify-start">
         {!isChat && (
-          <h1 className="text-body-bold head-text text-[25px] text-white mb-6">Player</h1>
+          <h1 className="text-body-bold head-text text-[25px] text-white mb-6">
+            Player
+          </h1>
         )}
-        {userInfo && (
-          <SugCard
-            isGuest={isGuest}
-            result2={isChat && usersChat ? JSON.stringify(usersChat) : users.length > 0 ? JSON.stringify(users) : JSON.stringify([])}
-            userInfo2={JSON.stringify(userInfo as UserData)}
-            type={"users"}
-            isChat={isChat}
-            Ids={Ids || ""}
-            islg={islg}
-            refrish={fetchNextPage} // Trigger next page fetch on refresh
-            setChat={setChat}
-          />
-        )}
+        <div id="right">
+          {userInfo && (
+            <SugCard
+              isGuest={isGuest}
+              result2={
+                isChat && usersChat
+                  ? JSON.stringify(usersChat)
+                  : users.length > 0
+                  ? JSON.stringify(users)
+                  : JSON.stringify([])
+              }
+              userInfo2={JSON.stringify(userInfo as UserData)}
+              type={"users"}
+              isChat={isChat}
+              Ids={Ids || ""}
+              islg={islg}
+              refrish={fetchNextPage} // Trigger next page fetch on refresh
+              setChat={setChat}
+            />
+          )}
+        </div>
 
-        {isFetchingNextPage &&
-
+        {isFetchingNextPage && (
           <div className="mt-4">
             <UserCardSkeleton is />
           </div>
-        }
-        <div ref={loadMoreRef} className="mt-4">
-        </div>
+        )}
+        <div ref={loadMoreRef} className="mt-4"></div>
         {/* This div triggers the next page load */}
       </div>
     </section>

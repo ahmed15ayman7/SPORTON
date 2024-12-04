@@ -28,9 +28,9 @@ import { useDispatch } from "react-redux";
 interface redirectType {
   redirect: string;
 }
-const Topbar = ({userInfo}:{userInfo:UserData|redirectType}) => {
+const Topbar = ({ userInfo }: { userInfo: UserData | redirectType }) => {
   const path = usePathname();
-  let dispatch= useDispatch()
+  let dispatch = useDispatch();
   const show = path.split("/").pop() === "new-post";
   const router = useRouter();
   if (show) {
@@ -41,15 +41,17 @@ const Topbar = ({userInfo}:{userInfo:UserData|redirectType}) => {
   }
   useEffect(() => {
     // dispatch(setUser(userInfo as UserData))
-  }, [userInfo])
-  
+  }, [userInfo]);
+
   return (
     <div className="topbar z-[40]">
       <div className="container p-0">
         <div className="flex flex-row justify-between">
           <Link
+            id="home"
             href="/"
-            className="flex items-center justify-between w-1/12 g-3 no-underline text-body-bold text-white">
+            className="flex min-w-96 max-sm:min-w-10 items-center justify-between w-1/12 g-3 no-underline text-body-bold text-white"
+          >
             <div className="flex items-center gap-9">
               <div className="max-sm:w-16 max-sm:h-16 w-20 h-20 relative">
                 <Image src="/logo5.gif" alt="" fill className="" />
@@ -99,8 +101,11 @@ const Topbar = ({userInfo}:{userInfo:UserData|redirectType}) => {
             </TooltipProvider>
             {(userInfo as UserData)?.image ? (
               <Link
-                href={`/profile/${(userInfo as UserData)?.id ? (userInfo as UserData).id : ""}`}
-                className="p-0">
+                href={`/profile/${
+                  (userInfo as UserData)?.id ? (userInfo as UserData).id : ""
+                }`}
+                className="p-0"
+              >
                 <Image
                   src={(userInfo as UserData)?.image}
                   alt="Profile"
@@ -109,7 +114,9 @@ const Topbar = ({userInfo}:{userInfo:UserData|redirectType}) => {
                   className="rounded-full object-contain"
                 />
               </Link>
-            ):<></>}
+            ) : (
+              <></>
+            )}
             {/* <ModeToggle/> */}
           </div>
         </div>
