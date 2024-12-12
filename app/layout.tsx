@@ -64,6 +64,21 @@ export default function RootLayout({
                 name="google-site-verification"
                 content="4SotCEA8ZnMeI_GpUauosjYwpag6nhVQ00yvIYEhRZs"
               />
+
+              <script
+                async
+                src="https://www.googletagmanager.com/gtag/js?id=G-2YD5P70M8D"
+              ></script>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-2YD5P70M8D');
+            `,
+                }}
+              />
             </head>
             <body className={inter.className}>
               <div className=" w-full">
