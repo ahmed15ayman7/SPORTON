@@ -56,9 +56,13 @@ export default function RootLayout({
           <html lang="en">
             <head>
               <link rel="canonical" href="https://www.sporton.website/" />
+              <meta
+                name="google-site-verification"
+                content="google6761b1a4aa436ed5"
+              />
             </head>
             <body className={inter.className}>
-              <div className=" w-full" >
+              <div className=" w-full">
                 {children}
                 <ToastContainer />
               </div>
