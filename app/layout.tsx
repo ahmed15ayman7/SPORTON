@@ -62,7 +62,7 @@ export default function RootLayout({
               /> */}
               <meta
                 name="google-site-verification"
-                content="4SotCEA8ZnMeI_GpUauosjYwpag6nhVQ00yvIYEhRZs"
+                content="google6761b1a4aa436ed5"
               />
               <script
                 dangerouslySetInnerHTML={{
