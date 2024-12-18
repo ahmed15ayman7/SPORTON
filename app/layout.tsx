@@ -56,10 +56,10 @@ export default function RootLayout({
           <html lang="en">
             <head>
               <link rel="canonical" href="https://www.sporton.website/" />
-              {/* <meta
+              <meta
                 name="google-site-verification"
-                content="google6761b1a4aa436ed5"
-              /> */}
+                content="YjryBWgaf6wQ2gI10PxU0coMLMeXMHTOE2cBpGWAgy0"
+              />
               <meta
                 name="google-site-verification"
                 content="google62bbac5407f85471"
