@@ -1,7 +1,12 @@
 import { SignOutbutton } from "../../../components/cards/SignOutbutton";
 import AccountProfile from "../../../components/forms/AccountProfile";
-import { UserData, fetchUser } from "../../../lib/actions/user.actions";
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  UserData,
+  currentUser,
+  fetchUser,
+} from "../../../lib/actions/user.actions";
+// import { currentUser } from "@clerk/nextjs/server";
+
 import { redirect } from "next/navigation";
 import { connectDB } from "@/mongoose";
 import React from "react";
@@ -28,15 +33,16 @@ const Onboarding = async () => {
   const userInfo = await fetchUser();
   if (!user) redirect("/sign-in");
   if ((userInfo as UserData)?.onboarding) redirect("/");
+  console.log(user);
   let userData: usData = {
-    id: user?.id,
-    email:(userInfo as UserData)?.email|| user.emailAddresses[0].emailAddress,
+    id: user?.email,
+    email: (userInfo as UserData)?.email || user?.email,
     objectID: (userInfo as UserData)?._id,
-    username: user?.username || (userInfo as UserData)?.username,
-    name: user?.firstName || (userInfo as UserData)?.name || "",
+    username: user?.name || (userInfo as UserData)?.username,
+    name: user?.name || (userInfo as UserData)?.name || "",
     bio: (userInfo as UserData)?.bio || "",
     sport: (userInfo as UserData)?.sport || "",
-    image: user?.imageUrl || (userInfo as UserData)?.image,
+    image: user?.image || (userInfo as UserData)?.image,
     type: (userInfo as UserData)?.type,
     phone: (userInfo as UserData)?.phone,
   };

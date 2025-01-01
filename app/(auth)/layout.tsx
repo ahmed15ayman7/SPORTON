@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import SessionProvider2 from "@/components/providers/SessionProvider2";
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     "Athlete Recognition",
   ],
   description:
-  "Join SPORTON, the ultimate platform for athletes, agents, and clubs. Login or sign-up to showcase talent, connect with clubs, and gain recognition in sports.",
+    "Join SPORTON, the ultimate platform for athletes, agents, and clubs. Login or sign-up to showcase talent, connect with clubs, and gain recognition in sports.",
   openGraph: {
     type: "website",
     url: "https://www.sporton.website/",
@@ -50,7 +51,7 @@ export default function RootLayout({
          sm:bg-[size:auto]
       "
     >
-      {children}
+      <SessionProvider2>{children}</SessionProvider2>
     </div>
   );
 }

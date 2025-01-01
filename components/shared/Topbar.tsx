@@ -102,7 +102,7 @@ const Topbar = ({ userInfo }: { userInfo: UserData | redirectType }) => {
             {(userInfo as UserData)?.image ? (
               <Link
                 href={`/profile/${
-                  (userInfo as UserData)?.id ? (userInfo as UserData).id : ""
+                  (userInfo as UserData)?._id ? (userInfo as UserData)._id : ""
                 }`}
                 className="p-0"
               >

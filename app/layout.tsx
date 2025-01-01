@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+// import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 import React from "react";
@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InfintyProvider from "@/components/providers/InfintyProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
+import SessionProvider2 from "@/components/providers/SessionProvider2";
 export const metadata: Metadata = {
   title: {
     default: "SPORTON | Player Posts, Achievements & Connect with Players",
@@ -49,58 +50,58 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // <ClerkProvider>
   return (
-    <ClerkProvider>
-      <InfintyProvider>
-        <ReduxProvider>
-          <html lang="en">
-            <head>
-              <link rel="canonical" href="https://www.sporton.website/" />
-              <meta
-                name="google-site-verification"
-                content="YjryBWgaf6wQ2gI10PxU0coMLMeXMHTOE2cBpGWAgy0"
-              />
-              <meta
-                name="google-site-verification"
-                content="google62bbac5407f85471"
-              />
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
+    <InfintyProvider>
+      <ReduxProvider>
+        <html lang="en">
+          <head>
+            <link rel="canonical" href="https://www.sporton.website/" />
+            <meta
+              name="google-site-verification"
+              content="YjryBWgaf6wQ2gI10PxU0coMLMeXMHTOE2cBpGWAgy0"
+            />
+            <meta
+              name="google-site-verification"
+              content="google62bbac5407f85471"
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
               j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               'https://www.googletagmanager.com/gtm.js?id=' + i + dl;f.parentNode.insertBefore(j,f);
               })(window,document,'script','dataLayer','GTM-KF63VLNP');
             `,
-                }}
-              ></script>
-              <script
-                async
-                src="https://www.googletagmanager.com/gtag/js?id=G-2YD5P70M8D"
-              ></script>
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
+              }}
+            ></script>
+            <script
+              async
+              src="https://www.googletagmanager.com/gtag/js?id=G-2YD5P70M8D"
+            ></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'G-2YD5P70M8D');
             `,
-                }}
-              />
-            </head>
-            <body className={inter.className}>
-              <div className=" w-full">
-                {children}
-                <ToastContainer />
-              </div>
-              <Analytics />
+              }}
+            />
+          </head>
+          <body className={inter.className}>
+            <div className=" w-full">
+              <SessionProvider2>{children}</SessionProvider2>
+              <ToastContainer />
+            </div>
+            <Analytics />
 
-              <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                  __html: `
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: `
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
@@ -113,20 +114,20 @@ export default function RootLayout({
                 ]
               }
             `,
-                }}
-              />
-              <noscript>
-                <iframe
-                  src="https://www.googletagmanager.com/ns.html?id=GTM-KF63VLNP"
-                  height="0"
-                  width="0"
-                  style={{ display: "none", visibility: "hidden" }}
-                ></iframe>
-              </noscript>
-            </body>
-          </html>
-        </ReduxProvider>
-      </InfintyProvider>
-    </ClerkProvider>
+              }}
+            />
+            <noscript>
+              <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-KF63VLNP"
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              ></iframe>
+            </noscript>
+          </body>
+        </html>
+      </ReduxProvider>
+    </InfintyProvider>
   );
+  // </ClerkProvider>
 }

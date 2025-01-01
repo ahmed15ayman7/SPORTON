@@ -1,15 +1,13 @@
-
-
-"use client"
-import ChatBox from '@/components/shared/ChatBox';
-import RightSidebar from '@/components/shared/RightSidebar';
-import { useEffect, useState } from 'react';
+"use client";
+import ChatBox from "@/components/shared/ChatBox";
+import RightSidebar from "@/components/shared/RightSidebar";
+import { useEffect, useState, Suspense } from "react";
 // import { Metadata } from "next";
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { UserData, fetchUser } from '@/lib/actions/user.actions';
-import ReloadButton from '@/components/shared/reload';
-import Loader from '@/components/shared/Loader';
+import { useSearchParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { UserData, fetchUser } from "@/lib/actions/user.actions";
+import ReloadButton from "@/components/shared/reload";
+import Loader from "@/components/shared/Loader";
 
 // export const metadata: Metadata = {
 //   title: "SPORTEN | Messaging",
@@ -17,7 +15,7 @@ import Loader from '@/components/shared/Loader';
 interface redirectType {
   redirect: string;
 }
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 const ChatPage = () => {
   let router = useRouter();
   const {
@@ -34,30 +32,53 @@ const ChatPage = () => {
   }
 
   let searchParams = useSearchParams();
-  let ids = searchParams.get('ids');
-  let hasIds = searchParams.has('ids');
-  const [size, setSize] = useState<number>()
-  const [refetchData, setRefetchData] = useState<number>()
+  let ids = searchParams.get("ids");
+  let hasIds = searchParams.has("ids");
+  const [size, setSize] = useState<number>();
+  const [refetchData, setRefetchData] = useState<number>();
   const [openChat, setChat] = useState<string>(hasIds ? ids! : "");
   useEffect(() => {
-    setSize(window.innerWidth)
-    window.addEventListener('resize', () => { setSize(window.innerWidth) })
-  }, [size])
+    setSize(window.innerWidth);
+    window.addEventListener("resize", () => {
+      setSize(window.innerWidth);
+    });
+  }, [size]);
   if (userError) return <ReloadButton />;
   if (userLoading) return <Loader is />;
   return (
     <div className=" bg-[url(/assets/bg.jpg)] bg-center max-sm:bg-cover bg-[length:100%_100%] bg-no-repeat">
       {/* sm and md */}
-      {size && size < 1280 && <div className="flex relative justify-center items-center overflow-hidden h-[100vh] ">
-        <RightSidebar isChat isxl islg={false} userInfo={(userInfo as UserData)!} />
-      </div>}
+      {size && size < 1280 && (
+        <div className="flex relative justify-center items-center overflow-hidden h-[100vh] ">
+          <RightSidebar
+            isChat
+            isxl
+            islg={false}
+            userInfo={(userInfo as UserData)!}
+          />
+        </div>
+      )}
       {/* lg */}
-      {size && size >= 1280 && <div className="flex relative justify-center items-center overflow-hidden h-[100vh] ">
-        <RightSidebar isChat islg={true} refetchData={refetchData} userInfo={(userInfo as UserData)!} setChat={setChat} Ids={openChat} />
-        <ChatBox Ids={openChat} setRefetchData={setRefetchData} />
-      </div>}
+      {size && size >= 1280 && (
+        <div className="flex relative justify-center items-center overflow-hidden h-[100vh] ">
+          <RightSidebar
+            isChat
+            islg={true}
+            refetchData={refetchData}
+            userInfo={(userInfo as UserData)!}
+            setChat={setChat}
+            Ids={openChat}
+          />
+          <ChatBox Ids={openChat} setRefetchData={setRefetchData} />
+        </div>
+      )}
     </div>
   );
 };
 
-export default ChatPage;
+const Page = () => {
+  <Suspense>
+    <ChatPage />
+  </Suspense>;
+};
+export default Page;

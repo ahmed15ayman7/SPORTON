@@ -60,7 +60,7 @@ const exampleParms: Parms = {
   content: "  جزمه كوره نايك المقاس 43/44 سعره ٤٠٠ جنيه",
   image:
     "https://mimg6cdn.haraj.com.sa/userfiles30/2024-04-28/1350x1800_8D0C2732-4604-431B-AEA1-9F95E48316B2.jpg",
-  createdAt: getRandomDate(new Date(2020, 0, 1), new Date()), // Random date between Jan 1, 2020 and now
+  createdAt: getRandomDate(new Date(2024, 7, 5), new Date()), // Random date between Jan 1, 2020 and now
 };
 const exampleParms2: Parms = {
   id: "2",
@@ -68,7 +68,7 @@ const exampleParms2: Parms = {
   author: exampleAuthor2,
   content: "مضرب بابولا كوميت مقاس ٢٥ وزن ٢٣٠ سعر ٣٠٠",
   image: "https://images.dubizzle.com.eg/thumbnails/6888202-240x180.webp",
-  createdAt: getRandomDate(new Date(2020, 0, 1), new Date()), // Random date between Jan 1, 2020 and now
+  createdAt: getRandomDate(new Date(2024, 7, 5), new Date()), // Random date between Jan 1, 2020 and now
 };
 const exampleParms3: Parms = {
   id: "3",
@@ -76,7 +76,7 @@ const exampleParms3: Parms = {
   author: exampleAuthor3,
   content: "جنيه 950 أدوات كيك بوكس كاملة",
   image: "https://images.dubizzle.com.eg/thumbnails/59484978-240x180.webp",
-  createdAt: getRandomDate(new Date(2020, 0, 1), new Date()), // Random date between Jan 1, 2020 and now
+  createdAt: getRandomDate(new Date(2024, 7, 5), new Date()), // Random date between Jan 1, 2020 and now
 };
 let arr = [exampleParms, exampleParms2, exampleParms3];
 

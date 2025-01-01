@@ -75,7 +75,7 @@ let ResultMap=({result,userInfo,i,setChat,isChat,islg,Ids,navigate,handleAddMemb
     let isFriend: boolean =
       userInfo?.friends.filter((e) => e.id === result?.id).length === 1;
     let checked = isFriend;
-    let route = `/profile/${result?.id}`;
+    let route = `/profile/${result?._id}`;
     const [first, setfirst] = useState(checked)
     return checked && isChat ? (
       <div

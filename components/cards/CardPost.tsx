@@ -176,18 +176,18 @@ const CardPost = ({
   };
   let handelDeletePost = async () => {
     if (isGuest) return;
-  
+
     let toastId = toast.loading("Deleting post...");
     try {
       // Display a loading message
-  
+
       // Ensure only the author can delete the post
       if (author._id === userId) {
         const response = await axios.delete(`/api/posts/${id}`, {
           data: { authorId: author._id, parentId, isComment, path: pathname },
         });
-        setIsDelete(true)
-  console.log(id)
+        setIsDelete(true);
+        console.log(id);
         // Update the toast to success
         toast.update(toastId, {
           render: "Post deleted successfully!",
@@ -207,7 +207,7 @@ const CardPost = ({
       console.error(e);
     }
   };
-  
+
   //!!!!!!!! SocialShare
   //?????????? SocialShare
   const SocialShare = ({ url, title }: { url: string; title: string }) => {
@@ -526,7 +526,7 @@ const CardPost = ({
           {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
           {/* <DropdownMenuSeparator /> */}
           <DropdownMenuItem>
-            <Link href={"/profile/" + author.id} className="flex gap-2">
+            <Link href={"/profile/" + author._id} className="flex gap-2">
               <Image
                 src={"/assets/edit.svg"}
                 alt={author.name}
@@ -559,7 +559,9 @@ const CardPost = ({
       id="post"
       className={` flex w-full flex-col rounded-xl ${
         isComment ? " px-0 xs:px-7" : "bg-dark-2 p-5"
-      } ${isDelete?"hidden":""} ${isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""}`}
+      } ${isDelete ? "hidden" : ""} ${
+        isRepost ? "border rounded-xl  px-0 xs:px-3 py-5" : ""
+      }`}
     >
       <div className=" flex items-start justify-between">
         <div className=" flex w-full flex-1 flex-row gap-4 ">
@@ -568,7 +570,10 @@ const CardPost = ({
               isRepost ? "" : "lg:flex"
             } hidden `}
           >
-            <Link href={"/profile/" + author.id} className="relative w-11 h-11">
+            <Link
+              href={"/profile/" + author._id}
+              className="relative w-11 h-11"
+            >
               <div className="relative   aspect-square h-10 w-10  ">
                 <img
                   src={author.image}
@@ -594,7 +599,7 @@ const CardPost = ({
                   }  `}
                 >
                   <Link
-                    href={"/profile/" + author.id}
+                    href={"/profile/" + author._id}
                     className="relative w-11 h-11"
                   >
                     <Image
@@ -615,7 +620,7 @@ const CardPost = ({
                     className="-translate-x-4"
                   />
                   <Link
-                    href={"/profile/" + author.id}
+                    href={"/profile/" + author._id}
                     className=" cursor-pointer w-full flex gap-4 "
                   >
                     <div className=" cursor-pointer w-full flex gap-[3px]">

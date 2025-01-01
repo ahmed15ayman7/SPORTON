@@ -53,7 +53,7 @@ export default function RootLayout({
     <>
       {userInfo && <Topbar userInfo={userInfo} />}
       <main className=" flex flex-row w-full">
-        {userInfo && <LeftSidebar />}
+        {userInfo && <LeftSidebar userInfo={userInfo as UserData} />}
         {userInfo && <TakeTour />}
         <section className="main-container">
           <div className=" w-full max-w-4xl">{children}</div>

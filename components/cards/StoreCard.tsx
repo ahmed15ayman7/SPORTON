@@ -262,7 +262,7 @@ let maxCharacters=100
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-dark-2 text-white">
         <DropdownMenuItem>
-          <Link href={"/profile/" + author.id} className="flex gap-2">
+          <Link href={"/profile/" + author._id} className="flex gap-2">
             <Image src={"/assets/edit.svg"} alt="edit" height={20} width={20} />
             <p>Edit Post</p>
           </Link>
@@ -302,7 +302,7 @@ let maxCharacters=100
             <div className="flex flex-col">
               <div className="flex  gap-2">
                 <Link
-                  href={"/profile/" + author.id}
+                  href={"/profile/" + author._id}
                   className="relative w-11 h-11">
                   <div className="relative aspect-square h-10 w-10">
                     <img
@@ -313,7 +313,7 @@ let maxCharacters=100
                   </div>
                 </Link>
                 <Link
-                  href={"/profile/" + author.id}
+                  href={"/profile/" + author._id}
                   className="text-xl font-semibold text-white">
                   {author.name}
                 </Link>

@@ -52,7 +52,7 @@ export default function HOME() {
     queryKey: ["user"],
     queryFn: () => currentUserFun(),
   });
-
+  
   // Fetch posts using useInfiniteQuery
   const {
     data: postsData,
@@ -68,14 +68,15 @@ export default function HOME() {
     },
     initialPageParam: 0,
   });
-
+  
   const loadMorePosts = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
-
+  
   useEffect(() => {
+    !userLoading && console.log(user);
     dispatch(setUser(userInfo as UserData));
   }, [userInfo]);
   useEffect(() => {
@@ -116,11 +117,10 @@ export default function HOME() {
     router.replace((userInfo as redirectType).redirect);
     return null; // تأكد من عدم إرجاع أي محتوى أثناء التوجيه
   }
-
   if (!user) router.replace("/sign-in");
   return (
     <>
-      <div >
+      <div>
         <Home
           FPosts2={JSON.stringify(posts)}
           userInfo2={JSON.stringify(userInfo)}
@@ -131,7 +131,9 @@ export default function HOME() {
         )}
         {isFetchingNextPage && (
           <div className="p-16 pt-0 flex flex-col gap-8 max-sm:p-0">
-            <h1 className="hidden">SPORTON - The Ultimate Sports Community in Egypt</h1>
+            <h1 className="hidden">
+              SPORTON - The Ultimate Sports Community in Egypt
+            </h1>
             <PostCardSkeleton is />
           </div>
         )}

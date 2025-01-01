@@ -110,7 +110,7 @@ const RightSidebar = ({
   let isGuest = (userInfo as UserData).email === GuestEmail;
   let usersChat: UserData[] = [];
   if (usersDataChat) {
-    usersDataChat.Rooms.forEach((e) =>
+    usersDataChat?.Rooms?.forEach((e) =>
       e.users.forEach((a: UserData) => {
         if (a._id !== (userInfo as UserData)._id) {
           usersChat.push(a);

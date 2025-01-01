@@ -1,12 +1,13 @@
 "use client";
 import { addFriend } from "@/lib/actions/user.actions";
-import { SignedIn, SignOutButton } from "@clerk/nextjs";
+import { signOut } from "next-auth/react";
+// import { SignedIn, SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 interface props {
-  isGuest:boolean;
+  isGuest: boolean;
   accountId: string;
   userAuthId: string | undefined;
   name: string;
@@ -37,18 +38,18 @@ const ProfileHeader = ({
   friends,
   type,
   myId,
-  isGuest
+  isGuest,
 }: props) => {
   let router = useRouter();
   let pathname = usePathname();
   let isFriend2 =
-  friends?.filter(
-    (friend) => friend.id === userId || friend.id === userAuthId
-  ).length === 1;
+    friends?.filter(
+      (friend) => friend.id === userId || friend.id === userAuthId
+    ).length === 1;
   const [isFriend, setIsFrind] = useState<boolean>(isFriend2);
   let handleAddFriend = async () => {
-    if(isGuest)return
-    setIsFrind(!isFriend)
+    if (isGuest) return;
+    setIsFrind(!isFriend);
     await addFriend({
       friendId: accountId,
       userId: myId,
@@ -58,6 +59,9 @@ const ProfileHeader = ({
   };
   let regLink = /https?:\/\/((www.)?\w+\d*.?\w*\/?)+/gi;
   let islink = bio.match(regLink);
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/sign-in" }); // Redirect to the sign-in page after signing out
+  };
   return (
     <div className="flex w-full  justify-between">
       <div className="flex flex-col justify-start">
@@ -88,7 +92,8 @@ const ProfileHeader = ({
               <div className="flex gap-[3px]">
                 <h3
                   className="text-white text-body-bold "
-                  style={{ whiteSpace: "nowrap", zIndex: "1000" }}>
+                  style={{ whiteSpace: "nowrap", zIndex: "1000" }}
+                >
                   {name}
                 </h3>
                 <Image
@@ -113,7 +118,8 @@ const ProfileHeader = ({
                 className=" underline text-primary-500 visited:text-purple-500  block hover:text-purple-400"
                 href={e}
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+              >
                 {e.length > 10 ? `${e.slice(0, 19)}...` : e}{" "}
               </a>
             ) : (
@@ -122,18 +128,21 @@ const ProfileHeader = ({
           )}
         </p>
         <div className="mt-12"></div>
-        {type === "User" && userId === userAuthId&&<Link
-          href="/boosting"
-          className="text-primary-500 hover:opacity-75 flex">
-          <Image
-            src="/assets/boosting.svg"
-            alt="boosting"
-            className=""
-            width={24}
-            height={24}
-          />
-          Boosting Profile
-        </Link>}
+        {type === "User" && userId === userAuthId && (
+          <Link
+            href="/boosting"
+            className="text-primary-500 hover:opacity-75 flex"
+          >
+            <Image
+              src="/assets/boosting.svg"
+              alt="boosting"
+              className=""
+              width={24}
+              height={24}
+            />
+            Boosting Profile
+          </Link>
+        )}
       </div>
       <div className="flex flex-col w-1/2 justify-between items-end gap-8">
         {userId === userAuthId || myId?.includes("org") ? (
@@ -142,7 +151,8 @@ const ProfileHeader = ({
               href={`/profile/edit/${
                 type === "Community" ? (myId ? myId : userId) : userId
               }`}
-              className="flex gap-4 cursor-pointer">
+              className="flex gap-4 cursor-pointer"
+            >
               <span className=" text-white  max-lg:hidden">edit</span>
               <Image
                 src="/assets/edit.svg"
@@ -160,11 +170,13 @@ const ProfileHeader = ({
           <div className="grow">
             <button
               className="flex no-underline gap-4 cursor-pointer"
-              onClick={handleAddFriend}>
+              onClick={handleAddFriend}
+            >
               <span
                 className={` text-white ${
                   isFriend ? "text-primary-500" : ""
-                } max-lg:hidden`}>
+                } max-lg:hidden`}
+              >
                 {isFriend ? "in your Team" : "add your Team"}
               </span>
               <Image
@@ -183,18 +195,16 @@ const ProfileHeader = ({
         )}
         {type === "User" && userId === userAuthId ? (
           <div className="max-sm:flex hidden ">
-            <SignedIn>
-              <SignOutButton redirectUrl="/sign-in">
-                <div className="flex gap-4 cursor-pointer">
-                  <Image
-                    src="/assets/logout.svg"
-                    alt="logout"
-                    width={24}
-                    height={24}
-                  />
-                </div>
-              </SignOutButton>
-            </SignedIn>
+            <div onClick={handleSignOut} className="">
+              <div className="flex gap-4 cursor-pointer">
+                <Image
+                  src="/assets/logout.svg"
+                  alt="logout"
+                  width={24}
+                  height={24}
+                />
+              </div>
+            </div>
           </div>
         ) : null}
         <div className="ml-2 mt-3 flex content-end   items-center gap-2">
@@ -207,16 +217,18 @@ const ProfileHeader = ({
                 zIndex: "400",
                 border: "1px solid #ffffff",
                 opacity: ".6",
-              }}>
-              +{friends?.length!>6?friends?.length!-6:friends?.length}
+              }}
+            >
+              +{friends?.length! > 6 ? friends?.length! - 6 : friends?.length}
             </p>
           )}
           {friends &&
-            friends.slice(0,7).map((friend, index) => {
+            friends.slice(0, 7).map((friend, index) => {
               return (
                 <div
                   key={index}
-                  className="relative -ml-4 aspect-square  w-8 h-8  shadow-2xl rounded-full">
+                  className="relative -ml-4 aspect-square  w-8 h-8  shadow-2xl rounded-full"
+                >
                   <img
                     src={friend.image}
                     alt={`user_${index}`}
