@@ -38,19 +38,19 @@ export default function SignInPage() {
         <div className="flex justify-evenly">
           <button
             onClick={() => signIn("google")}
-            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-white px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
+            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-[#ffffff] px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
           >
             <Image src="/google.svg" alt="Google" width={24} height={24} />
           </button>
           <button
             onClick={() => signIn("discord")}
-            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-white px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
+            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-[#ffffff] px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
           >
             <Image src="/discord.svg" alt="Discord" width={24} height={24} />
           </button>
           <button
             onClick={() => signIn("facebook")}
-            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-white px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
+            className="w-1/4 flex items-center justify-center gap-x-3 rounded-md bg-[#ffffff] px-3.5 py-1.5 shadow ring-1 ring-zinc-300 hover:ring-zinc-400"
           >
             <Image src="/facebook.svg" alt="Facebook" width={24} height={24} />
           </button>
@@ -58,7 +58,7 @@ export default function SignInPage() {
         <div className="space-y-4">
           <button
             onClick={() => signIn("credentials", { redirect: false })}
-            className="w-full rounded-md bg-primary-500 px-3.5 py-1.5 text-center text-sm font-medium text-white shadow outline-none ring-1 ring-primary-500 hover:bg-primary-500/80"
+            className="w-full rounded-md bg-primary-500 px-3.5 py-1.5 text-center text-sm font-medium text-[#ffffff] shadow outline-none ring-1 ring-primary-500 hover:bg-primary-500/80"
           >
             Sign In with Email
           </button>
