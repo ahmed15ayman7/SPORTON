@@ -1,3 +1,4 @@
+import { User, UserBehavior, UserStatus, } from '@prisma/client';
 /**
 * توثيق نقاط النهاية API
 * هذا الملف يحتوي على توثيق كامل لجميع نقاط النهاية API في النظام
@@ -39,6 +40,154 @@ export class ApiClient {
             .join('&');
     }
 
+    /**
+     * التسجيل والدخول
+     */
+    static auth = {
+        /**
+         * التسجيل
+         */
+        signup: (data: User) => ({
+            method: 'POST',
+            path: '/auth/signup',
+            description: 'التسجيل',
+            parameters: {
+                body: data
+            }
+        }),
+        /**
+         * الدخول
+         */
+        login: (data: User) => ({
+            method: 'POST',
+            path: '/auth/login',
+            description: 'الدخول',
+            parameters: {
+                body: data
+            }
+        }),
+        /**
+         * الخروج
+         */
+        logout: () => ({
+            method: 'POST',
+            path: '/auth/logout',
+            description: 'الخروج'
+        }),
+        /**
+         * التحقق من التوكن
+         */
+        verifyToken: () => ({
+            method: 'POST',
+            path: '/auth/verify-token',
+            description: 'التحقق من التوكن'
+        }),
+        /**
+         * التحقق من البريد الإلكتروني
+         * @example
+         * const data = {
+         *   code: "123456"
+         * };
+         * await ApiClient.auth.verifyEmail(data);
+         */
+        verifyPhone: (data: { code: string }) => ({
+            method: 'POST',
+            path: '/auth/verify-phone',
+            description: 'التحقق من الهاتف',
+            parameters: {
+                body: data
+            }
+        }),
+        /**
+         * إعادة تعيين كلمة المرور
+         */
+        resetPassword: (data: { email: string, newPassword: string, oldPassword: string }) => ({
+            method: 'POST',
+            path: '/auth/reset-password',
+            description: 'إعادة تعيين كلمة المرور',
+            parameters: {
+                body: data
+            }
+        })
+
+    };
+    /**
+     * المستخدم 
+     */
+    static user = {
+        /**
+         * إضافة مستخدم جديد
+         * @example
+         * const data = {
+         *   name: "أحمد محمد",
+         *   email: "ahmed@example.com",
+         *   password: "password123"
+         * };
+         * await ApiClient.user.create(data);
+         */
+        create: (data: User) => ({
+            method: 'POST',
+            path: '/user',
+            description: 'إضافة مستخدم جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        /**
+         * الحصول على جميع المستخدمين
+         * @example
+         * const users = await ApiClient.user.findAll();
+         */
+        findAll: () => ({
+            method: 'GET',
+            path: '/user',
+            description: 'الحصول على جميع المستخدمين'
+        }),
+        /**
+         * الحصول على مستخدم بالايدي
+         * @example
+         * const user = await ApiClient.user.findOne("123");
+         */
+        findOne: (id: string) => ({
+            method: 'GET',
+            path: `/user/${id}`,
+            description: 'الحصول على مستخدم بالايدي',
+            parameters: {
+                path: { id }
+            }
+        }),
+        /**
+         * تحديث معلومات المستخدم
+         * @example
+         * const data = {
+         *   name: "أحمد محمد",
+         *   email: "ahmed@example.com"
+         * };
+         * await ApiClient.user.update("123", data);
+         */
+        update: (id: string, data: User) => ({
+            method: 'PUT',
+            path: `/user/${id}`,
+            description: 'تحديث معلومات المستخدم',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        /**
+         * حذف مستخدم بالايدي
+         * @example
+         * await ApiClient.user.delete("123");
+         */
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/user/${id}`,
+            description: 'حذف مستخدم بالايدي',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
     /**
      * تجربة A/B
      */
@@ -6911,6 +7060,388 @@ export class ApiClient {
                 path: { id },
                 body: { status }
             }
+        })
+    };
+
+    static matches = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/matches',
+            description: 'الحصول على قائمة المباريات'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/matches/${id}`,
+            description: 'الحصول على تفاصيل مباراة محددة',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/matches',
+            description: 'إنشاء مباراة جديدة',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/matches/${id}`,
+            description: 'تحديث بيانات مباراة',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/matches/${id}`,
+            description: 'حذف مباراة',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static jobApplications = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/job-applications',
+            description: 'الحصول على قائمة طلبات التوظيف'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/job-applications/${id}`,
+            description: 'الحصول على تفاصيل طلب توظيف محدد',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/job-applications',
+            description: 'إنشاء طلب توظيف جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/job-applications/${id}`,
+            description: 'تحديث بيانات طلب توظيف',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/job-applications/${id}`,
+            description: 'حذف طلب توظيف',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static jobs = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/jobs',
+            description: 'الحصول على قائمة الوظائف'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/jobs/${id}`,
+            description: 'الحصول على تفاصيل وظيفة محددة',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/jobs',
+            description: 'إنشاء وظيفة جديدة',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/jobs/${id}`,
+            description: 'تحديث بيانات وظيفة',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/jobs/${id}`,
+            description: 'حذف وظيفة',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static achievements = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/achievements',
+            description: 'الحصول على قائمة الإنجازات'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/achievements/${id}`,
+            description: 'الحصول على تفاصيل إنجاز محدد',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/achievements',
+            description: 'إنشاء إنجاز جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/achievements/${id}`,
+            description: 'تحديث بيانات إنجاز',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/achievements/${id}`,
+            description: 'حذف إنجاز',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static skills = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/skills',
+            description: 'الحصول على قائمة المهارات'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/skills/${id}`,
+            description: 'الحصول على تفاصيل مهارة محددة',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/skills',
+            description: 'إنشاء مهارة جديدة',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/skills/${id}`,
+            description: 'تحديث بيانات مهارة',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/skills/${id}`,
+            description: 'حذف مهارة',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static companies = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/companies',
+            description: 'الحصول على قائمة الشركات'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/companies/${id}`,
+            description: 'الحصول على تفاصيل شركة محددة',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/companies',
+            description: 'إنشاء شركة جديدة',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/companies/${id}`,
+            description: 'تحديث بيانات شركة',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/companies/${id}`,
+            description: 'حذف شركة',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static scouts = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/scouts',
+            description: 'الحصول على قائمة الكشافين'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/scouts/${id}`,
+            description: 'الحصول على تفاصيل كشاف محدد',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/scouts',
+            description: 'إنشاء كشاف جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/scouts/${id}`,
+            description: 'تحديث بيانات كشاف',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/scouts/${id}`,
+            description: 'حذف كشاف',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static clubs = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/clubs',
+            description: 'الحصول على قائمة النوادي'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/clubs/${id}`,
+            description: 'الحصول على تفاصيل نادي محدد',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/clubs',
+            description: 'إنشاء نادي جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/clubs/${id}`,
+            description: 'تحديث بيانات نادي',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/clubs/${id}`,
+            description: 'حذف نادي',
+            parameters: {
+                path: { id }
+            }
+        })
+    };
+
+    static notification = {
+        getAll: () => ({
+            method: 'GET',
+            path: '/notification',
+            description: 'الحصول على قائمة الإشعارات'
+        }),
+        getById: (id: string) => ({
+            method: 'GET',
+            path: `/notification/${id}`,
+            description: 'الحصول على تفاصيل إشعار محدد',
+            parameters: {
+                path: { id }
+            }
+        }),
+        create: (data: any) => ({
+            method: 'POST',
+            path: '/notification',
+            description: 'إنشاء إشعار جديد',
+            parameters: {
+                body: data
+            }
+        }),
+        update: (id: string, data: any) => ({
+            method: 'PUT',
+            path: `/notification/${id}`,
+            description: 'تحديث بيانات إشعار',
+            parameters: {
+                path: { id },
+                body: data
+            }
+        }),
+        delete: (id: string) => ({
+            method: 'DELETE',
+            path: `/notification/${id}`,
+            description: 'حذف إشعار',
+            parameters: {
+                path: { id }
+            }
+        }),
+        markAsRead: (id: string) => ({
+            method: 'PUT',
+            path: `/notification/${id}/read`,
+            description: 'تحديد الإشعار كمقروء',
+            parameters: {
+                path: { id }
+            }
+        }),
+        markAllAsRead: () => ({
+            method: 'PUT',
+            path: '/notification/read-all',
+            description: 'تحديد جميع الإشعارات كمقروءة'
         })
     };
 

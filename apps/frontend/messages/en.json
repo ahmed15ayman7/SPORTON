@@ -1,0 +1,41 @@
+{
+    "auth": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "signOut": "Sign Out",
+        "email": "Email",
+        "password": "Password",
+        "phone": "Phone Number",
+        "name": "Name",
+        "verifyPhone": "Verify Phone Number",
+        "verificationCode": "Verification Code",
+        "resendCode": "Resend Code",
+        "loading": "Loading...",
+        "success": "Success",
+        "error": "Error",
+        "required": "This field is required",
+        "invalidEmail": "Invalid email address",
+        "invalidPhone": "Invalid phone number",
+        "passwordTooShort": "Password is too short",
+        "passwordTooLong": "Password is too long",
+        "passwordsDoNotMatch": "Passwords do not match"
+    },
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "search": "Search",
+        "filter": "Filter",
+        "sort": "Sort",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "confirm": "Confirm",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous",
+        "first": "First",
+        "last": "Last"
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "auth": {
+        "signIn": "تسجيل الدخول",
+        "signUp": "إنشاء حساب",
+        "signOut": "تسجيل الخروج",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "phone": "رقم الهاتف",
+        "name": "الاسم",
+        "verifyPhone": "التحقق من رقم الهاتف",
+        "verificationCode": "رمز التحقق",
+        "resendCode": "إعادة إرسال الرمز",
+        "loading": "جاري التحميل...",
+        "success": "تم بنجاح",
+        "error": "حدث خطأ",
+        "required": "هذا الحقل مطلوب",
+        "invalidEmail": "البريد الإلكتروني غير صالح",
+        "invalidPhone": "رقم الهاتف غير صالح",
+        "passwordTooShort": "كلمة المرور قصيرة جداً",
+        "passwordTooLong": "كلمة المرور طويلة جداً",
+        "passwordsDoNotMatch": "كلمات المرور غير متطابقة"
+    },
+    "common": {
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "search": "بحث",
+        "filter": "تصفية",
+        "sort": "ترتيب",
+        "loading": "جاري التحميل...",
+        "error": "حدث خطأ",
+        "success": "تم بنجاح",
+        "confirm": "تأكيد",
+        "back": "رجوع",
+        "next": "التالي",
+        "previous": "السابق",
+        "first": "الأول",
+        "last": "الأخير"
+    }
+}
