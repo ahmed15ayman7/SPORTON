@@ -1,0 +1,12 @@
+{
+    "scripts": {
+        "prisma:generate": "prisma generate"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.x",
+        "prisma": "^5.x"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.7"
+    }
+}

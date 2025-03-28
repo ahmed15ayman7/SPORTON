@@ -1,0 +1,1855 @@
+// Prisma schema for a professional sports network
+
+// Generator and Database Configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+
+// الموديل الأساسي للمستخدم
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique         // البريد الإلكتروني
+  phone         String    @unique         // رقم الهاتف
+  password      String                    // كلمة المرور (مشفرة)
+  role          Role                      // نوع المستخدم
+  status        UserStatus @default(ACTIVE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?                 // آخر تسجيل دخول
+  
+  // البيانات المشتركة
+  name          String                    // الاسم
+  image         String?                   // الصورة الشخصية
+  country       String?                   // الدولة
+  city          String?                   // المدينة
+  language      String?                   // اللغة المفضلة
+  
+  // العلاقات المشتركة
+  posts         Post[]                    // المنشورات
+  messages      Message[]                 // الرسائل
+  notifications Notification[]            // الإشعارات
+  
+  // البروفايلات المتخصصة (one-to-one)
+  playerProfile Player?
+  coachProfile  Coach?
+  clubProfile   Club?
+  agentProfile  Agent?
+  scoutProfile  Scout?
+  companyProfile Company?
+
+  Skill Skill[]
+
+  Achievement Achievement[]
+
+  Job Job[] @relation("Company")
+
+  JobApplication JobApplication[]
+
+  Match Match[] @relation("MatchPlayers")
+
+  Friendship Friendship[] @relation("UserFriendsA")
+
+  FriendshipB Friendship[] @relation("UserFriendsB")
+
+  
+  givenReviews    Review[]    @relation("Reviewer")
+  receivedReviews  Review[]   @relation("Reviewed")
+  blockList   BlockList[] @relation("Blocker")
+  blockedList BlockList[] @relation("Blocked")
+  trainings   Training[] @relation("TrainingCoach")
+  sponsorships Sponsorship[] @relation("Sponsor")
+  Reaction Reaction[]
+
+  Message Message[] @relation(name: "SentMessages")
+
+  ReceivedMessages Message[] @relation(name: "ReceivedMessages")
+
+  RoomUser RoomUser[]
+
+
+  TrainingPlayer Training[] @relation("TrainingPlayers")
+
+  Statistic Statistic[]
+
+  Certificate Certificate[]
+
+  Experience Experience[]
+
+  Education Education[]
+
+  Team Team[]
+
+  TeamMember TeamMember[]
+
+  Endorsement Endorsement[]  @relation(name: "GivenEndorsements")
+
+  Availability Availability[]
+
+  SponsorshipAthlete Sponsorship[] @relation("Athlete")
+
+  Comment Comment[]
+
+  EventSponsor EventSponsor[]
+
+  PerformanceReport PerformanceReport[]
+
+  PerformanceReportCoach PerformanceReport[] @relation("CoachReports")
+
+  Subscription Subscription[]
+
+  Payment Payment[]
+
+  Report Report[] @relation("Reporter")
+
+  Reported Report[] @relation("Reported")
+
+  CompetitionParticipant CompetitionParticipant[]
+
+  UserBehavior UserBehavior[]
+
+  TrainingReview TrainingReview[]
+
+  UserSegment UserSegment[]
+
+  ProductReview ProductReview[]
+
+  Order Order[]
+
+  Address Address[]
+  
+
+
+  ReceivedEndorsement Endorsement[] @relation(name: "ReceivedEndorsements")
+
+  AthleteMetrics AthleteMetrics[]
+
+  Article Article[]
+
+  Advertisement Advertisement[]
+
+  Event Event[]
+
+  EventParticipant EventParticipant[]
+
+  ProfessionalAchievement ProfessionalAchievement[]
+
+  SocialMedia SocialMedia[]
+
+  NotificationSettings NotificationSettings[]
+
+  Notification Notification[] @relation("NotificationSender")
+
+  Product Product[]
+}
+
+// بروفايل اللاعب
+model Player {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique         // علاقة one-to-one
+  
+  // معلومات خاصة باللاعب
+  dateOfBirth   DateTime                  // تاريخ الميلاد
+  height        Float?                    // الطول
+  weight        Float?                    // الوزن
+  position      String?                   // المركز
+  foot          Foot?                     // القدم المفضلة
+  jerseyNumber  Int?                      // رقم القميص
+  
+  // العلاقات الخاصة باللاعب
+  currentTeam   Club?     @relation("PlayerCurrentTeam", fields: [currentTeamId], references: [id])
+  currentTeamId Int?
+  statistics    PlayerStatistics?         // إحصائيات اللاعب
+  contracts     Contract[]                // العقود
+  achievements  Achievement[]             // الإنجازات
+  injuries      Injury[]                  // الإصابات
+  marketValue   Float?                    // القيمة السوقية
+
+  TeamCategory TeamCategory[]
+
+  AgentClient AgentClient[]
+
+  Transfer Transfer[]
+
+  ScoutingReport ScoutingReport[]
+
+  PlayerDiscovery PlayerDiscovery[]
+}
+
+// بروفايل المدرب
+model Coach {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // معلومات خاصة بالمدرب
+  specialization String[]                 // التخصصات
+  experience    Int                       // سنوات الخبرة
+  licenses      License[]                 // الرخص التدريبية
+  methodology   String?                   // المنهجية التدريبية
+  
+  // العلاقات الخاصة بالمدرب
+  teams         CoachingHistory[]         // تاريخ التدريب
+  trainings     Training[]                // التدريبات
+  achievements  Achievement[]             // الإنجازات
+
+  TeamCategory TeamCategory[]
+}
+
+// بروفايل النادي
+model Club {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // معلومات خاصة بالنادي
+  foundedYear   Int                       // سنة التأسيس
+  stadium       String?                   // الملعب
+  colors        String[]                  // ألوان النادي
+  
+  // العلاقات الخاصة بالنادي
+  players       Player[]  @relation("PlayerCurrentTeam")
+  coaches       CoachingHistory[]         // المدربين
+  facilities    Facility[]                // المرافق
+  teams         TeamCategory[]            // الفرق (أول، شباب، ناشئين)
+  tournaments   Tournament[]              // البطولات
+
+  Contract Contract[]
+
+  Transfer Transfer[] @relation("FromClub")
+
+  TransferTo Transfer[] @relation("ToClub")
+}
+
+// بروفايل الوكيل
+model Agent {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // معلومات خاصة بالوكيل
+  license       String?                   // رقم الرخصة
+  agency        String?                   // اسم الوكالة
+  
+  // العلاقات الخاصة بالوكيل
+  clients       AgentClient[]             // العملاء
+  deals         Transfer[]                // صفقات الانتقال
+  commissions   Commission[]              // العمولات
+
+  Contract Contract[]
+}
+
+// بروفايل الكشاف
+model Scout {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // معلومات خاصة بالكشاف
+  specialization String[]                 // التخصصات
+  regions       String[]                  // مناطق العمل
+  
+  // العلاقات الخاصة بالكشاف
+  reports       ScoutingReport[]          // تقارير الكشافة
+  discoveries   PlayerDiscovery[]         // اكتشافات اللاعبين
+}
+
+// بروفايل الشركة
+model Company {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // معلومات خاصة بالشركة
+  type          CompanyType               // نوع الشركة
+  registrationNo String?                  // رقم السجل التجاري
+  website       String?                   // الموقع الإلكتروني
+  
+  // العلاقات الخاصة بالشركة
+  products      Product[]                 // المنتجات
+  sponsorships  Sponsorship[]            // الرعايات
+  jobs          Job[]                     // الوظائف
+}
+
+enum CompanyType {
+  SPORTSWEAR    // ملابس رياضية
+  EQUIPMENT     // معدات رياضية
+  NUTRITION     // تغذية رياضية
+  MEDIA         // إعلام رياضي
+  OTHER         // أخرى
+}
+
+enum UserStatus {
+  ACTIVE        // نشط
+  INACTIVE      // غير نشط
+  SUSPENDED     // موقوف
+  BANNED        // محظور
+  PENDING       // في انتظار التفعيل
+}
+
+enum Foot {
+  RIGHT         // يمين
+  LEFT          // يسار
+  BOTH          // كلاهما
+}
+
+enum Role {
+  PLAYER
+  COACH
+  AGENT
+  CLUB
+  COMPANY
+  SCOUT
+  TRAINER
+}
+
+enum Sport {
+  FOOTBALL
+  RUNNING
+  TENNIS
+  BASKETBALL
+  SWIMMING
+  KARATE
+  DIVING
+  FITNESS
+  HORSE_RIDING
+  CYCLING
+  SKATING
+  HANDBALL
+  GOLF
+  HOCKEY
+  CHESS
+  KUNG_FU
+  BOXING
+  BOWLING
+}
+
+model Skill {
+  id       Int    @id @default(autoincrement())
+  name     String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+}
+
+model Achievement {
+  id       Int    @id @default(autoincrement())
+  title    String
+  details  String?
+  date     DateTime
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+
+  Player Player[]
+
+  Coach Coach[]
+}
+
+model Job {
+  id       Int    @id @default(autoincrement())
+  title    String
+  description String?
+  company  User   @relation("Company", fields: [companyId], references: [id])
+  companyId Int
+  applications JobApplication[]
+
+  Company Company[]
+}
+
+model JobApplication {
+  id       Int    @id @default(autoincrement())
+  job      Job    @relation(fields: [jobId], references: [id])
+  jobId    Int
+  applicant User  @relation(fields: [applicantId], references: [id])
+  applicantId Int
+  status   String @default("pending") // pending, accepted, rejected
+}
+
+model Match {
+  id       Int    @id @default(autoincrement())
+  teamA    String
+  teamB    String
+  date     DateTime
+  location String
+  players  User[] @relation("MatchPlayers")
+
+  Tournament Tournament[]
+
+  ScoutingReport ScoutingReport[]
+}
+
+model Friendship {
+  id       Int    @id @default(autoincrement())
+  userA    User   @relation("UserFriendsA", fields: [userAId], references: [id])
+  userAId  Int
+  userB    User   @relation("UserFriendsB", fields: [userBId], references: [id])
+  userBId  Int
+  status   String @default("pending") // pending, accepted, rejected, blocked
+  createdAt DateTime @default(now())
+}
+
+model BlockList {
+  id       Int    @id @default(autoincrement())
+  blocker  User   @relation("Blocker", fields: [blockerId], references: [id])
+  blockerId Int
+  blocked  User   @relation("Blocked", fields: [blockedId], references: [id])
+  blockedId Int
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id       Int    @id @default(autoincrement())
+  text     String
+  image    String?
+  video    String?
+  isAchievement Boolean @default(false)
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId Int
+  createdAt DateTime @default(now())
+  reactions Reaction[] @relation("Reactions")
+
+  Reaction Reaction[]
+}
+
+model Reaction {
+  id       Int    @id @default(autoincrement())
+  emoji    String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   Int
+
+  Post Post[] @relation("Reactions")
+}
+
+model Message {
+  id       Int    @id @default(autoincrement())
+  content  String?
+  mediaUrl String?
+  sender   User   @relation(fields: [senderId], references: [id], name: "SentMessages")
+  senderId Int
+  recipient User  @relation(fields: [recipientId], references: [id], name: "ReceivedMessages")
+  recipientId Int
+  timestamp DateTime @default(now())
+  isRead    Boolean  @default(false)
+
+  Room Room[] @relation(name: "MessageToRoom")
+
+  User User[]
+}
+
+model Room {
+  id       Int    @id @default(autoincrement())
+  name     String?
+  users    RoomUser[]
+  messages Message[] @relation(name: "MessageToRoom")
+  createdAt DateTime @default(now())
+}
+
+model RoomUser {
+  id       Int    @id @default(autoincrement())
+  room     Room   @relation(fields: [roomId], references: [id])
+  roomId   Int
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+}
+
+model Training {
+  id       Int    @id @default(autoincrement())
+  title    String
+  coach    User   @relation("TrainingCoach", fields: [coachId], references: [id])
+  coachId  Int
+  players  User[] @relation("TrainingPlayers")
+  date     DateTime
+  location String
+  description   String?
+  capacity      Int
+  level         TrainingLevel
+  price         Float?
+  requirements  String?
+  equipment     String?
+  videos        TrainingVideo[]
+  reviews       TrainingReview[]
+  categories    TrainingCategory[]
+
+  Coach Coach[]
+}
+
+enum TrainingLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+model TrainingVideo {
+  id          Int      @id @default(autoincrement())
+  training    Training @relation(fields: [trainingId], references: [id])
+  trainingId  Int
+  url         String
+  title       String
+  description String?
+}
+
+model Statistic {
+  id       Int    @id @default(autoincrement())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int @unique
+  matchesPlayed Int @default(0)
+  goals    Int @default(0)
+  assists  Int @default(0)
+}
+
+model Sponsorship {
+  id       Int    @id @default(autoincrement())
+  sponsor  User   @relation("Sponsor", fields: [sponsorId], references: [id])
+  sponsorId Int
+  athlete  User   @relation("Athlete", fields: [athleteId], references: [id])
+  athleteId Int
+  details  String?
+
+  Company Company[]
+}
+
+model Certificate {
+  id            Int      @id @default(autoincrement())
+  title         String
+  issuer        String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  description   String?
+  verified      Boolean  @default(false)
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+}
+
+model Experience {
+  id            Int      @id @default(autoincrement())
+  title         String
+  organization  String
+  location      String?
+  startDate     DateTime
+  endDate       DateTime?
+  current       Boolean  @default(false)
+  description   String?
+  achievements  String?
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+}
+
+model Education {
+  id            Int      @id @default(autoincrement())
+  institution   String
+  degree        String
+  field         String?
+  startDate     DateTime
+  endDate       DateTime?
+  grade         String?
+  activities    String?
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+}
+
+model Team {
+  id            Int          @id @default(autoincrement())
+  name          String
+  sport         Sport
+  location      String
+  description   String?
+  logo          String?
+  members       TeamMember[]
+  achievements  String?
+
+  User User[]
+}
+
+model TeamMember {
+  id            Int      @id @default(autoincrement())
+  team          Team     @relation(fields: [teamId], references: [id])
+  teamId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+  role          String
+  startDate     DateTime
+  endDate       DateTime?
+  current       Boolean  @default(false)
+}
+
+model Endorsement {
+  id            Int      @id @default(autoincrement())
+  skill         String
+  endorser      User     @relation(name: "GivenEndorsements", fields: [endorserId], references: [id])
+  endorserId    Int
+  recipient     User     @relation(name: "ReceivedEndorsements", fields: [recipientId], references: [id])  
+  recipientId   Int
+  createdAt     DateTime @default(now())
+}
+
+model Availability {
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int      @unique
+  status        AvailabilityStatus
+  fromDate      DateTime?
+  toDate        DateTime?
+  notes         String?
+}
+
+model AthleteMetrics {
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int      @unique
+  height        Float?
+  weight        Float?
+  speed         Float?
+  strength      Float?
+  endurance     Float?
+  flexibility   Float?
+  lastUpdated   DateTime @updatedAt
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+  OPEN_TO_OFFERS
+  CONTRACT_ENDING
+}
+
+model Article {
+  id            Int       @id @default(autoincrement())
+  title         String
+  content       String
+  author        User      @relation(fields: [authorId], references: [id])
+  authorId      Int
+  categories    Category[]
+  tags          String[]
+  thumbnail     String?
+  views         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  comments      Comment[]
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String
+  articles      Article[]
+}
+
+model Comment {
+  id            Int       @id @default(autoincrement())
+  content       String
+  author        User      @relation(fields: [authorId], references: [id])
+  authorId      Int
+  article       Article   @relation(fields: [articleId], references: [id])
+  articleId     Int
+  createdAt     DateTime  @default(now())
+}
+
+model Advertisement {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  image         String?
+  url           String?
+  sponsor       User      @relation(fields: [sponsorId], references: [id])
+  sponsorId     Int
+  startDate     DateTime
+  endDate       DateTime
+  targetSports  Sport[]
+  targetRoles   Role[]
+  clicks        Int       @default(0)
+  impressions   Int       @default(0)
+  budget        Float
+  status        AdStatus
+  targetLocation String?
+  targetAge      AgeRange?
+  analytics      AdAnalytics?
+  campaign      Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId    Int?
+  keywords      String[]
+  maxBudgetPerDay Float?
+
+  AdTargeting AdTargeting[]
+}
+
+model AdAnalytics {
+  id            Int           @id @default(autoincrement())
+  advertisement Advertisement @relation(fields: [adId], references: [id])
+  adId          Int          @unique
+  conversions   Int          @default(0)
+  ctr           Float        @default(0)
+  engagement    Float        @default(0)
+  reach         Int          @default(0)
+}
+
+model Event {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  sport         Sport
+  startDate     DateTime
+  endDate       DateTime
+  location      String
+  organizer     User      @relation(fields: [organizerId], references: [id])
+  organizerId   Int
+  participants  EventParticipant[]
+  sponsors      EventSponsor[]
+  maxParticipants Int?
+  registrationDeadline DateTime
+  price         Float?
+  status        EventStatus
+  categories    EventCategory[]
+  gallery       EventImage[]
+  agenda        EventAgenda[]
+  requirements  String?
+  facilities    String?
+  rules         String?
+  prizes        Prize[]
+  streaming     StreamingInfo?
+}
+
+model EventAgenda {
+  id        Int      @id @default(autoincrement())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   Int
+  title     String
+  startTime DateTime
+  endTime   DateTime
+  location  String?
+  speaker   String?
+}
+
+model Prize {
+  id        Int      @id @default(autoincrement())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   Int
+  rank      Int
+  amount    Float
+  description String?
+
+  Competition Competition[]
+}
+
+model EventParticipant {
+  id            Int       @id @default(autoincrement())
+  event         Event     @relation(fields: [eventId], references: [id])
+  eventId       Int
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  status        ParticipationStatus
+  registeredAt  DateTime  @default(now())
+}
+
+model EventSponsor {
+  id            Int       @id @default(autoincrement())
+  event         Event     @relation(fields: [eventId], references: [id])
+  eventId       Int
+  sponsor       User      @relation(fields: [sponsorId], references: [id])
+  sponsorId     Int
+  sponsorshipType String
+  amount        Float
+}
+
+model Review {
+  id            Int       @id @default(autoincrement())
+  reviewer      User      @relation("Reviewer", fields: [reviewerId], references: [id])
+  reviewerId    Int
+  reviewed      User      @relation("Reviewed", fields: [reviewedId], references: [id])
+  reviewedId    Int
+  rating        Int       @default(0)
+  comment       String?
+  createdAt     DateTime  @default(now())
+}
+
+model ProfessionalAchievement {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  title         String
+  organization  String
+  date          DateTime
+  proof         String?   // URL للشهادة أو الدليل
+  verified      Boolean   @default(false)
+}
+
+enum AdStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  PENDING_REVIEW
+}
+
+enum EventStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipationStatus {
+  REGISTERED
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model SocialMedia {
+  id        Int     @id @default(autoincrement())
+  platform  String  // مثل Instagram, Twitter, YouTube
+  url       String
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model NotificationSettings {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int       @unique
+  
+  // إعدادات القنوات
+  emailEnabled  Boolean   @default(true)  // تفعيل البريد
+  pushEnabled   Boolean   @default(true)  // تفعيل الإشعارات الفورية
+  smsEnabled    Boolean   @default(false) // تفعيل الرسائل النصية
+  
+  // إعدادات أنواع الإشعارات
+  messageNotifications    Boolean @default(true)  // إشعارات الرسائل
+  transferNotifications   Boolean @default(true)  // إشعارات الانتقالات
+  matchNotifications     Boolean @default(true)  // إشعارات المباريات
+  trainingNotifications  Boolean @default(true)  // إشعارات التدريب
+  newsNotifications      Boolean @default(true)  // إشعارات الأخبار
+  contractNotifications  Boolean @default(true)  // إشعارات العقود
+  
+  // إعدادات الوقت
+  quietHoursStart DateTime?               // بداية ساعات الهدوء
+  quietHoursEnd   DateTime?               // نهاية ساعات الهدوء
+  timezone        String   @default("UTC")// المنطقة الزمنية
+}
+
+model NotificationTemplate {
+  id            Int       @id @default(autoincrement())
+  type          NotificationType
+  title         String                    // قالب العنوان
+  content       String                    // قالب المحتوى
+  variables     String[]                  // المتغيرات المستخدمة
+  language      String                    // اللغة
+  isActive      Boolean   @default(true)  // حالة القالب
+}
+
+model NotificationLog {
+  id            Int       @id @default(autoincrement())
+  notification  Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int
+  status        DeliveryStatus           // حالة التوصيل
+  channel       NotificationChannel      // قناة الإرسال
+  attempts      Int       @default(0)    // عدد محاولات الإرسال
+  error         String?                  // رسالة الخطأ إن وجدت
+  sentAt        DateTime  @default(now()) // وقت الإرسال
+}
+
+model NotificationGroup {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم المجموعة
+  description   String?                   // وصف المجموعة
+  notifications Notification[]            // الإشعارات في المجموعة
+  createdAt     DateTime  @default(now())
+}
+
+enum NotificationType {
+  MESSAGE           // رسالة جديدة
+  TRANSFER_OFFER    // عرض انتقال
+  MATCH_UPDATE      // تحديث مباراة
+  TRAINING_SCHEDULE // جدول تدريب
+  CONTRACT_UPDATE   // تحديث عقد
+  INJURY_UPDATE     // تحديث إصابة
+  TEAM_NEWS         // أخبار الفريق
+  ACHIEVEMENT       // إنجاز جديد
+  SYSTEM           // إشعار نظام
+  REMINDER         // تذكير
+  PAYMENT          // دفع
+  DOCUMENT         // مستند
+  OTHER            // أخرى
+}
+
+enum Priority {
+  LOW              // منخفضة
+  NORMAL           // عادية
+  HIGH             // عالية
+  URGENT           // عاجلة
+}
+
+enum NotificationChannel {
+  EMAIL            // بريد إلكتروني
+  PUSH             // إشعار فوري
+  SMS              // رسالة نصية
+  IN_APP           // داخل التطبيق
+}
+
+enum DeliveryStatus {
+  PENDING          // في الانتظار
+  SENT             // تم الإرسال
+  DELIVERED        // تم التوصيل
+  FAILED           // فشل
+  BLOCKED          // محظور
+}
+
+model NotificationAction {
+  id            Int       @id @default(autoincrement())
+  notification  Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int       @unique
+  actionType    ActionType               // نوع الإجراء
+  actionUrl     String?                  // رابط الإجراء
+  buttonText    String?                  // نص زر الإجراء
+  completed     Boolean   @default(false) // حالة اكتمال الإجراء
+  completedAt   DateTime?                // وقت اكتمال الإجراء
+}
+
+enum ActionType {
+  VIEW            // عرض
+  ACCEPT          // قبول
+  REJECT          // رفض
+  REPLY           // رد
+  CONFIRM         // تأكيد
+  REVIEW          // مراجعة
+  PAY             // دفع
+  OTHER           // أخرى
+}
+
+model Notification {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])  // المستخدم المستلم
+  userId        Int
+  type          NotificationType          // نوع الإشعار
+  title         String                    // عنوان الإشعار
+  content       String                    // محتوى الإشعار
+  data          Json?                     // بيانات إضافية للإشعار
+  isRead        Boolean   @default(false) // حالة القراءة
+  isArchived    Boolean   @default(false) // حالة الأرشفة
+  createdAt     DateTime  @default(now()) // وقت الإنشاء
+  readAt        DateTime?                 // وقت القراءة
+  priority      Priority  @default(NORMAL) // أولوية الإشعار
+  action        NotificationAction?       // الإجراء المطلوب
+  sender        User?     @relation("NotificationSender", fields: [senderId], references: [id])
+  senderId      Int?                      // المرسل (إن وجد)
+  expiresAt     DateTime?                 // وقت انتهاء صلاحية الإشعار
+
+  NotificationLog NotificationLog[]
+
+  NotificationGroup NotificationGroup[]
+}
+
+model Competition {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  sport         Sport
+  startDate     DateTime
+  endDate       DateTime
+  format        CompetitionFormat
+  participants  CompetitionParticipant[]
+  rounds        CompetitionRound[]
+  prizes        Prize[]
+  rules         String?
+  status        CompetitionStatus
+}
+
+enum CompetitionFormat {
+  KNOCKOUT
+  LEAGUE
+  GROUP_STAGE
+  HYBRID
+}
+
+model PerformanceReport {
+  id            Int       @id @default(autoincrement())
+  athlete       User      @relation(fields: [athleteId], references: [id])
+  athleteId     Int
+  date          DateTime
+  metrics       Json      // يحتوي على مقاييس الأداء المختلفة
+  analysis      String?
+  recommendations String?
+  coach         User      @relation("CoachReports", fields: [coachId], references: [id])
+  coachId       Int
+}
+
+model Subscription {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  plan          PlanType
+  startDate     DateTime
+  endDate       DateTime
+  status        SubscriptionStatus
+  features      String[]
+}
+
+model Payment {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  amount        Float
+  type          PaymentType
+  status        PaymentStatus
+  date          DateTime
+  description   String?
+}
+
+model Report {
+  id            Int       @id @default(autoincrement())
+  reporter      User      @relation("Reporter", fields: [reporterId], references: [id])
+  reporterId    Int
+  reported      User      @relation("Reported", fields: [reportedId], references: [id])
+  reportedId    Int
+  type          ReportType
+  description   String
+  status        ReportStatus
+  createdAt     DateTime  @default(now())
+}
+
+// الأنواع المختلفة للاشتراكات في المنصة
+enum PlanType {
+  FREE          // الخطة المجانية
+  BASIC         // الخطة الأساسية
+  PREMIUM       // الخطة المتميزة
+  PROFESSIONAL  // الخطة الاحترافية
+}
+
+// حالات الاشتراك المختلفة
+enum SubscriptionStatus {
+  ACTIVE        // اشتراك نشط
+  EXPIRED       // اشتراك منتهي
+  CANCELLED     // اشتراك ملغي
+  PENDING       // في انتظار التفعيل
+}
+
+// أنواع المدفوعات المختلفة
+enum PaymentType {
+  SUBSCRIPTION  // دفع اشتراك
+  EVENT         // دفع لفعالية
+  TRAINING      // دفع لتدريب
+  ADVERTISEMENT // دفع إعلان
+  SPONSORSHIP   // دفع رعاية
+}
+
+// حالات الدفع المختلفة
+enum PaymentStatus {
+  PENDING       // في انتظار الدفع
+  COMPLETED     // تم الدفع
+  FAILED        // فشل الدفع
+  REFUNDED      // تم استرداد المبلغ
+}
+
+// أنواع التقارير والشكاوى
+enum ReportType {
+  HARASSMENT    // تحرش
+  SPAM          // محتوى مزعج
+  FAKE_ACCOUNT  // حساب مزيف
+  INAPPROPRIATE // محتوى غير لائق
+  SCAM          // احتيال
+}
+
+// حالات التقارير
+enum ReportStatus {
+  PENDING       // قيد المراجعة
+  INVESTIGATING // جاري التحقيق
+  RESOLVED      // تم الحل
+  DISMISSED     // تم الرفض
+}
+
+// الفئات العمرية للإعلانات
+enum AgeRange {
+  UNDER_18      // تحت 18
+  AGE_18_24     // من 18 إلى 24
+  AGE_25_34     // من 25 إلى 34
+  AGE_35_44     // من 35 إلى 44
+  AGE_45_PLUS   // 45 فما فوق
+}
+
+// موديل جديد لحملات التسويق
+model Campaign {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم الحملة
+  description   String?                   // وصف الحملة
+  startDate     DateTime                  // تاريخ البداية
+  endDate       DateTime                  // تاريخ النهاية
+  budget        Float                     // الميزانية الكلية
+  status        CampaignStatus           // حالة الحملة
+  advertisements Advertisement[]          // الإعلانات المرتبطة
+  analytics     CampaignAnalytics?       // تحليلات الحملة
+}
+
+// حالات الحملات التسويقية
+enum CampaignStatus {
+  DRAFT        // مسودة
+  ACTIVE       // نشطة
+  PAUSED       // متوقفة مؤقتاً
+  COMPLETED    // مكتملة
+}
+
+// تحليلات الحملات التسويقية
+model CampaignAnalytics {
+  id            Int      @id @default(autoincrement())
+  campaign      Campaign @relation(fields: [campaignId], references: [id])
+  campaignId    Int      @unique
+  totalReach    Int      @default(0)     // إجمالي الوصول
+  engagement    Float    @default(0)      // نسبة التفاعل
+  conversions   Int      @default(0)      // عدد التحويلات
+  roi           Float    @default(0)      // العائد على الاستثمار
+}
+
+// موديل للفئات في الفعاليات
+model EventCategory {
+  id            Int      @id @default(autoincrement())
+  name          String                    // اسم الفئة
+  description   String?                   // وصف الفئة
+  events        Event[]                   // الفعاليات المرتبطة
+}
+
+// موديل لصور الفعاليات
+model EventImage {
+  id            Int      @id @default(autoincrement())
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       Int
+  url           String                    // رابط الصورة
+  description   String?                   // وصف الصورة
+  isMain        Boolean  @default(false)  // هل هي الصورة الرئيسية
+}
+
+// موديل لمعلومات البث المباشر
+model StreamingInfo {
+  id            Int      @id @default(autoincrement())
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       Int      @unique
+  platform      String                    // منصة البث
+  url           String                    // رابط البث
+  startTime     DateTime                  // وقت بداية البث
+  endTime       DateTime                  // وقت نهاية البث
+  isLive        Boolean  @default(false)  // هل البث مباشر حالياً
+}
+
+// موديل لمراجعات التدريب
+model TrainingReview {
+  id            Int      @id @default(autoincrement())
+  training      Training @relation(fields: [trainingId], references: [id])
+  trainingId    Int
+  reviewer      User     @relation(fields: [reviewerId], references: [id])
+  reviewerId    Int
+  rating        Int                      // التقييم من 5
+  comment       String?                  // التعليق
+  createdAt     DateTime @default(now()) // تاريخ المراجعة
+}
+
+// موديل لفئات التدريب
+model TrainingCategory {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم الفئة
+  description   String?                   // وصف الفئة
+  trainings     Training[]                // التدريبات المرتبطة
+}
+
+// موديل للمشاركين في المسابقات
+model CompetitionParticipant {
+  id            Int         @id @default(autoincrement())
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId Int
+  participant   User        @relation(fields: [participantId], references: [id])
+  participantId Int
+  status        ParticipationStatus      // حالة المشاركة
+  rank          Int?                     // الترتيب النهائي
+  score         Float?                   // النتيجة
+}
+
+// موديل لجولات المسابقة
+model CompetitionRound {
+  id            Int         @id @default(autoincrement())
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId Int
+  roundNumber   Int                      // رقم الجولة
+  startDate     DateTime                 // تاريخ البداية
+  endDate       DateTime                 // تاريخ النهاية
+  status        RoundStatus              // حالة الجولة
+}
+
+// حالات جولات المسابقة
+enum RoundStatus {
+  UPCOMING      // قادمة
+  IN_PROGRESS   // جارية
+  COMPLETED     // مكتملة
+  CANCELLED     // ملغاة
+}
+
+// حالات المسابقة
+enum CompetitionStatus {
+  REGISTRATION  // فترة التسجيل
+  ONGOING       // جارية
+  COMPLETED     // مكتملة
+  CANCELLED     // ملغاة
+}
+
+// موديل لتتبع سلوك المستخدم وتفضيلاته
+model UserBehavior {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  interactionType InteractionType  // نوع التفاعل
+  contentType   ContentType        // نوع المحتوى
+  contentId     Int               // معرف المحتوى
+  timestamp     DateTime  @default(now())
+  timeSpent     Int?              // الوقت المستغرق بالثواني
+  score         Float     @default(0)  // درجة الاهتمام
+  sessionDuration Int?     // مدة الجلسة بالثواني
+  deviceInfo     Json?    // معلومات عن الجهاز
+  location       Json?    // الموقع الجغرافي
+  timeOfDay      DateTime // وقت التفاعل
+  dayOfWeek      Int      // يوم الأسبوع
+  isPositive     Boolean  // هل التفاعل إيجابي
+}
+
+// موديل لتحليل الأداء
+model EngagementMetrics {
+  id            Int       @id @default(autoincrement())
+  contentId     Int
+  contentType   ContentType
+  viewCount     Int      @default(0)
+  avgTimeSpent  Float    @default(0)
+  engagementRate Float   @default(0)
+  bounceRate    Float    @default(0)
+  peakHours     Json     // ساعات الذروة
+  demographics  Json     // البيانات الديموغرافية
+}
+
+// موديل لتحليل المحتوى
+model ContentAnalytics {
+  id            Int       @id @default(autoincrement())
+  contentType   ContentType
+  contentId     Int
+  keywords      String[]
+  topics        String[]
+  engagement    Float     @default(0)
+  relevanceScore Float    @default(0)
+  targetAudience TargetAudience[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// موديل لتحسين استهداف الإعلانات
+model AdTargeting {
+  id            Int       @id @default(autoincrement())
+  advertisement Advertisement @relation(fields: [adId], references: [id])
+  adId          Int
+  targetInterests String[]
+  targetBehaviors String[]
+  demographicData Json?    // بيانات ديموغرافية إضافية
+  locationData   Json?    // بيانات جغرافية مفصلة
+  timeTargeting  Json?    // أوقات العرض المفضلة
+  performanceScore Float  @default(0)
+  optimizationRules Json?    // قواعد التحسين
+  bidStrategy    String    // استراتيجية المزايدة
+  budget        Float     // الميزانية
+  minPerformanceScore Float // الحد الأدنى للأداء
+  targetSegments UserSegment[] // الفئات المستهدفة
+  blacklist     String[]  // القائمة السوداء
+  customRules   Json?     // قواعد مخصصة
+
+  TargetingPerformance TargetingPerformance[]
+}
+
+// موديل لتتبع أداء الاستهداف
+model TargetingPerformance {
+  id            Int       @id @default(autoincrement())
+  targeting     AdTargeting @relation(fields: [targetingId], references: [id])
+  targetingId   Int
+  segment       UserSegment @relation(fields: [segmentId], references: [id])
+  segmentId     Int
+  performance   Float
+  cost         Float
+  roi          Float
+  date         DateTime
+}
+
+enum InteractionType {
+  VIEW          // مشاهدة
+  LIKE          // إعجاب
+  COMMENT       // تعليق
+  SHARE         // مشاركة
+  CLICK         // نقر
+  SAVE          // حفظ
+  HIDE          // إخفاء
+  REPORT        // إبلاغ
+}
+
+enum ContentType {
+  POST
+  AD
+  EVENT
+  ARTICLE
+  TRAINING
+  JOB
+}
+
+model TargetAudience {
+  id            Int       @id @default(autoincrement())
+  contentAnalytics ContentAnalytics @relation(fields: [analyticsId], references: [id])
+  analyticsId   Int
+  sport         Sport
+  role          Role
+  ageRange      AgeRange
+  gender        Gender?
+  interests     String[]
+  weight        Float     @default(1.0)
+}
+
+// موديل لحساب درجة الملاءمة
+model ContentScore {
+  id            Int       @id @default(autoincrement())
+  contentId     Int
+  contentType   ContentType
+  userSegment   String   // فئة المستخدم
+  relevanceScore Float   // درجة الملاءمة
+  freshness     Float    // درجة الحداثة
+  quality       Float    // درجة الجودة
+  engagement    Float    // درجة التفاعل
+  finalScore    Float    // الدرجة النهائية
+  lastCalculated DateTime @updatedAt
+}
+
+// موديل لتقسيم المستخدمين
+model UserSegment {
+  id            Int       @id @default(autoincrement())
+  name          String
+  criteria      Json     // معايير التقسيم
+  users         User[]   // المستخدمين في هذه الفئة
+  priority      Int      // أولوية الفئة
+
+  AdTargeting AdTargeting[]
+
+  TargetingPerformance TargetingPerformance[]
+}
+
+// موديل لتجارب A/B
+model ABTest {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  startDate     DateTime
+  endDate       DateTime?
+  status        TestStatus
+  variants      TestVariant[]
+  metrics       Json      // المقاييس المتتبعة
+  winner        String?   // النسخة الفائزة
+}
+
+model TestVariant {
+  id            Int       @id @default(autoincrement())
+  test          ABTest   @relation(fields: [testId], references: [id])
+  testId        Int
+  name          String
+  configuration Json     // إعدادات النسخة
+  performance   Json     // أداء النسخة
+}
+
+enum TestStatus {
+  DRAFT
+  RUNNING
+  COMPLETED
+  ANALYZED
+}
+
+// موديل لتتبع التحسينات
+model OptimizationLog {
+  id            Int       @id @default(autoincrement())
+  date          DateTime
+  type          String    // نوع التحسين
+  changes       Json      // التغييرات المطبقة
+  impact        Json      // تأثير التغييرات
+  metrics       Json      // المقاييس المتأثرة
+}
+
+// موديل المنتجات
+model Product {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم المنتج
+  description   String                    // وصف المنتج
+  price         Float                     // السعر
+  images        ProductImage[]            // صور المنتج
+  category      ProductCategory @relation(fields: [categoryId], references: [id])
+  categoryId    Int
+  brand         String?                   // الماركة
+  sport         Sport                     // الرياضة المتعلقة
+  inStock       Int                       // الكمية المتوفرة
+  status        ProductStatus @default(ACTIVE)
+  discount      Discount?                 // الخصم إن وجد
+  variants      ProductVariant[]          // المقاسات والألوان
+  reviews       ProductReview[]           // التقييمات
+  orders        OrderItem[]               // الطلبات
+  users         User[]                    // المستخدمين (سلة التسوق)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  specifications Json?                    // مواصفات المنتج
+  weight        Float?                    // الوزن للشحن
+  featured      Boolean   @default(false) // منتج مميز
+
+  Company Company[]
+}
+
+// موديل فئات المنتجات
+model ProductCategory {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم الفئة
+  description   String?                   // وصف الفئة
+  image         String?                   // صورة الفئة
+  products      Product[]                 // المنتجات في هذه الفئة
+  parent        ProductCategory? @relation("SubCategories", fields: [parentId], references: [id])
+  parentId      Int?
+  subCategories ProductCategory[] @relation("SubCategories")
+}
+
+// موديل صور المنتج
+model ProductImage {
+  id            Int       @id @default(autoincrement())
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     Int
+  url           String                    // رابط الصورة
+  isMain        Boolean   @default(false) // الصورة الرئيسية
+  order         Int       @default(0)     // ترتيب الصور
+}
+
+// موديل متغيرات المنتج (المقاسات والألوان)
+model ProductVariant {
+  id            Int       @id @default(autoincrement())
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     Int
+  size          String?                   // المقاس
+  color         String?                   // اللون
+  sku           String   @unique          // رقم المنتج المميز
+  price         Float?                    // سعر خاص للمتغير
+  inStock       Int      @default(0)      // الكمية المتوفرة
+
+  OrderItem OrderItem[]
+}
+
+// موديل تقييمات المنتج
+model ProductReview {
+  id            Int       @id @default(autoincrement())
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     Int
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  rating        Int                       // التقييم من 5
+  comment       String?                   // التعليق
+  images        String[]                  // صور المراجعة
+  createdAt     DateTime  @default(now())
+  verified      Boolean   @default(false) // مشتري حقيقي
+}
+
+// موديل الخصومات
+model Discount {
+  id            Int       @id @default(autoincrement())
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     Int       @unique
+  percentage    Float                     // نسبة الخصم
+  startDate     DateTime                  // تاريخ بداية الخصم
+  endDate       DateTime                  // تاريخ نهاية الخصم
+  active        Boolean   @default(true)  // هل الخصم نشط
+}
+
+// موديل الطلبات
+model Order {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  items         OrderItem[]               // منتجات الطلب
+  status        OrderStatus
+  totalAmount   Float                     // المبلغ الإجمالي
+  address       Address    @relation(fields: [addressId], references: [id])
+  addressId     Int
+  paymentStatus PaymentStatus
+  paymentMethod PaymentMethod
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  trackingNumber String?                  // رقم التتبع
+  notes         String?                   // ملاحظات الطلب
+}
+
+// موديل منتجات الطلب
+model OrderItem {
+  id            Int       @id @default(autoincrement())
+  order         Order     @relation(fields: [orderId], references: [id])
+  orderId       Int
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     Int
+  quantity      Int                       // الكمية
+  price         Float                     // السعر وقت الطلب
+  variant       ProductVariant? @relation(fields: [variantId], references: [id])
+  variantId     Int?
+}
+
+// موديل العناوين
+model Address {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int
+  name          String                    // اسم المستلم
+  street        String                    // الشارع
+  city          String                    // المدينة
+  state         String                    // المحافظة/الولاية
+  country       String                    // الدولة
+  zipCode       String?                   // الرمز البريدي
+  phone         String                    // رقم الهاتف
+  isDefault     Boolean   @default(false) // العنوان الافتراضي
+  orders        Order[]                   // الطلبات المرتبطة
+}
+
+enum ProductStatus {
+  ACTIVE        // متوفر
+  OUT_OF_STOCK  // نفذت الكمية
+  DISCONTINUED  // متوقف
+  COMING_SOON   // قريباً
+}
+
+enum OrderStatus {
+  PENDING       // في انتظار التأكيد
+  CONFIRMED     // تم التأكيد
+  PROCESSING    // جاري التجهيز
+  SHIPPED       // تم الشحن
+  DELIVERED     // تم التوصيل
+  CANCELLED     // ملغي
+  RETURNED      // مرتجع
+}
+
+enum PaymentMethod {
+  CREDIT_CARD   // بطاقة ائتمان
+  DEBIT_CARD    // بطاقة خصم
+  BANK_TRANSFER // تحويل بنكي
+  CASH_ON_DELIVERY // الدفع عند الاستلام
+  WALLET        // المحفظة الإلكترونية
+}
+
+// إحصائيات اللاعب
+model PlayerStatistics {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int       @unique
+  
+  // الإحصائيات الأساسية
+  matches       Int       @default(0)     // عدد المباريات
+  goals         Int       @default(0)     // الأهداف
+  assists       Int       @default(0)     // التمريرات الحاسمة
+  yellowCards   Int       @default(0)     // البطاقات الصفراء
+  redCards      Int       @default(0)     // البطاقات الحمراء
+  
+  // إحصائيات متقدمة
+  minutesPlayed Int       @default(0)     // دقائق اللعب
+  passAccuracy  Float?                    // دقة التمريرات
+  shotAccuracy  Float?                    // دقة التسديد
+  tackles       Int       @default(0)     // التدخلات
+  season        String                    // الموسم
+}
+
+// تاريخ التدريب
+model CoachingHistory {
+  id            Int       @id @default(autoincrement())
+  coach         Coach     @relation(fields: [coachId], references: [id])
+  coachId       Int
+  club          Club      @relation(fields: [clubId], references: [id])
+  clubId        Int
+  startDate     DateTime
+  endDate       DateTime?
+  position      String                    // المنصب
+  achievements  String[]                  // الإنجازات
+}
+
+// العقود
+model Contract {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  club          Club      @relation(fields: [clubId], references: [id])
+  clubId        Int
+  startDate     DateTime                  // تاريخ بداية العقد
+  endDate       DateTime                  // تاريخ نهاية العقد
+  salary        Float                     // الراتب
+  currency      String                    // العملة
+  bonuses       Json?                     // المكافآت والحوافز
+  buyoutClause  Float?                    // الشرط الجزائي
+  status        ContractStatus @default(ACTIVE)
+  documents     String[]                  // روابط المستندات
+  agent         Agent?    @relation(fields: [agentId], references: [id])
+  agentId       Int?
+  terms         Json?                     // شروط إضافية
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  Transfer Transfer[]
+}
+
+// الإصابات
+model Injury {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  type          String                    // نوع الإصابة
+  startDate     DateTime                  // تاريخ الإصابة
+  endDate       DateTime?                 // تاريخ العودة المتوقع
+  description   String                    // وصف الإصابة
+  severity      InjurySeverity            // شدة الإصابة
+  treatment     String?                   // العلاج
+  medicalReport String?                   // التقرير الطبي
+  status        InjuryStatus @default(ACTIVE)
+  doctor        String?                   // الطبيب المعالج
+}
+
+// الرخص التدريبية
+model License {
+  id            Int       @id @default(autoincrement())
+  coach         Coach     @relation(fields: [coachId], references: [id])
+  coachId       Int
+  name          String                    // اسم الرخصة
+  issuedBy      String                    // الجهة المانحة
+  issueDate     DateTime                  // تاريخ الإصدار
+  expiryDate    DateTime?                 // تاريخ الانتهاء
+  level         String                    // مستوى الرخصة
+  certificate   String?                   // رابط الشهادة
+  verified      Boolean   @default(false)  // حالة التحقق
+}
+
+// مرافق النادي
+model Facility {
+  id            Int       @id @default(autoincrement())
+  club          Club      @relation(fields: [clubId], references: [id])
+  clubId        Int
+  name          String                    // اسم المرفق
+  type          FacilityType             // نوع المرفق
+  capacity      Int?                      // السعة
+  location      String?                   // الموقع
+  description   String?                   // الوصف
+  images        String[]                  // صور المرفق
+  status        FacilityStatus @default(ACTIVE)
+  maintenance   MaintenanceSchedule[]     // جدول الصيانة
+}
+
+// فئات الفرق في النادي
+model TeamCategory {
+  id            Int       @id @default(autoincrement())
+  club          Club      @relation(fields: [clubId], references: [id])
+  clubId        Int
+  name          String                    // اسم الفئة (أول، شباب، ناشئين)
+  ageGroup      String?                   // الفئة العمرية
+  coach         Coach?    @relation(fields: [coachId], references: [id])
+  coachId       Int?
+  players       Player[]                  // اللاعبين
+  schedule      TrainingSchedule[]        // جدول التدريب
+  competitions  Tournament[]              // البطولات المشارك فيها
+}
+
+// البطولات
+model Tournament {
+  id            Int       @id @default(autoincrement())
+  name          String                    // اسم البطولة
+  organizer     Club      @relation(fields: [organizerId], references: [id])
+  organizerId   Int
+  startDate     DateTime                  // تاريخ البداية
+  endDate       DateTime                  // تاريخ النهاية
+  type          TournamentType            // نوع البطولة
+  teams         TeamCategory[]            // الفرق المشاركة
+  matches       Match[]                   // المباريات
+  prizes        Json?                     // الجوائز
+  rules         String?                   // القوانين
+  status        TournamentStatus @default(UPCOMING)
+}
+
+// عملاء الوكيل
+model AgentClient {
+  id            Int       @id @default(autoincrement())
+  agent         Agent     @relation(fields: [agentId], references: [id])
+  agentId       Int
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  startDate     DateTime                  // تاريخ بداية التمثيل
+  endDate       DateTime?                 // تاريخ نهاية التمثيل
+  contract      String?                   // عقد التمثيل
+  commission    Float                     // نسبة العمولة
+  status        ClientStatus @default(ACTIVE)
+}
+
+// صفقات الانتقال
+model Transfer {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  fromClub      Club      @relation("FromClub", fields: [fromClubId], references: [id])
+  fromClubId    Int
+  toClub        Club      @relation("ToClub", fields: [toClubId], references: [id])
+  toClubId      Int
+  agent         Agent     @relation(fields: [agentId], references: [id])
+  agentId       Int
+  date          DateTime                  // تاريخ الانتقال
+  fee           Float                     // قيمة الصفقة
+  currency      String                    // العملة
+  type          TransferType             // نوع الانتقال
+  commission    Commission?               // عمولة الوكيل
+  contract      Contract   @relation(fields: [contractId], references: [id])
+  contractId    Int
+}
+
+// عمولات الوكيل
+model Commission {
+  id            Int       @id @default(autoincrement())
+  agent         Agent     @relation(fields: [agentId], references: [id])
+  agentId       Int
+  transfer      Transfer  @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  transferId    Int       @unique
+  amount        Float                     // قيمة العمولة
+  percentage    Float                     // النسبة من الصفقة
+  currency      String                    // العملة
+  paymentDate   DateTime                  // تاريخ السداد
+  status        PaymentStatus @default(PENDING)
+}
+
+// تقارير الكشافة
+model ScoutingReport {
+  id            Int       @id @default(autoincrement())
+  scout         Scout     @relation(fields: [scoutId], references: [id])
+  scoutId       Int
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  date          DateTime                  // تاريخ التقرير
+  match         Match?    @relation(fields: [matchId], references: [id])
+  matchId       Int?
+  technicalEvaluation Json              // التقييم الفني
+  physicalEvaluation  Json              // التقييم البدني
+  mentalEvaluation    Json              // التقييم الذهني
+  potential     Int                      // التقييم المستقبلي (1-100)
+  recommendation String                  // التوصية
+  videos        String[]                 // فيديوهات التقييم
+  notes         String?                  // ملاحظات إضافية
+}
+
+// اكتشافات اللاعبين
+model PlayerDiscovery {
+  id            Int       @id @default(autoincrement())
+  scout         Scout     @relation(fields: [scoutId], references: [id])
+  scoutId       Int
+  player        Player    @relation(fields: [playerId], references: [id])
+  playerId      Int
+  date          DateTime                  // تاريخ الاكتشاف
+  location      String                    // مكان الاكتشاف
+  context       String                    // سياق الاكتشاف
+  initialReport String                    // التقرير الأولي
+  status        DiscoveryStatus @default(PENDING)
+  outcome       String?                   // النتيجة النهائية
+}
+
+// الحالات المختلفة
+enum ContractStatus {
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  PENDING
+}
+
+enum InjurySeverity {
+  MINOR
+  MODERATE
+  SEVERE
+  CRITICAL
+}
+
+enum InjuryStatus {
+  ACTIVE
+  RECOVERING
+  RECOVERED
+}
+
+enum FacilityType {
+  STADIUM
+  TRAINING_GROUND
+  GYM
+  MEDICAL_CENTER
+  ACADEMY
+  OTHER
+}
+
+enum FacilityStatus {
+  ACTIVE
+  UNDER_MAINTENANCE
+  INACTIVE
+}
+
+enum TournamentType {
+  LEAGUE
+  CUP
+  FRIENDLY
+  INTERNATIONAL
+}
+
+enum TournamentStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  TERMINATED
+}
+
+enum TransferType {
+  PERMANENT
+  LOAN
+  FREE_AGENT
+  YOUTH_PROMOTION
+}
+
+enum DiscoveryStatus {
+  PENDING
+  EVALUATING
+  SIGNED
+  REJECTED
+}
+
+// جدول الصيانة
+model MaintenanceSchedule {
+  id            Int       @id @default(autoincrement())
+  facility      Facility  @relation(fields: [facilityId], references: [id])
+  facilityId    Int
+  startDate     DateTime
+  endDate       DateTime
+  type          String
+  description   String?
+  cost          Float?
+  status        String
+}
+
+// جدول التدريب
+model TrainingSchedule {
+  id            Int       @id @default(autoincrement())
+  team          TeamCategory @relation(fields: [teamId], references: [id])
+  teamId        Int
+  dayOfWeek     Int
+  startTime     DateTime
+  endTime       DateTime
+  location      String
+  type          String
+}
