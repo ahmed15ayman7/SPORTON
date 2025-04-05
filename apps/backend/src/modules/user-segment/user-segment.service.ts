@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UserSegment } from '@prisma/client';
+import { UserSegment, User, AdTargeting, TargetingPerformance } from '@prisma/client';
 
 @Injectable()
 export class UserSegmentService extends BaseService<UserSegment> {
@@ -32,7 +32,7 @@ export class UserSegmentService extends BaseService<UserSegment> {
         return segment;
     }
 
-    async getSegmentUsers(id: number) {
+    async getSegmentUsers(id: number): Promise<User[]> {
         const segment = await this.prisma.userSegment.findUnique({
             where: { id },
             include: {
@@ -45,7 +45,7 @@ export class UserSegmentService extends BaseService<UserSegment> {
         return segment.users;
     }
 
-    async getSegmentTargeting(id: number) {
+    async getSegmentTargeting(id: number): Promise<AdTargeting[]> {
         const segment = await this.prisma.userSegment.findUnique({
             where: { id },
             include: {
@@ -58,7 +58,7 @@ export class UserSegmentService extends BaseService<UserSegment> {
         return segment.AdTargeting;
     }
 
-    async getSegmentPerformance(id: number) {
+    async getSegmentPerformance(id: number): Promise<TargetingPerformance[]> {
         const segment = await this.prisma.userSegment.findUnique({
             where: { id },
             include: {

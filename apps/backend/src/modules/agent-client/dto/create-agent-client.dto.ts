@@ -9,7 +9,7 @@ export class CreateAgentClientDto {
 
     @ApiProperty({ description: 'معرف العميل' })
     @IsNumber()
-    clientId: number;
+    playerId: number;
 
     @ApiProperty({ description: 'حالة العميل' })
     @IsEnum(ClientStatus)
@@ -29,4 +29,14 @@ export class CreateAgentClientDto {
     @IsString()
     @IsOptional()
     notes?: string;
+
+    @ApiProperty({ description: 'عمولة الوكيل', required: false })
+    @IsNumber()
+    @IsOptional()
+    commission: number;
+
+    @ApiProperty({ description: 'العقد', required: false })
+    @IsString()
+    @IsOptional()
+    contract?: string;
 } 

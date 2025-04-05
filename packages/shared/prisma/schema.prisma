@@ -8,7 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   // url      = env("DATABASE_URL")
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url       = env("POSTGRES_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -25,7 +25,6 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   lastLogin     DateTime?                 // آخر تسجيل دخول
-  
   // البيانات المشتركة
   name          String                    // الاسم
   image         String?                   // الصورة الشخصية
@@ -149,6 +148,7 @@ model User {
   Notification Notification[] @relation("NotificationSender")
 
   Product Product[]
+
 }
 
 // بروفايل اللاعب
@@ -164,15 +164,16 @@ model Player {
   position      String?                   // المركز
   foot          Foot?                     // القدم المفضلة
   jerseyNumber  Int?                      // رقم القميص
-  
+  facilityId    Int
+  facility      Facility @relation(fields: [facilityId], references: [id])
   // العلاقات الخاصة باللاعب
-  currentTeam   Club?     @relation("PlayerCurrentTeam", fields: [currentTeamId], references: [id])
+  marketValue   Float?                    // القيمة السوقية
   currentTeamId Int?
+  currentTeam   Club?     @relation("PlayerCurrentTeam", fields: [currentTeamId], references: [id])
   statistics    PlayerStatistics?         // إحصائيات اللاعب
   contracts     Contract[]                // العقود
   achievements  Achievement[]             // الإنجازات
   injuries      Injury[]                  // الإصابات
-  marketValue   Float?                    // القيمة السوقية
 
   TeamCategory TeamCategory[]
 
@@ -201,8 +202,10 @@ model Coach {
   teams         CoachingHistory[]         // تاريخ التدريب
   trainings     Training[]                // التدريبات
   achievements  Achievement[]             // الإنجازات
-
+  PerformanceReport PerformanceReport[]
   TeamCategory TeamCategory[]
+
+  TrainingSchedule TrainingSchedule[]
 }
 
 // بروفايل النادي
@@ -417,6 +420,8 @@ model Post {
   reactions Reaction[] @relation("Reactions")
 
   Reaction Reaction[]
+
+  EngagementMetrics EngagementMetrics[]
 }
 
 model Reaction {
@@ -677,7 +682,8 @@ model Advertisement {
   campaignId    Int?
   keywords      String[]
   maxBudgetPerDay Float?
-
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   AdTargeting AdTargeting[]
 }
 
@@ -991,6 +997,8 @@ model PerformanceReport {
   recommendations String?
   coach         User      @relation("CoachReports", fields: [coachId], references: [id])
   coachId       Int
+
+  Coach Coach[]
 }
 
 model Subscription {
@@ -1237,6 +1245,9 @@ model EngagementMetrics {
   bounceRate    Float    @default(0)
   peakHours     Json     // ساعات الذروة
   demographics  Json     // البيانات الديموغرافية
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  content       Post   @relation(fields: [contentId], references: [id])
 }
 
 // موديل لتحليل المحتوى
@@ -1271,7 +1282,8 @@ model AdTargeting {
   targetSegments UserSegment[] // الفئات المستهدفة
   blacklist     String[]  // القائمة السوداء
   customRules   Json?     // قواعد مخصصة
-
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   TargetingPerformance TargetingPerformance[]
 }
 
@@ -1645,8 +1657,13 @@ model Facility {
   location      String?                   // الموقع
   description   String?                   // الوصف
   images        String[]                  // صور المرفق
+  icon          String                   // الرمز المرفق
   status        FacilityStatus @default(ACTIVE)
   maintenance   MaintenanceSchedule[]     // جدول الصيانة
+
+  TrainingSchedule TrainingSchedule[]
+
+  Player Player[]
 }
 
 // فئات الفرق في النادي
@@ -1656,11 +1673,15 @@ model TeamCategory {
   clubId        Int
   name          String                    // اسم الفئة (أول، شباب، ناشئين)
   ageGroup      String?                   // الفئة العمرية
+  minAge        Int?
+  maxAge        Int?
   coach         Coach?    @relation(fields: [coachId], references: [id])
   coachId       Int?
   players       Player[]                  // اللاعبين
   schedule      TrainingSchedule[]        // جدول التدريب
   competitions  Tournament[]              // البطولات المشارك فيها
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // البطولات
@@ -1711,6 +1732,13 @@ model Transfer {
   commission    Commission?               // عمولة الوكيل
   contract      Contract   @relation(fields: [contractId], references: [id])
   contractId    Int
+  status        TransferStatus @default(PENDING)
+}
+
+enum TransferStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }
 
 // عمولات الوكيل
@@ -1853,5 +1881,16 @@ model TrainingSchedule {
   startTime     DateTime
   endTime       DateTime
   location      String
+  status        TrainingScheduleStatus @default(ACTIVE)
   type          String
+  coach         Coach?    @relation(fields: [coachId], references: [id])
+  coachId       Int?
+  facility      Facility? @relation(fields: [facilityId], references: [id])
+  facilityId    Int?
+}
+
+enum TrainingScheduleStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
 }

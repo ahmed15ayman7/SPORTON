@@ -41,15 +41,4 @@ export class JobsController extends BaseController<Job> {
         return this.jobsService.create(createJobDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a job' })
-    @ApiResponse({ status: 200, description: 'The job has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateJobDto: UpdateJobDto,
-    ) {
-        return this.jobsService.update(id, updateJobDto);
-    }
 } 

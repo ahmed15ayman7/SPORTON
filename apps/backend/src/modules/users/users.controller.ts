@@ -1,11 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { UsersService } from './users.service';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -19,7 +17,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user profile with all relations' })
     @ApiResponse({ status: 200, description: 'Return user profile.' })
-    async getUserProfile(@Param('id', ParseIntPipe) id: number) {
+    async getUserProfile(@Param('id', ParseIntPipe) id: number): Promise<User> {
         return this.usersService.getUserProfile(id);
     }
 
@@ -28,7 +26,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user friends' })
     @ApiResponse({ status: 200, description: 'Return user friends.' })
-    async getUserFriends(@Param('id', ParseIntPipe) id: number) {
+    async getUserFriends(@Param('id', ParseIntPipe) id: number): Promise<User[]> {
         return this.usersService.getUserFriends(id);
     }
 
@@ -37,7 +35,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user blocked users' })
     @ApiResponse({ status: 200, description: 'Return user blocked users.' })
-    async getUserBlockedUsers(@Param('id', ParseIntPipe) id: number) {
+    async getUserBlockedUsers(@Param('id', ParseIntPipe) id: number): Promise<User[]> {
         return this.usersService.getUserBlockedUsers(id);
     }
 
@@ -46,7 +44,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user notifications' })
     @ApiResponse({ status: 200, description: 'Return user notifications.' })
-    async getUserNotifications(@Param('id', ParseIntPipe) id: number) {
+    async getUserNotifications(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
         return this.usersService.getUserNotifications(id);
     }
 
@@ -55,7 +53,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user orders' })
     @ApiResponse({ status: 200, description: 'Return user orders.' })
-    async getUserOrders(@Param('id', ParseIntPipe) id: number) {
+    async getUserOrders(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
         return this.usersService.getUserOrders(id);
     }
 
@@ -64,7 +62,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user addresses' })
     @ApiResponse({ status: 200, description: 'Return user addresses.' })
-    async getUserAddresses(@Param('id', ParseIntPipe) id: number) {
+    async getUserAddresses(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
         return this.usersService.getUserAddresses(id);
     }
 
@@ -73,7 +71,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user metrics' })
     @ApiResponse({ status: 200, description: 'Return user metrics.' })
-    async getUserMetrics(@Param('id', ParseIntPipe) id: number) {
+    async getUserMetrics(@Param('id', ParseIntPipe) id: number): Promise<any> {
         return this.usersService.getUserMetrics(id);
     }
 
@@ -82,7 +80,7 @@ export class UsersController extends BaseController<User> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user social media accounts' })
     @ApiResponse({ status: 200, description: 'Return user social media accounts.' })
-    async getUserSocialMedia(@Param('id', ParseIntPipe) id: number) {
+    async getUserSocialMedia(@Param('id', ParseIntPipe) id: number): Promise<any[]> {
         return this.usersService.getUserSocialMedia(id);
     }
 
@@ -95,24 +93,4 @@ export class UsersController extends BaseController<User> {
         return this.usersService.getUserProfessionalAchievements(id);
     }
 
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
-    async create(@Body() createUserDto: CreateUserDto) {
-        return this.usersService.create(createUserDto);
-    }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a user' })
-    @ApiResponse({ status: 200, description: 'The user has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateUserDto: UpdateUserDto,
-    ) {
-        return this.usersService.update(id, updateUserDto);
-    }
 } 

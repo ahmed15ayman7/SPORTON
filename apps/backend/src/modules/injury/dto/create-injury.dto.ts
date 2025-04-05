@@ -28,12 +28,12 @@ export class CreateInjuryDto {
 
     @ApiProperty({ description: 'تاريخ الإصابة' })
     @IsDate()
-    injuryDate: Date;
+    startDate: Date;
 
     @ApiProperty({ description: 'تاريخ التعافي المتوقع', required: false })
     @IsDate()
     @IsOptional()
-    expectedRecoveryDate?: Date;
+    endDate?: Date;
 
     @ApiProperty({ description: 'شدة الإصابة', enum: InjurySeverity })
     @IsEnum(InjurySeverity)
@@ -51,5 +51,11 @@ export class CreateInjuryDto {
     @ApiProperty({ description: 'ملاحظات إضافية', required: false })
     @IsString()
     @IsOptional()
-    notes?: string;
+    doctor?: string;
+
+    @ApiProperty({ description: 'التقرير الطبي', required: false })
+    @IsString()
+    @IsOptional()
+    medicalReport?: string;
+
 } 

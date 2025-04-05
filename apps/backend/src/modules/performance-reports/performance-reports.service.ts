@@ -31,7 +31,7 @@ export class PerformanceReportsService extends BaseService<PerformanceReport> {
         return report;
     }
 
-    async getAthleteReports(athleteId: number) {
+    async getAthleteReports(athleteId: number): Promise<PerformanceReport[]> {
         const reports = await this.prisma.performanceReport.findMany({
             where: { athleteId },
             include: this.getIncludeFields(),
@@ -42,7 +42,7 @@ export class PerformanceReportsService extends BaseService<PerformanceReport> {
         return reports;
     }
 
-    async getCoachReports(coachId: number) {
+    async getCoachReports(coachId: number): Promise<PerformanceReport[]> {
         const reports = await this.prisma.performanceReport.findMany({
             where: { coachId },
             include: this.getIncludeFields(),
@@ -53,7 +53,7 @@ export class PerformanceReportsService extends BaseService<PerformanceReport> {
         return reports;
     }
 
-    async getReportsByDateRange(startDate: Date, endDate: Date) {
+    async getReportsByDateRange(startDate: Date, endDate: Date): Promise<PerformanceReport[]> {
         const reports = await this.prisma.performanceReport.findMany({
             where: {
                 date: {
@@ -69,7 +69,7 @@ export class PerformanceReportsService extends BaseService<PerformanceReport> {
         return reports;
     }
 
-    async getLatestReport(athleteId: number) {
+    async getLatestReport(athleteId: number): Promise<PerformanceReport | null> {
         const report = await this.prisma.performanceReport.findFirst({
             where: { athleteId },
             include: this.getIncludeFields(),
@@ -80,7 +80,7 @@ export class PerformanceReportsService extends BaseService<PerformanceReport> {
         return report;
     }
 
-    async getAthleteProgress(athleteId: number) {
+    async getAthleteProgress(athleteId: number): Promise<PerformanceReport[]> {
         const reports = await this.prisma.performanceReport.findMany({
             where: { athleteId },
             include: this.getIncludeFields(),

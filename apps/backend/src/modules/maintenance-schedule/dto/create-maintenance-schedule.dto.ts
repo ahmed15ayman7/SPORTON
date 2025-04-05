@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsEnum, IsOptional, IsDate } from 'class-validator';
+import { IsNumber, IsString, IsEnum, IsOptional, IsDate, isDate } from 'class-validator';
 import { FacilityType } from '@prisma/client';
 
 export class CreateMaintenanceScheduleDto {
@@ -35,4 +35,16 @@ export class CreateMaintenanceScheduleDto {
     @IsString()
     @IsOptional()
     notes?: string;
+
+    @ApiProperty({ description: 'المنشأة', required: false })
+    @IsString()
+    type: string;
+
+    @ApiProperty({ description: 'تاريخ البدء' })
+    @IsDate()
+    startDate: Date;
+
+    @ApiProperty({ description: 'تاريخ الانتهاء' })
+    @IsDate()
+    endDate: Date;
 } 

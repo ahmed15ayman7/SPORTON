@@ -36,7 +36,6 @@ export class OrderItemService extends BaseService<OrderItem> {
         return this.prisma.orderItem.findMany({
             where: { orderId },
             include: this.getIncludeFields(),
-            orderBy: { createdAt: 'desc' },
         });
     }
 
@@ -48,11 +47,11 @@ export class OrderItemService extends BaseService<OrderItem> {
         });
     }
 
-    async updateOrderItemPrice(id: number, unitPrice: number): Promise<OrderItem> {
+    async updateOrderItemPrice(id: number, price: number): Promise<OrderItem> {
         const orderItem = await this.getOrderItemProfile(id);
         return this.prisma.orderItem.update({
             where: { id },
-            data: { unitPrice },
+            data: { price },
         });
     }
 
@@ -60,7 +59,6 @@ export class OrderItemService extends BaseService<OrderItem> {
         return this.prisma.orderItem.findMany({
             where: { productId },
             include: this.getIncludeFields(),
-            orderBy: { createdAt: 'desc' },
         });
     }
 
@@ -68,7 +66,6 @@ export class OrderItemService extends BaseService<OrderItem> {
         return this.prisma.orderItem.findMany({
             where: { variantId },
             include: this.getIncludeFields(),
-            orderBy: { createdAt: 'desc' },
         });
     }
 } 

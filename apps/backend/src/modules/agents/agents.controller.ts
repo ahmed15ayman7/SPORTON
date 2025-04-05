@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { AgentsService } from './agents.service';
-import { Agent } from '@prisma/client';
+import { Agent, Player } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
@@ -28,7 +28,7 @@ export class AgentsController extends BaseController<Agent> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get agent players' })
     @ApiResponse({ status: 200, description: 'Return agent players.' })
-    async getAgentPlayers(@Param('id', ParseIntPipe) id: number) {
+    async getAgentPlayers(@Param('id', ParseIntPipe) id: number): Promise<Player[]> {
         return this.agentsService.getAgentPlayers(id);
     }
 
@@ -59,15 +59,5 @@ export class AgentsController extends BaseController<Agent> {
         return this.agentsService.create(createAgentDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update an agent' })
-    @ApiResponse({ status: 200, description: 'The agent has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateAgentDto: UpdateAgentDto,
-    ) {
-        return this.agentsService.update(id, updateAgentDto);
-    }
+
 } 

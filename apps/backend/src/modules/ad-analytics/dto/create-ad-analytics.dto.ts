@@ -18,7 +18,7 @@ export class CreateAdAnalyticsDto {
     ctr: number;
 
     @ApiProperty({ description: 'معدل التفاعل' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     engagement: number;
 

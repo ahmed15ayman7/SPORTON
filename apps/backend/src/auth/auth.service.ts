@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../modules/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 
@@ -14,7 +14,7 @@ export class AuthService {
     ) { }
 
     async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.usersService.user({ email });
+        const user = await this.usersService.findByEmail(email);
         if (user && (await bcrypt.compare(password, user.password))) {
             const { password, ...result } = user;
             return result;
@@ -35,7 +35,7 @@ export class AuthService {
             const payload = this.jwtService.verify(token, {
                 secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
             });
-            const user = await this.usersService.user({ id: payload.sub });
+            const user = await this.usersService.findOne(payload.sub);
             if (!user) {
                 throw new UnauthorizedException();
             }
@@ -53,9 +53,9 @@ export class AuthService {
     }
 
     async validateOAuthUser(profile: any): Promise<User> {
-        let user = await this.usersService.user({ email: profile.email });
+        let user = await this.usersService.findByEmail(profile.email);
         if (!user) {
-            user = await this.usersService.createUser({
+            user = await this.usersService.create({
                 email: profile.email,
                 name: profile.name,
                 password: Math.random().toString(36).slice(-8),

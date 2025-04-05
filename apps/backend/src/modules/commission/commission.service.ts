@@ -2,45 +2,45 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCommissionDto } from './dto/create-commission.dto';
 import { UpdateCommissionDto } from './dto/update-commission.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { Commission, PaymentStatus } from '@prisma/client';
 @Injectable()
 export class CommissionService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createCommissionDto: CreateCommissionDto) {
+    async create(createCommissionDto: CreateCommissionDto): Promise<Commission> {
         return this.prisma.commission.create({
             data: {
                 agentId: createCommissionDto.agentId,
-                transactionId: createCommissionDto.transactionId,
-                type: createCommissionDto.type,
-                status: createCommissionDto.status,
+                transferId: createCommissionDto.transferId,
                 amount: createCommissionDto.amount,
-                createdAt: createCommissionDto.createdAt,
-                paidAt: createCommissionDto.paidAt,
-                notes: createCommissionDto.notes
+                percentage: createCommissionDto.percentage,
+                currency: createCommissionDto.currency,
+                paymentDate: createCommissionDto.paymentDate,
+                status: createCommissionDto.status,
             },
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
     }
 
-    async findAll() {
+    async findAll(params: PaginationDto): Promise<Commission[]> {
         return this.prisma.commission.findMany({
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<Commission> {
         const commission = await this.prisma.commission.findUnique({
             where: { id },
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
 
@@ -51,48 +51,46 @@ export class CommissionService {
         return commission;
     }
 
-    async findByAgent(agentId: number) {
+    async findByAgent(agentId: number): Promise<Commission[]> {
         return this.prisma.commission.findMany({
             where: { agentId },
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
     }
 
-    async findByTransaction(transactionId: number) {
+    async findByTransfer(transferId: number): Promise<Commission[]> {
         return this.prisma.commission.findMany({
-            where: { transactionId },
+            where: { transferId },
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
     }
 
-    async findByStatus(status: string) {
+    async findByStatus(status: PaymentStatus): Promise<Commission[]> {
         return this.prisma.commission.findMany({
             where: { status },
             include: {
                 agent: true,
-                transaction: true
+                transfer: true
             }
         });
     }
 
-    async update(id: number, updateCommissionDto: UpdateCommissionDto) {
+    async update(id: number, updateCommissionDto: UpdateCommissionDto): Promise<Commission> {
         try {
             return await this.prisma.commission.update({
                 where: { id },
                 data: {
                     status: updateCommissionDto.status,
-                    paidAt: updateCommissionDto.paidAt,
-                    notes: updateCommissionDto.notes
                 },
                 include: {
                     agent: true,
-                    transaction: true
+                    transfer: true
                 }
             });
         } catch (error) {
@@ -100,7 +98,7 @@ export class CommissionService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<Commission> {
         try {
             return await this.prisma.commission.delete({
                 where: { id }

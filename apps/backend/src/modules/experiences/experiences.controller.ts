@@ -49,16 +49,4 @@ export class ExperiencesController extends BaseController<Experience> {
     async create(@Body() createExperienceDto: CreateExperienceDto) {
         return this.experiencesService.create(createExperienceDto);
     }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update an experience' })
-    @ApiResponse({ status: 200, description: 'The experience has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateExperienceDto: UpdateExperienceDto,
-    ) {
-        return this.experiencesService.update(id, updateExperienceDto);
-    }
 } 

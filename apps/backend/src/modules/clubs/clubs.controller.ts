@@ -95,15 +95,4 @@ export class ClubsController extends BaseController<Club> {
         return this.clubsService.create(createClubDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a club' })
-    @ApiResponse({ status: 200, description: 'The club has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateClubDto: UpdateClubDto,
-    ) {
-        return this.clubsService.update(id, updateClubDto);
-    }
 } 

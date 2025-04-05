@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsEnum, IsFloat, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ContentType } from '@prisma/client';
 
@@ -19,17 +19,17 @@ export class CreateEngagementMetricsDto {
     viewCount?: number;
 
     @ApiProperty({ description: 'متوسط الوقت المستغرق', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     avgTimeSpent?: number;
 
     @ApiProperty({ description: 'معدل التفاعل', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     engagementRate?: number;
 
     @ApiProperty({ description: 'معدل الارتداد', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     bounceRate?: number;
 

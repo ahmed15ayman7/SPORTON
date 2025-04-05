@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TeamCategoryService } from './team-category.service';
-import { CreateTeamCategoryDto } from './dto/create-team-category.dto';
-import { UpdateTeamCategoryDto } from './dto/update-team-category.dto';
+import { TeamCategory } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('فئات الفرق')
 @Controller('team-categories')
@@ -12,15 +12,15 @@ export class TeamCategoryController {
     @Post()
     @ApiOperation({ summary: 'إنشاء فئة فريق جديدة' })
     @ApiResponse({ status: 201, description: 'تم إنشاء فئة الفريق بنجاح' })
-    create(@Body() createTeamCategoryDto: CreateTeamCategoryDto) {
+    create(@Body() createTeamCategoryDto: TeamCategory) {
         return this.teamCategoryService.create(createTeamCategoryDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع فئات الفرق' })
     @ApiResponse({ status: 200, description: 'تم جلب فئات الفرق بنجاح' })
-    findAll() {
-        return this.teamCategoryService.findAll();
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.teamCategoryService.findAll(paginationDto);
     }
 
     @Get(':id')
@@ -45,7 +45,7 @@ export class TeamCategoryController {
     @ApiResponse({ status: 200, description: 'تم تحديث فئة الفريق بنجاح' })
     update(
         @Param('id') id: string,
-        @Body() updateTeamCategoryDto: UpdateTeamCategoryDto,
+        @Body() updateTeamCategoryDto: TeamCategory,
     ) {
         return this.teamCategoryService.update(+id, updateTeamCategoryDto);
     }

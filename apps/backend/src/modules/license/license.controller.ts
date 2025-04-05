@@ -30,18 +30,18 @@ export class LicenseController {
         return this.licenseService.findOne(+id);
     }
 
-    @Get('user/:userId')
+    @Get('coach/:coachId')
     @ApiOperation({ summary: 'الحصول على تراخيص مستخدم محدد' })
     @ApiResponse({ status: 200, description: 'تم جلب تراخيص المستخدم بنجاح' })
-    findByUser(@Param('userId') userId: string) {
-        return this.licenseService.findByUser(+userId);
+    findByCoach(@Param('coachId') coachId: string) {
+        return this.licenseService.findByCoach(+coachId);
     }
 
-    @Get('type/:type')
-    @ApiOperation({ summary: 'الحصول على تراخيص بنوع محدد' })
+    @Get('name/:name')
+    @ApiOperation({ summary: 'الحصول على تراخيص باسم محدد' })
     @ApiResponse({ status: 200, description: 'تم جلب التراخيص بنجاح' })
-    findByType(@Param('type') type: string) {
-        return this.licenseService.findByType(type);
+    findByName(@Param('name') name: string) {
+        return this.licenseService.findByName(name);
     }
 
     @Patch(':id')

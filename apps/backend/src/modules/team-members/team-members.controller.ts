@@ -59,15 +59,4 @@ export class TeamMembersController extends BaseController<TeamMember> {
         return this.teamMembersService.create(createTeamMemberDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a team member' })
-    @ApiResponse({ status: 200, description: 'The team member has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateTeamMemberDto: UpdateTeamMemberDto,
-    ) {
-        return this.teamMembersService.update(id, updateTeamMemberDto);
-    }
 } 

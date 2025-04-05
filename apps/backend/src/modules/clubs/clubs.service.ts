@@ -131,29 +131,25 @@ export class ClubsService extends BaseService<Club> {
         const club = await this.prisma.club.findUnique({
             where: { id },
             include: {
-                contracts: true,
+                Contract: true,
             },
         });
         if (!club) {
             throw new NotFoundException('النادي غير موجود');
         }
-        return club.contracts;
+        return club.Contract;
     }
 
     async getClubTransfers(id: number): Promise<any[]> {
         const club = await this.prisma.club.findUnique({
             where: { id },
             include: {
-                transfers: true,
-                transfersTo: true,
+                Transfer: true,
             },
         });
         if (!club) {
             throw new NotFoundException('النادي غير موجود');
         }
-        return {
-            outgoing: club.transfers,
-            incoming: club.transfersTo,
-        };
+        return club.Transfer;
     }
-} 
+}

@@ -2,12 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
-
+import { Product } from '@prisma/client';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class CartService {
-    constructor(private prisma: PrismaService) { }
+export class CartService extends BaseService<Product> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'Product');
+    }
 
-    async create(createCartDto: CreateCartDto) {
+    async create(createCartDto: CreateCartDto): Promise<any> {
         const { userId, items = [] } = createCartDto;
 
         // التحقق من وجود المستخدم
@@ -52,21 +55,21 @@ export class CartService {
         return this.prisma.user.update({
             where: { id: userId },
             data: {
-                products: {
+                Product: {
                     connect: cartItems.map(item => ({ id: item.productId }))
                 }
             },
             include: {
-                products: true
+                Product: true
             }
         });
     }
 
-    async findByUser(userId: number) {
+    async findByUser(userId: number): Promise<Product[]> {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
             include: {
-                products: true
+                Product: true
             }
         });
 
@@ -74,10 +77,10 @@ export class CartService {
             throw new NotFoundException(`المستخدم رقم ${userId} غير موجود`);
         }
 
-        return user.products;
+        return user.Product;
     }
 
-    async addItem(userId: number, productId: number, quantity: number, variantId?: number) {
+    async addItem(userId: number, productId: number, quantity: number, variantId?: number): Promise<any> {
         // التحقق من وجود المنتج
         const product = await this.prisma.product.findUnique({
             where: { id: productId },
@@ -102,22 +105,22 @@ export class CartService {
         return this.prisma.user.update({
             where: { id: userId },
             data: {
-                products: {
+                Product: {
                     connect: { id: productId }
                 }
             },
             include: {
-                products: true
+                Product: true
             }
         });
     }
 
-    async updateItemQuantity(userId: number, productId: number, quantity: number) {
+    async updateItemQuantity(userId: number, productId: number, quantity: number): Promise<any> {
         // التحقق من وجود المنتج في السلة
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
             include: {
-                products: {
+                Product: {
                     where: { id: productId }
                 }
             }
@@ -127,7 +130,7 @@ export class CartService {
             throw new NotFoundException(`المستخدم رقم ${userId} غير موجود`);
         }
 
-        if (user.products.length === 0) {
+        if (user.Product.length === 0) {
             throw new NotFoundException(`المنتج رقم ${productId} غير موجود في السلة`);
         }
 
@@ -135,27 +138,27 @@ export class CartService {
         return this.prisma.user.update({
             where: { id: userId },
             data: {
-                products: {
+                Product: {
                     connect: { id: productId }
                 }
             },
             include: {
-                products: true
+                Product: true
             }
         });
     }
 
-    async removeItem(userId: number, productId: number) {
+    async removeItem(userId: number, productId: number): Promise<any> {
         try {
             return await this.prisma.user.update({
                 where: { id: userId },
                 data: {
-                    products: {
+                    Product: {
                         disconnect: { id: productId }
                     }
                 },
                 include: {
-                    products: true
+                    Product: true
                 }
             });
         } catch (error) {
@@ -163,17 +166,17 @@ export class CartService {
         }
     }
 
-    async clearCart(userId: number) {
+    async clearCart(userId: number): Promise<any> {
         try {
             return await this.prisma.user.update({
                 where: { id: userId },
                 data: {
-                    products: {
+                    Product: {
                         set: []
                     }
                 },
                 include: {
-                    products: true
+                    Product: true
                 }
             });
         } catch (error) {
@@ -181,11 +184,11 @@ export class CartService {
         }
     }
 
-    async calculateTotal(userId: number) {
+    async calculateTotal(userId: number): Promise<number> {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
             include: {
-                products: true
+                Product: true
             }
         });
 
@@ -194,26 +197,26 @@ export class CartService {
         }
 
         let total = 0;
-        for (const product of user.products) {
+        for (const product of user.Product) {
             total += product.price;
         }
 
         return total;
     }
 
-    async update(userId: number, updateCartDto: UpdateCartDto) {
+    async updateUserCart(userId: number, updateCartDto: UpdateCartDto): Promise<any> {
         const { items = [] } = updateCartDto;
 
         try {
             return await this.prisma.user.update({
                 where: { id: userId },
                 data: {
-                    products: {
+                    Product: {
                         set: items.map(item => ({ id: item.productId }))
                     }
                 },
                 include: {
-                    products: true
+                    Product: true
                 }
             });
         } catch (error) {

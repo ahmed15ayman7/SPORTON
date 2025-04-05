@@ -47,6 +47,10 @@ export class OrderService extends BaseService<Order> {
 
     async updateOrderStatus(id: number, status: OrderStatus): Promise<Order> {
         const order = await this.getOrderProfile(id);
+        if (order.status !== OrderStatus.PENDING) {
+            throw new Error('لا يمكن تحديث حالة الطلب في هذه الحالة');
+        }
+
         return this.prisma.order.update({
             where: { id },
             data: { status },

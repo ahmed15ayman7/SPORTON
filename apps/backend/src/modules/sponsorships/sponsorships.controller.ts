@@ -50,15 +50,4 @@ export class SponsorshipsController extends BaseController<Sponsorship> {
         return this.sponsorshipsService.create(createSponsorshipDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a sponsorship' })
-    @ApiResponse({ status: 200, description: 'The sponsorship has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateSponsorshipDto: UpdateSponsorshipDto,
-    ) {
-        return this.sponsorshipsService.update(id, updateSponsorshipDto);
-    }
 } 

@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsArray, IsOptional, IsFloat, IsString } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsArray, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAdTargetingDto {
@@ -32,7 +32,7 @@ export class CreateAdTargetingDto {
     timeTargeting?: any;
 
     @ApiProperty({ description: 'درجة الأداء', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     performanceScore?: number;
 
@@ -46,12 +46,12 @@ export class CreateAdTargetingDto {
     bidStrategy: string;
 
     @ApiProperty({ description: 'الميزانية' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     budget: number;
 
     @ApiProperty({ description: 'الحد الأدنى للأداء' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     minPerformanceScore: number;
 

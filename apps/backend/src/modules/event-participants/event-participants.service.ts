@@ -31,7 +31,7 @@ export class EventParticipantsService extends BaseService<EventParticipant> {
         return participant;
     }
 
-    async getEventParticipants(eventId: number) {
+    async getEventParticipants(eventId: number): Promise<EventParticipant[]> {
         const participants = await this.prisma.eventParticipant.findMany({
             where: { eventId },
             include: this.getIncludeFields(),
@@ -42,7 +42,7 @@ export class EventParticipantsService extends BaseService<EventParticipant> {
         return participants;
     }
 
-    async getUserParticipations(userId: number) {
+    async getUserParticipations(userId: number): Promise<EventParticipant[]> {
         const participations = await this.prisma.eventParticipant.findMany({
             where: { userId },
             include: this.getIncludeFields(),
@@ -53,7 +53,7 @@ export class EventParticipantsService extends BaseService<EventParticipant> {
         return participations;
     }
 
-    async getParticipantsByStatus(eventId: number, status: string) {
+    async getParticipantsByStatus(eventId: number, status: string): Promise<EventParticipant[]> {
         const participants = await this.prisma.eventParticipant.findMany({
             where: {
                 eventId,
@@ -67,7 +67,7 @@ export class EventParticipantsService extends BaseService<EventParticipant> {
         return participants;
     }
 
-    async updateParticipationStatus(id: number, status: string) {
+    async updateParticipationStatus(id: number, status: string): Promise<EventParticipant> {
         return this.prisma.eventParticipant.update({
             where: { id },
             data: {

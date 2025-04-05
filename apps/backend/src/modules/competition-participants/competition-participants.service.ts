@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CompetitionParticipant } from '@prisma/client';
+import { CompetitionParticipant, ParticipationStatus } from '@prisma/client';
 
 @Injectable()
 export class CompetitionParticipantsService extends BaseService<CompetitionParticipant> {
@@ -31,7 +31,7 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         return participant;
     }
 
-    async getCompetitionParticipants(competitionId: number) {
+    async getCompetitionParticipants(competitionId: number): Promise<CompetitionParticipant[]> {
         const participants = await this.prisma.competitionParticipant.findMany({
             where: { competitionId },
             include: this.getIncludeFields(),
@@ -43,7 +43,7 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         return participants;
     }
 
-    async getUserParticipations(participantId: number) {
+    async getUserParticipations(participantId: number): Promise<CompetitionParticipant[]> {
         const participations = await this.prisma.competitionParticipant.findMany({
             where: { participantId },
             include: this.getIncludeFields(),
@@ -56,7 +56,7 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         return participations;
     }
 
-    async getParticipantsByStatus(competitionId: number, status: string) {
+    async getParticipantsByStatus(competitionId: number, status: string): Promise<CompetitionParticipant[]> {
         const participants = await this.prisma.competitionParticipant.findMany({
             where: {
                 competitionId,
@@ -71,7 +71,7 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         return participants;
     }
 
-    async updateParticipantRank(id: number, rank: number) {
+    async updateParticipantRank(id: number, rank: number): Promise<CompetitionParticipant> {
         return this.prisma.competitionParticipant.update({
             where: { id },
             data: { rank },
@@ -79,7 +79,7 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         });
     }
 
-    async updateParticipantScore(id: number, score: number) {
+    async updateParticipantScore(id: number, score: number): Promise<CompetitionParticipant> {
         return this.prisma.competitionParticipant.update({
             where: { id },
             data: { score },
@@ -87,11 +87,11 @@ export class CompetitionParticipantsService extends BaseService<CompetitionParti
         });
     }
 
-    async getCompetitionStandings(competitionId: number) {
+    async getCompetitionStandings(competitionId: number): Promise<CompetitionParticipant[]> {
         const participants = await this.prisma.competitionParticipant.findMany({
             where: {
                 competitionId,
-                status: 'COMPLETED',
+                status: ParticipationStatus.CONFIRMED,
             },
             include: this.getIncludeFields(),
             orderBy: [

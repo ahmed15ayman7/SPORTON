@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Agent } from '@prisma/client';
+import { Agent, Player } from '@prisma/client';
 
 @Injectable()
 export class AgentsService extends BaseService<Agent> {
@@ -57,42 +57,46 @@ export class AgentsService extends BaseService<Agent> {
         return agent;
     }
 
-    async getAgentPlayers(id: number): Promise<any[]> {
+    async getAgentPlayers(id: number): Promise<Player[]> {
         const agent = await this.prisma.agent.findUnique({
             where: { id },
             include: {
-                players: true,
+                clients: {
+                    include: {
+                        player: true
+                    }
+                },
             },
         });
         if (!agent) {
             throw new NotFoundException('الوكيل غير موجود');
         }
-        return agent.players;
+        return agent.clients.map(client => client.player);
     }
 
     async getAgentContracts(id: number): Promise<any[]> {
         const agent = await this.prisma.agent.findUnique({
             where: { id },
             include: {
-                contracts: true,
+                Contract: true,
             },
         });
         if (!agent) {
             throw new NotFoundException('الوكيل غير موجود');
         }
-        return agent.contracts;
+        return agent.Contract;
     }
 
     async getAgentTransfers(id: number): Promise<any[]> {
         const agent = await this.prisma.agent.findUnique({
             where: { id },
             include: {
-                transfers: true,
+                deals: true,
             },
         });
         if (!agent) {
             throw new NotFoundException('الوكيل غير موجود');
         }
-        return agent.transfers;
+        return agent.deals;
     }
 } 

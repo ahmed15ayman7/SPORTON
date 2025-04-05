@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-
+import { Address } from '@prisma/client';
 @Injectable()
 export class AddressService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createAddressDto: CreateAddressDto) {
+    async create(createAddressDto: CreateAddressDto): Promise<Address> {
         return this.prisma.address.create({
             data: {
                 userId: createAddressDto.userId,
@@ -26,7 +26,7 @@ export class AddressService {
         });
     }
 
-    async findAll() {
+    async findAll(): Promise<Address[]> {
         return this.prisma.address.findMany({
             include: {
                 user: true
@@ -34,7 +34,7 @@ export class AddressService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<Address> {
         const address = await this.prisma.address.findUnique({
             where: { id },
             include: {
@@ -49,7 +49,7 @@ export class AddressService {
         return address;
     }
 
-    async findByUser(userId: number) {
+    async findByUser(userId: number): Promise<Address[]> {
         return this.prisma.address.findMany({
             where: { userId },
             include: {
@@ -58,7 +58,7 @@ export class AddressService {
         });
     }
 
-    async update(id: number, updateAddressDto: UpdateAddressDto) {
+    async update(id: number, updateAddressDto: UpdateAddressDto): Promise<Address> {
         try {
             return await this.prisma.address.update({
                 where: { id },
@@ -81,7 +81,7 @@ export class AddressService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<Address> {
         try {
             return await this.prisma.address.delete({
                 where: { id }
@@ -91,7 +91,7 @@ export class AddressService {
         }
     }
 
-    async setDefault(id: number) {
+    async setDefault(id: number): Promise<Address> {
         try {
             const address = await this.prisma.address.findUnique({
                 where: { id }

@@ -30,7 +30,7 @@ export class CompetitionRoundsService extends BaseService<CompetitionRound> {
         return round;
     }
 
-    async getCompetitionRounds(competitionId: number) {
+    async getCompetitionRounds(competitionId: number): Promise<CompetitionRound[]> {
         const rounds = await this.prisma.competitionRound.findMany({
             where: { competitionId },
             include: this.getIncludeFields(),
@@ -41,7 +41,7 @@ export class CompetitionRoundsService extends BaseService<CompetitionRound> {
         return rounds;
     }
 
-    async getCurrentRound(competitionId: number) {
+    async getCurrentRound(competitionId: number): Promise<CompetitionRound | null> {
         const currentRound = await this.prisma.competitionRound.findFirst({
             where: {
                 competitionId,
@@ -52,7 +52,7 @@ export class CompetitionRoundsService extends BaseService<CompetitionRound> {
         return currentRound;
     }
 
-    async getUpcomingRounds(competitionId: number) {
+    async getUpcomingRounds(competitionId: number): Promise<CompetitionRound[]> {
         const upcomingRounds = await this.prisma.competitionRound.findMany({
             where: {
                 competitionId,
@@ -66,7 +66,7 @@ export class CompetitionRoundsService extends BaseService<CompetitionRound> {
         return upcomingRounds;
     }
 
-    async getCompletedRounds(competitionId: number) {
+    async getCompletedRounds(competitionId: number): Promise<CompetitionRound[]> {
         const completedRounds = await this.prisma.competitionRound.findMany({
             where: {
                 competitionId,
@@ -80,7 +80,7 @@ export class CompetitionRoundsService extends BaseService<CompetitionRound> {
         return completedRounds;
     }
 
-    async updateRoundStatus(id: number, status: string) {
+    async updateRoundStatus(id: number, status: string): Promise<CompetitionRound> {
         return this.prisma.competitionRound.update({
             where: { id },
             data: { status: status as any },

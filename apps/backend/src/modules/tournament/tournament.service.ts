@@ -1,49 +1,74 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { Tournament, TournamentType } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TournamentService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createTournamentDto: CreateTournamentDto) {
+    async create(createTournamentDto: CreateTournamentDto): Promise<Tournament> {
         return this.prisma.tournament.create({
             data: {
                 name: createTournamentDto.name,
-                description: createTournamentDto.description,
                 startDate: createTournamentDto.startDate,
                 endDate: createTournamentDto.endDate,
-                facilityId: createTournamentDto.facilityId,
-                teamCategoryId: createTournamentDto.teamCategoryId,
-                maxTeams: createTournamentDto.maxTeams,
+                type: createTournamentDto.type,
+                organizerId: createTournamentDto.organizerId,
                 rules: createTournamentDto.rules,
                 prizes: createTournamentDto.prizes,
-                entryFee: createTournamentDto.entryFee,
-                notes: createTournamentDto.notes
+                status: createTournamentDto.status
             },
             include: {
-                facility: true,
-                teamCategory: true
+                teams: true,
+                matches: true
             }
         });
     }
 
-    async findAll() {
-        return this.prisma.tournament.findMany({
+    async findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<Tournament>> {
+        const { take, skip, search } = paginationDto;
+        const where: Prisma.TournamentWhereInput = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            ];
+        }
+
+        const tournaments = await this.prisma.tournament.findMany({
+            where,
             include: {
-                facility: true,
-                teamCategory: true
-            }
+                teams: true,
+                matches: true
+            },
+            skip,
+            take
         });
+
+        const total = await this.prisma.tournament.count({ where });
+
+        return {
+            data: tournaments,
+            meta: {
+                total,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: (skip || 0) + (take || 10) < total,
+            }
+        };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<Tournament> {
         const tournament = await this.prisma.tournament.findUnique({
             where: { id },
             include: {
-                facility: true,
-                teamCategory: true
+                teams: true,
+                matches: true
             }
         });
 
@@ -54,27 +79,27 @@ export class TournamentService {
         return tournament;
     }
 
-    async findByFacility(facilityId: number) {
+    async findByOrganizer(organizerId: number): Promise<Tournament[]> {
         return this.prisma.tournament.findMany({
-            where: { facilityId },
+            where: { organizerId },
             include: {
-                facility: true,
-                teamCategory: true
+                teams: true,
+                matches: true
             }
         });
     }
 
-    async findByTeamCategory(teamCategoryId: number) {
+    async findByType(type: TournamentType): Promise<Tournament[]> {
         return this.prisma.tournament.findMany({
-            where: { teamCategoryId },
+            where: { type },
             include: {
-                facility: true,
-                teamCategory: true
+                teams: true,
+                matches: true
             }
         });
     }
 
-    async findByDateRange(startDate: Date, endDate: Date) {
+    async findByDateRange(startDate: Date, endDate: Date): Promise<Tournament[]> {
         return this.prisma.tournament.findMany({
             where: {
                 AND: [
@@ -83,32 +108,29 @@ export class TournamentService {
                 ]
             },
             include: {
-                facility: true,
-                teamCategory: true
+                teams: true,
+                matches: true
             }
         });
     }
 
-    async update(id: number, updateTournamentDto: UpdateTournamentDto) {
+    async update(id: number, updateTournamentDto: UpdateTournamentDto): Promise<Tournament> {
         try {
             return await this.prisma.tournament.update({
                 where: { id },
                 data: {
                     name: updateTournamentDto.name,
-                    description: updateTournamentDto.description,
                     startDate: updateTournamentDto.startDate,
                     endDate: updateTournamentDto.endDate,
-                    facilityId: updateTournamentDto.facilityId,
-                    teamCategoryId: updateTournamentDto.teamCategoryId,
-                    maxTeams: updateTournamentDto.maxTeams,
+                    type: updateTournamentDto.type,
+                    organizerId: updateTournamentDto.organizerId,
                     rules: updateTournamentDto.rules,
                     prizes: updateTournamentDto.prizes,
-                    entryFee: updateTournamentDto.entryFee,
-                    notes: updateTournamentDto.notes
+                    status: updateTournamentDto.status
                 },
                 include: {
-                    facility: true,
-                    teamCategory: true
+                    teams: true,
+                    matches: true
                 }
             });
         } catch (error) {
@@ -116,7 +138,7 @@ export class TournamentService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<Tournament> {
         try {
             return await this.prisma.tournament.delete({
                 where: { id }

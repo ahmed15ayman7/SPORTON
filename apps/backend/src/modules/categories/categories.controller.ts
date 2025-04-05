@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { Category } from '@prisma/client';
 @ApiTags('الفئات')
 @Controller('categories')
 export class CategoriesController {
@@ -19,7 +21,7 @@ export class CategoriesController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع الفئات' })
     @ApiResponse({ status: 200, description: 'تم جلب الفئات بنجاح' })
-    findAll(@Query('search') search?: string) {
+    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<Category>> {
         return this.categoriesService.findAll(search);
     }
 

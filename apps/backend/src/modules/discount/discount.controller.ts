@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DiscountService } from './discount.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('الخصومات')
 @Controller('discount')
@@ -19,8 +20,8 @@ export class DiscountController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع الخصومات' })
     @ApiResponse({ status: 200, description: 'تم جلب الخصومات بنجاح' })
-    findAll() {
-        return this.discountService.findAll();
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.discountService.findAll(paginationDto);
     }
 
     @Get(':id')

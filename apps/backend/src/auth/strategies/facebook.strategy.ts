@@ -7,10 +7,10 @@ import { ConfigService } from '@nestjs/config';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     constructor(configService: ConfigService) {
         super({
-            clientID: configService.get<string>('FACEBOOK_APP_ID'),
-            clientSecret: configService.get<string>('FACEBOOK_APP_SECRET'),
+            clientID: configService.get<string>('FACEBOOK_APP_ID') || '',
+            clientSecret: configService.get<string>('FACEBOOK_APP_SECRET') || '',
             callbackURL: 'http://localhost:3000/auth/facebook/callback',
-            scope: 'email',
+            scope: ['email'],
             profileFields: ['emails', 'name'],
         });
     }

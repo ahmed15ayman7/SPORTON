@@ -65,17 +65,6 @@ export class AthleteMetricsController extends BaseController<AthleteMetrics> {
         return this.athleteMetricsService.create(createAthleteMetricsDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'تحديث مقاييس رياضي موجود' })
-    @ApiResponse({ status: 200, description: 'تم تحديث مقاييس الرياضي بنجاح.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateAthleteMetricsDto: UpdateAthleteMetricsDto,
-    ) {
-        return this.athleteMetricsService.update(id, updateAthleteMetricsDto);
-    }
 
     @Put('user/:userId')
     @UseGuards(JwtAuthGuard)

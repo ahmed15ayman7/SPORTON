@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
 @ApiTags('التعليقات')
 @Controller('comments')
 export class CommentsController {
@@ -19,8 +19,8 @@ export class CommentsController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع التعليقات' })
     @ApiResponse({ status: 200, description: 'تم جلب التعليقات بنجاح' })
-    findAll(@Query('search') search?: string) {
-        return this.commentsService.findAll(search);
+    findAll(@Query() params: PaginationDto) {
+        return this.commentsService.findAll(params);
     }
 
     @Get('profile/:id')

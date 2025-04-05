@@ -1,15 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePlayerDiscoveryDto } from './dto/create-player-discovery.dto';
 import { UpdatePlayerDiscoveryDto } from './dto/update-player-discovery.dto';
-
+import { PlayerDiscovery, DiscoveryStatus } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
 export class PlayerDiscoveryService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createPlayerDiscoveryDto: CreatePlayerDiscoveryDto) {
+    async create(createPlayerDiscoveryDto: CreatePlayerDiscoveryDto): Promise<PlayerDiscovery> {
         return this.prisma.playerDiscovery.create({
-            data: createPlayerDiscoveryDto,
+            data: {
+                ...createPlayerDiscoveryDto,
+                status: DiscoveryStatus.PENDING,
+                date: new Date(),
+                context: 'initial',
+                initialReport: 'initial',
+            },
             include: {
                 scout: true,
                 player: true,
@@ -17,16 +25,28 @@ export class PlayerDiscoveryService {
         });
     }
 
-    async findAll() {
-        return this.prisma.playerDiscovery.findMany({
+    async findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<PlayerDiscovery>> {
+        const { skip, take } = query;
+        const playerDiscoveries = await this.prisma.playerDiscovery.findMany({
+            skip,
+            take,
             include: {
                 scout: true,
                 player: true,
             },
         });
+        return {
+            data: playerDiscoveries,
+            meta: {
+                total: playerDiscoveries.length,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: playerDiscoveries.length === take,
+            },
+        };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<PlayerDiscovery> {
         const discovery = await this.prisma.playerDiscovery.findUnique({
             where: { id },
             include: {
@@ -42,7 +62,7 @@ export class PlayerDiscoveryService {
         return discovery;
     }
 
-    async findByScout(scoutId: number) {
+    async findByScout(scoutId: number): Promise<PlayerDiscovery[]> {
         return this.prisma.playerDiscovery.findMany({
             where: { scoutId },
             include: {
@@ -52,7 +72,7 @@ export class PlayerDiscoveryService {
         });
     }
 
-    async findByPlayer(playerId: number) {
+    async findByPlayer(playerId: number): Promise<PlayerDiscovery[]> {
         return this.prisma.playerDiscovery.findMany({
             where: { playerId },
             include: {
@@ -62,7 +82,7 @@ export class PlayerDiscoveryService {
         });
     }
 
-    async findByStatus(status: string) {
+    async findByStatus(status: DiscoveryStatus): Promise<PlayerDiscovery[]> {
         return this.prisma.playerDiscovery.findMany({
             where: { status },
             include: {
@@ -72,7 +92,7 @@ export class PlayerDiscoveryService {
         });
     }
 
-    async update(id: number, updatePlayerDiscoveryDto: UpdatePlayerDiscoveryDto) {
+    async update(id: number, updatePlayerDiscoveryDto: UpdatePlayerDiscoveryDto): Promise<PlayerDiscovery> {
         try {
             return await this.prisma.playerDiscovery.update({
                 where: { id },
@@ -87,7 +107,7 @@ export class PlayerDiscoveryService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<PlayerDiscovery> {
         try {
             return await this.prisma.playerDiscovery.delete({
                 where: { id },

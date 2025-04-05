@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { EngagementMetrics } from '@prisma/client';
+import { EngagementMetrics, ContentType } from '@prisma/client';
 
 @Injectable()
 export class EngagementMetricsService extends BaseService<EngagementMetrics> {
@@ -30,7 +30,7 @@ export class EngagementMetricsService extends BaseService<EngagementMetrics> {
         return metrics;
     }
 
-    async getContentMetrics(contentId: number) {
+    async getContentMetrics(contentId: number): Promise<EngagementMetrics[]> {
         const metrics = await this.prisma.engagementMetrics.findMany({
             where: { contentId },
             include: this.getIncludeFields(),
@@ -41,7 +41,7 @@ export class EngagementMetricsService extends BaseService<EngagementMetrics> {
         return metrics;
     }
 
-    async getMetricsByType(contentType: string) {
+    async getMetricsByType(contentType: ContentType): Promise<EngagementMetrics[]> {
         const metrics = await this.prisma.engagementMetrics.findMany({
             where: { contentType },
             include: this.getIncludeFields(),
@@ -52,7 +52,7 @@ export class EngagementMetricsService extends BaseService<EngagementMetrics> {
         return metrics;
     }
 
-    async getMetricsByDateRange(startDate: Date, endDate: Date) {
+    async getMetricsByDateRange(startDate: Date, endDate: Date): Promise<EngagementMetrics[]> {
         const metrics = await this.prisma.engagementMetrics.findMany({
             where: {
                 createdAt: {
@@ -68,10 +68,10 @@ export class EngagementMetricsService extends BaseService<EngagementMetrics> {
         return metrics;
     }
 
-    async getMetricsAnalytics(contentId: number) {
+    async getMetricsAnalytics(contentId: number): Promise<any> {
         const metrics = await this.prisma.engagementMetrics.findMany({
             where: { contentId },
-            include: this.getIncludeFields(),
+
         });
 
         const analytics = {

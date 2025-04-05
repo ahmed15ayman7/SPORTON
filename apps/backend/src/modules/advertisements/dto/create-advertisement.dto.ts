@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional, IsEnum, IsDate, IsFloat } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional, IsEnum, IsDate, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Sport, Role, AdStatus, AgeRange } from '@prisma/client';
 
@@ -51,7 +51,7 @@ export class CreateAdvertisementDto {
     targetRoles: Role[];
 
     @ApiProperty({ description: 'الميزانية' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     budget: number;
 
@@ -77,7 +77,7 @@ export class CreateAdvertisementDto {
     keywords: string[];
 
     @ApiProperty({ description: 'الحد الأقصى للميزانية اليومية' })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     maxBudgetPerDay?: number;
 } 

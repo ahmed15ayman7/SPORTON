@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateNotificationSettingsDto } from './dto/create-notification-settings.dto';
 import { UpdateNotificationSettingsDto } from './dto/update-notification-settings.dto';
-
+import { NotificationSettings } from '@prisma/client';
 @Injectable()
 export class NotificationSettingsService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createNotificationSettingsDto: CreateNotificationSettingsDto) {
+    async create(createNotificationSettingsDto: CreateNotificationSettingsDto): Promise<NotificationSettings> {
         return this.prisma.notificationSettings.create({
             data: {
                 user: { connect: { id: createNotificationSettingsDto.userId } },
@@ -30,7 +30,7 @@ export class NotificationSettingsService {
         });
     }
 
-    async findAll() {
+    async findAll(): Promise<NotificationSettings[]> {
         return this.prisma.notificationSettings.findMany({
             include: {
                 user: true,
@@ -38,7 +38,7 @@ export class NotificationSettingsService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<NotificationSettings> {
         const settings = await this.prisma.notificationSettings.findUnique({
             where: { id },
             include: {
@@ -53,7 +53,7 @@ export class NotificationSettingsService {
         return settings;
     }
 
-    async findByUser(userId: number) {
+    async findByUser(userId: number): Promise<NotificationSettings> {
         const settings = await this.prisma.notificationSettings.findUnique({
             where: { userId },
             include: {
@@ -68,7 +68,7 @@ export class NotificationSettingsService {
         return settings;
     }
 
-    async update(id: number, updateNotificationSettingsDto: UpdateNotificationSettingsDto) {
+    async update(id: number, updateNotificationSettingsDto: UpdateNotificationSettingsDto): Promise<NotificationSettings> {
         try {
             return await this.prisma.notificationSettings.update({
                 where: { id },
@@ -82,7 +82,7 @@ export class NotificationSettingsService {
         }
     }
 
-    async updateByUser(userId: number, updateNotificationSettingsDto: UpdateNotificationSettingsDto) {
+    async updateByUser(userId: number, updateNotificationSettingsDto: UpdateNotificationSettingsDto): Promise<NotificationSettings> {
         try {
             return await this.prisma.notificationSettings.update({
                 where: { userId },
@@ -96,7 +96,7 @@ export class NotificationSettingsService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<NotificationSettings> {
         try {
             return await this.prisma.notificationSettings.delete({
                 where: { id },

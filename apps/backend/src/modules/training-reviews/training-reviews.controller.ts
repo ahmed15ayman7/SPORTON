@@ -13,7 +13,8 @@ import { TrainingReviewsService } from './training-reviews.service';
 import { CreateTrainingReviewDto } from './dto/create-training-review.dto';
 import { UpdateTrainingReviewDto } from './dto/update-training-review.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-
+import { TrainingReview } from '@prisma/client';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('مراجعات التدريب')
 @Controller('training-reviews')
 export class TrainingReviewsController {
@@ -22,49 +23,49 @@ export class TrainingReviewsController {
     @Post()
     @ApiOperation({ summary: 'إضافة مراجعة جديدة للتدريب' })
     @ApiResponse({ status: 201, description: 'تم إضافة المراجعة بنجاح' })
-    create(@Body() createTrainingReviewDto: CreateTrainingReviewDto) {
+    create(@Body() createTrainingReviewDto: CreateTrainingReviewDto): Promise<TrainingReview> {
         return this.trainingReviewsService.create(createTrainingReviewDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع مراجعات التدريب' })
     @ApiResponse({ status: 200, description: 'تم استرجاع المراجعات بنجاح' })
-    findAll(@Query() query: PaginationDto) {
+    findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<TrainingReview>> {
         return this.trainingReviewsService.findAll(query);
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'الحصول على تفاصيل مراجعة محددة' })
     @ApiResponse({ status: 200, description: 'تم استرجاع تفاصيل المراجعة بنجاح' })
-    getTrainingReviewProfile(@Param('id') id: string) {
+    getTrainingReviewProfile(@Param('id') id: string): Promise<TrainingReview> {
         return this.trainingReviewsService.getTrainingReviewProfile(+id);
     }
 
     @Get('training/:trainingId')
     @ApiOperation({ summary: 'الحصول على مراجعات تدريب محدد' })
     @ApiResponse({ status: 200, description: 'تم استرجاع المراجعات بنجاح' })
-    getTrainingReviews(@Param('trainingId') trainingId: string) {
+    getTrainingReviews(@Param('trainingId') trainingId: string): Promise<TrainingReview[]> {
         return this.trainingReviewsService.getTrainingReviews(+trainingId);
     }
 
     @Get('user/:reviewerId')
     @ApiOperation({ summary: 'الحصول على مراجعات مستخدم محدد' })
     @ApiResponse({ status: 200, description: 'تم استرجاع المراجعات بنجاح' })
-    getUserReviews(@Param('reviewerId') reviewerId: string) {
+    getUserReviews(@Param('reviewerId') reviewerId: string): Promise<TrainingReview[]> {
         return this.trainingReviewsService.getUserReviews(+reviewerId);
     }
 
     @Get('training/:trainingId/average')
     @ApiOperation({ summary: 'الحصول على متوسط تقييم تدريب محدد' })
     @ApiResponse({ status: 200, description: 'تم استرجاع متوسط التقييم بنجاح' })
-    getAverageRating(@Param('trainingId') trainingId: string) {
+    getAverageRating(@Param('trainingId') trainingId: string): Promise<number> {
         return this.trainingReviewsService.getAverageRating(+trainingId);
     }
 
     @Get('training/:trainingId/distribution')
     @ApiOperation({ summary: 'الحصول على توزيع تقييمات تدريب محدد' })
     @ApiResponse({ status: 200, description: 'تم استرجاع توزيع التقييمات بنجاح' })
-    getRatingDistribution(@Param('trainingId') trainingId: string) {
+    getRatingDistribution(@Param('trainingId') trainingId: string): Promise<{ rating: number; count: number }[]> {
         return this.trainingReviewsService.getRatingDistribution(+trainingId);
     }
 

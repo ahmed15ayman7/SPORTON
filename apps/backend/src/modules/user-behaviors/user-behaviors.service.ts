@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UserBehavior } from '@prisma/client';
+import { UserBehavior, InteractionType, ContentType } from '@prisma/client';
 
 @Injectable()
 export class UserBehaviorsService extends BaseService<UserBehavior> {
@@ -30,7 +30,7 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behavior;
     }
 
-    async getUserBehaviors(userId: number) {
+    async getUserBehaviors(userId: number): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: { userId },
             include: this.getIncludeFields(),
@@ -41,9 +41,9 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getBehaviorsByType(interactionType: string) {
+    async getBehaviorsByType(interactionType: string): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
-            where: { interactionType },
+            where: { interactionType: interactionType as InteractionType },
             include: this.getIncludeFields(),
             orderBy: {
                 timestamp: 'desc',
@@ -52,9 +52,9 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getBehaviorsByContentType(contentType: string) {
+    async getBehaviorsByContentType(contentType: string): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
-            where: { contentType },
+            where: { contentType: contentType as ContentType },
             include: this.getIncludeFields(),
             orderBy: {
                 timestamp: 'desc',
@@ -63,7 +63,7 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getBehaviorsByDateRange(startDate: Date, endDate: Date) {
+    async getBehaviorsByDateRange(startDate: Date, endDate: Date): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: {
                 timestamp: {
@@ -79,7 +79,7 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getBehaviorsByDayOfWeek(dayOfWeek: number) {
+    async getBehaviorsByDayOfWeek(dayOfWeek: number): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: { dayOfWeek },
             include: this.getIncludeFields(),
@@ -90,7 +90,7 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getPositiveBehaviors(userId: number) {
+    async getPositiveBehaviors(userId: number): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: {
                 userId,
@@ -104,7 +104,7 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getNegativeBehaviors(userId: number) {
+    async getNegativeBehaviors(userId: number): Promise<UserBehavior[]> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: {
                 userId,
@@ -118,7 +118,17 @@ export class UserBehaviorsService extends BaseService<UserBehavior> {
         return behaviors;
     }
 
-    async getUserBehaviorAnalytics(userId: number) {
+    async getUserBehaviorAnalytics(userId: number): Promise<{
+        totalInteractions: number;
+        averageTimeSpent: number;
+        averageScore: number;
+        averageSessionDuration: number;
+        positiveInteractions: number;
+        negativeInteractions: number;
+        interactionTypes: {};
+        contentTypes: {};
+        dayOfWeekDistribution: {};
+    }> {
         const behaviors = await this.prisma.userBehavior.findMany({
             where: { userId },
             include: this.getIncludeFields(),

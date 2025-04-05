@@ -2,24 +2,26 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateInjuryDto } from './dto/create-injury.dto';
 import { UpdateInjuryDto } from './dto/update-injury.dto';
-import { InjuryStatus } from './dto/create-injury.dto';
-
+import { InjuryStatus, Injury, InjurySeverity } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
 export class InjuryService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createInjuryDto: CreateInjuryDto) {
+    async create(createInjuryDto: CreateInjuryDto): Promise<Injury> {
         return this.prisma.injury.create({
             data: {
                 playerId: createInjuryDto.playerId,
                 type: createInjuryDto.type,
                 description: createInjuryDto.description,
-                injuryDate: createInjuryDto.injuryDate,
-                expectedRecoveryDate: createInjuryDto.expectedRecoveryDate,
-                severity: createInjuryDto.severity,
+                startDate: createInjuryDto.startDate ? new Date(createInjuryDto.startDate) : new Date(),
+                endDate: createInjuryDto.endDate ? new Date(createInjuryDto.endDate) : null,
+                severity: createInjuryDto.severity as InjurySeverity,
                 status: createInjuryDto.status,
                 treatment: createInjuryDto.treatment,
-                notes: createInjuryDto.notes
+                medicalReport: createInjuryDto.medicalReport,
+                doctor: createInjuryDto.doctor,
             },
             include: {
                 player: true
@@ -27,15 +29,20 @@ export class InjuryService {
         });
     }
 
-    async findAll() {
-        return this.prisma.injury.findMany({
+    async findAll(paginationDto: PaginationDto): Promise<PaginatedResponse<Injury>> {
+        const { skip, take } = paginationDto;
+        const total = await this.prisma.injury.count();
+        const injuries = await this.prisma.injury.findMany({
+            skip,
+            take,
             include: {
                 player: true
             }
         });
+        return { data: injuries, meta: { total, skip: skip || 0, take: take || 10, hasMore: (skip || 0) + (take || 10) < total } };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<Injury> {
         const injury = await this.prisma.injury.findUnique({
             where: { id },
             include: {
@@ -50,7 +57,7 @@ export class InjuryService {
         return injury;
     }
 
-    async findByPlayer(playerId: number) {
+    async findByPlayer(playerId: number): Promise<Injury[]> {
         return this.prisma.injury.findMany({
             where: { playerId },
             include: {
@@ -59,7 +66,7 @@ export class InjuryService {
         });
     }
 
-    async findByStatus(status: InjuryStatus) {
+    async findByStatus(status: InjuryStatus): Promise<Injury[]> {
         return this.prisma.injury.findMany({
             where: { status },
             include: {
@@ -68,19 +75,18 @@ export class InjuryService {
         });
     }
 
-    async update(id: number, updateInjuryDto: UpdateInjuryDto) {
+    async update(id: number, updateInjuryDto: UpdateInjuryDto): Promise<Injury> {
         try {
             return await this.prisma.injury.update({
                 where: { id },
                 data: {
                     type: updateInjuryDto.type,
                     description: updateInjuryDto.description,
-                    injuryDate: updateInjuryDto.injuryDate,
-                    expectedRecoveryDate: updateInjuryDto.expectedRecoveryDate,
-                    severity: updateInjuryDto.severity,
+                    startDate: updateInjuryDto.startDate ? new Date(updateInjuryDto.startDate) : new Date(),
+                    endDate: updateInjuryDto.endDate ? new Date(updateInjuryDto.endDate) : null,
+                    severity: updateInjuryDto.severity as InjurySeverity,
                     status: updateInjuryDto.status,
                     treatment: updateInjuryDto.treatment,
-                    notes: updateInjuryDto.notes
                 },
                 include: {
                     player: true
@@ -91,7 +97,7 @@ export class InjuryService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<Injury> {
         try {
             return await this.prisma.injury.delete({
                 where: { id }
@@ -101,7 +107,7 @@ export class InjuryService {
         }
     }
 
-    async updateStatus(id: number, status: InjuryStatus) {
+    async updateStatus(id: number, status: InjuryStatus): Promise<Injury> {
         try {
             return await this.prisma.injury.update({
                 where: { id },

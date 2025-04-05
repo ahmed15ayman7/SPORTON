@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CoachingHistoryService } from './coaching-history.service';
 import { CreateCoachingHistoryDto } from './dto/create-coaching-history.dto';
 import { UpdateCoachingHistoryDto } from './dto/update-coaching-history.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('سجلات التدريب')
 @Controller('coaching-history')
@@ -19,8 +20,8 @@ export class CoachingHistoryController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع سجلات التدريب' })
     @ApiResponse({ status: 200, description: 'تم جلب سجلات التدريب بنجاح' })
-    findAll() {
-        return this.coachingHistoryService.findAll();
+    findAll(@Query() params: PaginationDto) {
+        return this.coachingHistoryService.findAll(params);
     }
 
     @Get(':id')

@@ -2,14 +2,14 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { PostsService } from './posts.service';
-import { Post } from '@prisma/client';
+import { Post as PostModel } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 @ApiTags('posts')
 @Controller('posts')
-export class PostsController extends BaseController<Post> {
+export class PostsController extends BaseController<PostModel> {
     constructor(private readonly postsService: PostsService) {
         super(postsService);
     }
@@ -50,15 +50,4 @@ export class PostsController extends BaseController<Post> {
         return this.postsService.create(createPostDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a post' })
-    @ApiResponse({ status: 200, description: 'The post has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updatePostDto: UpdatePostDto,
-    ) {
-        return this.postsService.update(id, updatePostDto);
-    }
 } 

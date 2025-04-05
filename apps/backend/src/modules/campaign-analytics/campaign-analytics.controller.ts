@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CampaignAnalyticsService } from './campaign-analytics.service';
 import { CreateCampaignAnalyticsDto } from './dto/create-campaign-analytics.dto';
 import { UpdateCampaignAnalyticsDto } from './dto/update-campaign-analytics.dto';
-
+import { CampaignAnalytics } from '@prisma/client';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('تحليلات الحملات')
 @Controller('campaign-analytics')
 export class CampaignAnalyticsController {
@@ -19,7 +21,7 @@ export class CampaignAnalyticsController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع تحليلات الحملات' })
     @ApiResponse({ status: 200, description: 'تم جلب تحليلات الحملات بنجاح' })
-    findAll(@Query('search') search?: string) {
+    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<CampaignAnalytics>> {
         return this.campaignAnalyticsService.findAll(search);
     }
 

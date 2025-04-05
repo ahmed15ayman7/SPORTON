@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PrizesService } from './prizes.service';
-import { CreatePrizeDto } from './dto/create-prize.dto';
-import { UpdatePrizeDto } from './dto/update-prize.dto';
+
 import { PaginationDto } from '../../common/dto/pagination.dto';
+import { Prize } from '@prisma/client';
 
 @ApiTags('الجوائز')
 @Controller('prizes')
@@ -22,7 +22,7 @@ export class PrizesController {
     @Post()
     @ApiOperation({ summary: 'إضافة جائزة جديدة' })
     @ApiResponse({ status: 201, description: 'تم إضافة الجائزة بنجاح' })
-    create(@Body() createPrizeDto: CreatePrizeDto) {
+    create(@Body() createPrizeDto: Prize) {
         return this.prizesService.create(createPrizeDto);
     }
 
@@ -67,7 +67,7 @@ export class PrizesController {
     @Patch(':id')
     @ApiOperation({ summary: 'تحديث جائزة محددة' })
     @ApiResponse({ status: 200, description: 'تم تحديث الجائزة بنجاح' })
-    update(@Param('id') id: string, @Body() updatePrizeDto: UpdatePrizeDto) {
+    update(@Param('id') id: string, @Body() updatePrizeDto: Prize) {
         return this.prizesService.update(+id, updatePrizeDto);
     }
 

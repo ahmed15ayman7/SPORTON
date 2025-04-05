@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('التقييمات')
 @Controller('reviews')
@@ -19,8 +20,8 @@ export class ReviewController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع التقييمات' })
     @ApiResponse({ status: 200, description: 'تم جلب التقييمات بنجاح' })
-    findAll() {
-        return this.reviewService.findAll();
+    findAll(@Query() params: PaginationDto) {
+        return this.reviewService.findAll(params);
     }
 
     @Get(':id')

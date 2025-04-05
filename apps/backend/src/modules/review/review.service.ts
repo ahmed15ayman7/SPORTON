@@ -2,12 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-
+import { ProductReview } from '@prisma/client';
+import { BaseService } from '@/common/services/base.service';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { Prisma } from '@prisma/client';
 @Injectable()
-export class ReviewService {
-    constructor(private prisma: PrismaService) { }
+export class ReviewService extends BaseService<ProductReview> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'productReview');
+    }
 
-    async create(createReviewDto: CreateReviewDto) {
+    async create(createReviewDto: CreateReviewDto): Promise<ProductReview> {
         return this.prisma.productReview.create({
             data: {
                 product: { connect: { id: createReviewDto.productId } },
@@ -23,16 +29,30 @@ export class ReviewService {
         });
     }
 
-    async findAll() {
-        return this.prisma.productReview.findMany({
-            include: {
-                product: true,
-                user: true,
-            },
-        });
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<ProductReview>> {
+        const { take, skip, search } = params;
+        const where: Prisma.ProductReviewWhereInput = search ? {
+            OR: [
+                { comment: { contains: search, mode: 'insensitive' } },
+                { user: { name: { contains: search, mode: 'insensitive' } } },
+            ],
+        } : {};
+        const [data, total] = await this.prisma.$transaction([
+            this.prisma.productReview.findMany({
+                where,
+                include: {
+                    product: true,
+                    user: true,
+                },
+                skip,
+                take,
+            }),
+            this.prisma.productReview.count({ where }),
+        ]);
+        return { data, meta: { total, skip: skip || 0, take: take || 10, hasMore: (skip || 0) + (take || 10) < total } };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<ProductReview> {
         const review = await this.prisma.productReview.findUnique({
             where: { id },
             include: {
@@ -48,7 +68,7 @@ export class ReviewService {
         return review;
     }
 
-    async findByProduct(productId: number) {
+    async findByProduct(productId: number): Promise<ProductReview[]> {
         return this.prisma.productReview.findMany({
             where: { productId },
             include: {
@@ -58,7 +78,7 @@ export class ReviewService {
         });
     }
 
-    async findByUser(userId: number) {
+    async findByUser(userId: number): Promise<ProductReview[]> {
         return this.prisma.productReview.findMany({
             where: { userId },
             include: {
@@ -68,7 +88,7 @@ export class ReviewService {
         });
     }
 
-    async update(id: number, updateReviewDto: UpdateReviewDto) {
+    async update(id: number, updateReviewDto: UpdateReviewDto): Promise<ProductReview> {
         try {
             return await this.prisma.productReview.update({
                 where: { id },
@@ -83,7 +103,7 @@ export class ReviewService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<ProductReview> {
         try {
             return await this.prisma.productReview.delete({
                 where: { id },

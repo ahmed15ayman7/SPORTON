@@ -1,13 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateStreamingInfoDto } from './dto/create-streaming-info.dto';
+import { StreamingInfo } from '@prisma/client';
+import { BaseService } from '../../common/services/base.service';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 import { UpdateStreamingInfoDto } from './dto/update-streaming-info.dto';
 
 @Injectable()
-export class StreamingInfoService {
-    constructor(private prisma: PrismaService) { }
+export class StreamingInfoService extends BaseService<StreamingInfo> {
+    constructor(prisma: PrismaService) {
+        super(prisma, 'streamingInfo');
+    }
 
-    async create(createStreamingInfoDto: CreateStreamingInfoDto) {
+    async create(createStreamingInfoDto: StreamingInfo): Promise<StreamingInfo> {
         return this.prisma.streamingInfo.create({
             data: {
                 eventId: createStreamingInfoDto.eventId,
@@ -23,15 +28,29 @@ export class StreamingInfoService {
         });
     }
 
-    async findAll() {
-        return this.prisma.streamingInfo.findMany({
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<StreamingInfo>> {
+        const { take, skip, search } = params;
+
+        const streamingInfos = await this.prisma.streamingInfo.findMany({
+            skip,
+            take,
             include: {
                 event: true
             }
         });
+
+        return {
+            data: streamingInfos,
+            meta: {
+                total: streamingInfos.length,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: (skip || 0) + (take || 10) < streamingInfos.length
+            }
+        };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<StreamingInfo> {
         const streamingInfo = await this.prisma.streamingInfo.findUnique({
             where: { id },
             include: {
@@ -46,8 +65,8 @@ export class StreamingInfoService {
         return streamingInfo;
     }
 
-    async findByEvent(eventId: number) {
-        return this.prisma.streamingInfo.findUnique({
+    async findByEvent(eventId: number): Promise<StreamingInfo[]> {
+        return this.prisma.streamingInfo.findMany({
             where: { eventId },
             include: {
                 event: true
@@ -55,7 +74,7 @@ export class StreamingInfoService {
         });
     }
 
-    async update(id: number, updateStreamingInfoDto: UpdateStreamingInfoDto) {
+    async update(id: number, updateStreamingInfoDto: UpdateStreamingInfoDto): Promise<StreamingInfo> {
         try {
             return await this.prisma.streamingInfo.update({
                 where: { id },
@@ -75,7 +94,7 @@ export class StreamingInfoService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<StreamingInfo> {
         try {
             return await this.prisma.streamingInfo.delete({
                 where: { id }
@@ -85,7 +104,7 @@ export class StreamingInfoService {
         }
     }
 
-    async toggleLive(id: number) {
+    async toggleLive(id: number): Promise<StreamingInfo> {
         try {
             const streamingInfo = await this.prisma.streamingInfo.findUnique({
                 where: { id }

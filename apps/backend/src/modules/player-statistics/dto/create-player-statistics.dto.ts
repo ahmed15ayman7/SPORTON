@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsOptional, IsFloat } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class CreatePlayerStatisticsDto {
     @ApiProperty({ description: 'معرف اللاعب' })
@@ -31,12 +31,12 @@ export class CreatePlayerStatisticsDto {
     minutesPlayed: number;
 
     @ApiProperty({ description: 'دقة التمريرات', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     passAccuracy?: number;
 
     @ApiProperty({ description: 'دقة التسديد', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     shotAccuracy?: number;
 

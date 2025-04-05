@@ -52,7 +52,7 @@ export class BaseController<T> {
     @ApiResponse({ status: 200, description: 'The record has been successfully updated.' })
     async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() data: any,
+        @Body() data: T,
     ): Promise<T> {
         return this.baseService.update(id, data);
     }

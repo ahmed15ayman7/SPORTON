@@ -114,25 +114,25 @@ export class CoachesService extends BaseService<Coach> {
         const coach = await this.prisma.coach.findUnique({
             where: { id },
             include: {
-                performanceReports: true,
+                PerformanceReport: true,
             },
         });
         if (!coach) {
             throw new NotFoundException('المدرب غير موجود');
         }
-        return coach.performanceReports;
+        return coach.PerformanceReport;
     }
 
     async getCoachProfessionalAchievements(id: number): Promise<any[]> {
         const coach = await this.prisma.coach.findUnique({
             where: { id },
             include: {
-                professionalAchievements: true,
+                achievements: true,
             },
         });
         if (!coach) {
             throw new NotFoundException('المدرب غير موجود');
         }
-        return coach.professionalAchievements;
+        return coach.achievements;
     }
 } 

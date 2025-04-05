@@ -66,10 +66,7 @@ export class RoomsService extends BaseService<Room> {
             data: {
                 users: {
                     delete: {
-                        roomId_userId: {
-                            roomId: roomId,
-                            userId: userId,
-                        },
+                        id: userId,
                     },
                 },
             },

@@ -19,7 +19,7 @@ export class TrainingsController extends BaseController<Training> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get training profile with all relations' })
     @ApiResponse({ status: 200, description: 'Return training profile.' })
-    async getTrainingProfile(@Param('id', ParseIntPipe) id: number) {
+    async getTrainingProfile(@Param('id', ParseIntPipe) id: number): Promise<Training> {
         return this.trainingsService.getTrainingProfile(id);
     }
 
@@ -28,7 +28,7 @@ export class TrainingsController extends BaseController<Training> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get coach trainings' })
     @ApiResponse({ status: 200, description: 'Return coach trainings.' })
-    async getCoachTrainings(@Param('coachId', ParseIntPipe) coachId: number) {
+    async getCoachTrainings(@Param('coachId', ParseIntPipe) coachId: number): Promise<Training[]> {
         return this.trainingsService.getCoachTrainings(coachId);
     }
 
@@ -37,7 +37,7 @@ export class TrainingsController extends BaseController<Training> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get player trainings' })
     @ApiResponse({ status: 200, description: 'Return player trainings.' })
-    async getPlayerTrainings(@Param('playerId', ParseIntPipe) playerId: number) {
+    async getPlayerTrainings(@Param('playerId', ParseIntPipe) playerId: number): Promise<Training[]> {
         return this.trainingsService.getPlayerTrainings(playerId);
     }
 
@@ -49,7 +49,7 @@ export class TrainingsController extends BaseController<Training> {
     async addPlayerToTraining(
         @Param('trainingId', ParseIntPipe) trainingId: number,
         @Param('playerId', ParseIntPipe) playerId: number,
-    ) {
+    ): Promise<Training> {
         return this.trainingsService.addPlayerToTraining(trainingId, playerId);
     }
 
@@ -61,7 +61,7 @@ export class TrainingsController extends BaseController<Training> {
     async removePlayerFromTraining(
         @Param('trainingId', ParseIntPipe) trainingId: number,
         @Param('playerId', ParseIntPipe) playerId: number,
-    ) {
+    ): Promise<Training> {
         return this.trainingsService.removePlayerFromTraining(trainingId, playerId);
     }
 
@@ -82,19 +82,7 @@ export class TrainingsController extends BaseController<Training> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new training' })
     @ApiResponse({ status: 201, description: 'The training has been successfully created.' })
-    async create(@Body() createTrainingDto: CreateTrainingDto) {
+    async create(@Body() createTrainingDto: CreateTrainingDto): Promise<Training> {
         return this.trainingsService.create(createTrainingDto);
-    }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a training' })
-    @ApiResponse({ status: 200, description: 'The training has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateTrainingDto: UpdateTrainingDto,
-    ) {
-        return this.trainingsService.update(id, updateTrainingDto);
     }
 } 

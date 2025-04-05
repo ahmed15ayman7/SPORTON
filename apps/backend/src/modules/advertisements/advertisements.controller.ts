@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdvertisementsService } from './advertisements.service';
 import { CreateAdvertisementDto } from './dto/create-advertisement.dto';
 import { UpdateAdvertisementDto } from './dto/update-advertisement.dto';
-
+import { Advertisement } from '@prisma/client';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('الإعلانات')
 @Controller('advertisements')
 export class AdvertisementsController {
@@ -12,77 +14,77 @@ export class AdvertisementsController {
     @Post()
     @ApiOperation({ summary: 'إنشاء إعلان جديد' })
     @ApiResponse({ status: 201, description: 'تم إنشاء الإعلان بنجاح' })
-    create(@Body() createAdvertisementDto: CreateAdvertisementDto) {
+    async create(@Body() createAdvertisementDto: CreateAdvertisementDto): Promise<Advertisement> {
         return this.advertisementsService.create(createAdvertisementDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع الإعلانات' })
     @ApiResponse({ status: 200, description: 'تم جلب الإعلانات بنجاح' })
-    findAll(@Query('search') search?: string) {
+    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<Advertisement>> {
         return this.advertisementsService.findAll(search);
     }
 
     @Get('profile/:id')
     @ApiOperation({ summary: 'الحصول على تفاصيل الإعلان' })
     @ApiResponse({ status: 200, description: 'تم جلب تفاصيل الإعلان بنجاح' })
-    getAdvertisementProfile(@Param('id') id: string) {
+    async getAdvertisementProfile(@Param('id') id: string): Promise<Advertisement> {
         return this.advertisementsService.getAdvertisementProfile(+id);
     }
 
     @Get('sponsor/:sponsorId')
     @ApiOperation({ summary: 'الحصول على إعلانات المعلن' })
     @ApiResponse({ status: 200, description: 'تم جلب إعلانات المعلن بنجاح' })
-    getSponsorAdvertisements(@Param('sponsorId') sponsorId: string) {
+    async getSponsorAdvertisements(@Param('sponsorId') sponsorId: string): Promise<Advertisement[]> {
         return this.advertisementsService.getSponsorAdvertisements(+sponsorId);
     }
 
     @Get('active')
     @ApiOperation({ summary: 'الحصول على الإعلانات النشطة' })
     @ApiResponse({ status: 200, description: 'تم جلب الإعلانات النشطة بنجاح' })
-    getActiveAdvertisements() {
+    async getActiveAdvertisements(): Promise<Advertisement[]> {
         return this.advertisementsService.getActiveAdvertisements();
     }
 
     @Get('sport/:sport')
     @ApiOperation({ summary: 'الحصول على إعلانات رياضة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب إعلانات الرياضة بنجاح' })
-    getAdvertisementsBySport(@Param('sport') sport: string) {
+    async getAdvertisementsBySport(@Param('sport') sport: string): Promise<Advertisement[]> {
         return this.advertisementsService.getAdvertisementsBySport(sport);
     }
 
     @Get('role/:role')
     @ApiOperation({ summary: 'الحصول على إعلانات دور معين' })
     @ApiResponse({ status: 200, description: 'تم جلب إعلانات الدور بنجاح' })
-    getAdvertisementsByRole(@Param('role') role: string) {
+    async getAdvertisementsByRole(@Param('role') role: string): Promise<Advertisement[]> {
         return this.advertisementsService.getAdvertisementsByRole(role);
     }
 
     @Post(':id/click')
     @ApiOperation({ summary: 'زيادة عدد النقرات' })
     @ApiResponse({ status: 200, description: 'تم زيادة عدد النقرات بنجاح' })
-    incrementClicks(@Param('id') id: string) {
+    async incrementClicks(@Param('id') id: string): Promise<Advertisement> {
         return this.advertisementsService.incrementClicks(+id);
     }
 
     @Post(':id/impression')
     @ApiOperation({ summary: 'زيادة عدد المشاهدات' })
     @ApiResponse({ status: 200, description: 'تم زيادة عدد المشاهدات بنجاح' })
-    incrementImpressions(@Param('id') id: string) {
+    async incrementImpressions(@Param('id') id: string): Promise<Advertisement> {
         return this.advertisementsService.incrementImpressions(+id);
     }
 
     @Patch(':id')
     @ApiOperation({ summary: 'تحديث الإعلان' })
     @ApiResponse({ status: 200, description: 'تم تحديث الإعلان بنجاح' })
-    update(@Param('id') id: string, @Body() updateAdvertisementDto: UpdateAdvertisementDto) {
+    async update(@Param('id') id: string, @Body() updateAdvertisementDto: UpdateAdvertisementDto): Promise<Advertisement> {
         return this.advertisementsService.update(+id, updateAdvertisementDto);
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'حذف الإعلان' })
     @ApiResponse({ status: 200, description: 'تم حذف الإعلان بنجاح' })
-    remove(@Param('id') id: string) {
+    async remove(@Param('id') id: string): Promise<Advertisement> {
         return this.advertisementsService.remove(+id);
     }
 } 

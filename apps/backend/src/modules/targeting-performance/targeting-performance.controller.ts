@@ -3,6 +3,8 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TargetingPerformanceService } from './targeting-performance.service';
 import { CreateTargetingPerformanceDto } from './dto/create-targeting-performance.dto';
 import { UpdateTargetingPerformanceDto } from './dto/update-targeting-performance.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+
 
 @ApiTags('أداء الاستهداف')
 @Controller('targeting-performance')
@@ -19,8 +21,8 @@ export class TargetingPerformanceController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع أداء الاستهداف' })
     @ApiResponse({ status: 200, description: 'تم جلب أداء الاستهداف بنجاح' })
-    findAll(@Query('search') search?: string) {
-        return this.targetingPerformanceService.findAll(search);
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.targetingPerformanceService.findAll(paginationDto);
     }
 
     @Get(':id')

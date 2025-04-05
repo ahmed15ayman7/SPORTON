@@ -10,16 +10,17 @@ export class LicenseService {
     async create(createLicenseDto: CreateLicenseDto) {
         return this.prisma.license.create({
             data: {
-                userId: createLicenseDto.userId,
-                type: createLicenseDto.type,
-                number: createLicenseDto.number,
+                coachId: createLicenseDto.coachId,
+                name: createLicenseDto.name,
+                issuedBy: createLicenseDto.issuedBy,
                 issueDate: createLicenseDto.issueDate,
                 expiryDate: createLicenseDto.expiryDate,
-                issuingAuthority: createLicenseDto.issuingAuthority,
-                notes: createLicenseDto.notes
+                level: createLicenseDto.level,
+                certificate: createLicenseDto.certificate,
+                verified: createLicenseDto.verified
             },
             include: {
-                user: true
+                coach: true
             }
         });
     }
@@ -27,7 +28,7 @@ export class LicenseService {
     async findAll() {
         return this.prisma.license.findMany({
             include: {
-                user: true
+                coach: true
             }
         });
     }
@@ -36,7 +37,7 @@ export class LicenseService {
         const license = await this.prisma.license.findUnique({
             where: { id },
             include: {
-                user: true
+                coach: true
             }
         });
 
@@ -47,20 +48,20 @@ export class LicenseService {
         return license;
     }
 
-    async findByUser(userId: number) {
+    async findByCoach(coachId: number) {
         return this.prisma.license.findMany({
-            where: { userId },
+            where: { coachId },
             include: {
-                user: true
+                coach: true
             }
         });
     }
 
-    async findByType(type: string) {
+    async findByName(name: string) {
         return this.prisma.license.findMany({
-            where: { type },
+            where: { name },
             include: {
-                user: true
+                coach: true
             }
         });
     }
@@ -70,15 +71,16 @@ export class LicenseService {
             return await this.prisma.license.update({
                 where: { id },
                 data: {
-                    type: updateLicenseDto.type,
-                    number: updateLicenseDto.number,
+                    name: updateLicenseDto.name,
+                    issuedBy: updateLicenseDto.issuedBy,
                     issueDate: updateLicenseDto.issueDate,
                     expiryDate: updateLicenseDto.expiryDate,
-                    issuingAuthority: updateLicenseDto.issuingAuthority,
-                    notes: updateLicenseDto.notes
+                    level: updateLicenseDto.level,
+                    certificate: updateLicenseDto.certificate,
+                    verified: updateLicenseDto.verified
                 },
                 include: {
-                    user: true
+                    coach: true
                 }
             });
         } catch (error) {

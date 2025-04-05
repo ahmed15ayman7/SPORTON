@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PlayerStatisticsService } from './player-statistics.service';
 import { PlayerStatisticsController } from './player-statistics.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
     imports: [PrismaModule],

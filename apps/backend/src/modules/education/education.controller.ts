@@ -50,15 +50,4 @@ export class EducationController extends BaseController<Education> {
         return this.educationService.create(createEducationDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update an education' })
-    @ApiResponse({ status: 200, description: 'The education has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateEducationDto: UpdateEducationDto,
-    ) {
-        return this.educationService.update(id, updateEducationDto);
-    }
 } 

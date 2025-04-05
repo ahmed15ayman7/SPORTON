@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsOptional, IsFloat } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAthleteMetricsDto {
@@ -9,31 +9,31 @@ export class CreateAthleteMetricsDto {
 
     @ApiProperty({ description: 'الطول بالسنتيمتر', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     height?: number;
 
     @ApiProperty({ description: 'الوزن بالكيلوجرام', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     weight?: number;
 
     @ApiProperty({ description: 'السرعة (متر/ثانية)', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     speed?: number;
 
     @ApiProperty({ description: 'القوة (كيلوجرام)', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     strength?: number;
 
     @ApiProperty({ description: 'التحمل (دقيقة)', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     endurance?: number;
 
     @ApiProperty({ description: 'المرونة (درجة)', required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     flexibility?: number;
 } 

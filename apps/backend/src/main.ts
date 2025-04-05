@@ -2,18 +2,17 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as helmet from 'helmet';
-import * as cors from 'cors';
+
+import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   // Global pipes
   app.useGlobalPipes(new ValidationPipe());
 
   // Security
   app.use(helmet());
-  app.use(cors());
 
   // Swagger setup
   const config = new DocumentBuilder()

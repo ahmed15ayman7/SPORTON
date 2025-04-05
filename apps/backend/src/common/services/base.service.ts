@@ -84,6 +84,11 @@ export class BaseService<T> {
             where: { id },
         });
     }
+    async remove(id: number) {
+        return this.prisma[this.modelName].delete({
+            where: { id },
+        });
+    }
 
     protected getSearchFields(): string[] {
         return ['name', 'description']; // Default searchable fields

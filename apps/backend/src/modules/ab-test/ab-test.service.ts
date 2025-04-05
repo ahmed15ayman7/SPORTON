@@ -30,7 +30,7 @@ export class ABTestService extends BaseService<ABTest> {
         return test;
     }
 
-    async getTestVariants(id: number) {
+    async getTestVariants(id: number): Promise<any> {
         const test = await this.prisma.aBTest.findUnique({
             where: { id },
             include: {
@@ -43,7 +43,7 @@ export class ABTestService extends BaseService<ABTest> {
         return test.variants;
     }
 
-    async getTestMetrics(id: number) {
+    async getTestMetrics(id: number): Promise<any> {
         const test = await this.prisma.aBTest.findUnique({
             where: { id },
         });
@@ -53,7 +53,7 @@ export class ABTestService extends BaseService<ABTest> {
         return test.metrics;
     }
 
-    async getTestWinner(id: number) {
+    async getTestWinner(id: number): Promise<any> {
         const test = await this.prisma.aBTest.findUnique({
             where: { id },
             include: {

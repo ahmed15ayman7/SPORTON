@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateNotificationLogDto } from './dto/create-notification-log.dto';
 import { UpdateNotificationLogDto } from './dto/update-notification-log.dto';
-
+import { NotificationLog, DeliveryStatus, NotificationChannel } from '@prisma/client';
 @Injectable()
 export class NotificationLogService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createNotificationLogDto: CreateNotificationLogDto) {
+    async create(createNotificationLogDto: CreateNotificationLogDto): Promise<NotificationLog> {
         return this.prisma.notificationLog.create({
             data: {
                 notification: { connect: { id: createNotificationLogDto.notificationId } },
@@ -22,7 +22,7 @@ export class NotificationLogService {
         });
     }
 
-    async findAll() {
+    async findAll(): Promise<NotificationLog[]> {
         return this.prisma.notificationLog.findMany({
             include: {
                 notification: true,
@@ -30,7 +30,7 @@ export class NotificationLogService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<NotificationLog> {
         const log = await this.prisma.notificationLog.findUnique({
             where: { id },
             include: {
@@ -45,7 +45,7 @@ export class NotificationLogService {
         return log;
     }
 
-    async findByNotification(notificationId: number) {
+    async findByNotification(notificationId: number): Promise<NotificationLog[]> {
         return this.prisma.notificationLog.findMany({
             where: { notificationId },
             include: {
@@ -54,25 +54,25 @@ export class NotificationLogService {
         });
     }
 
-    async findByStatus(status: string) {
+    async findByStatus(status: string): Promise<NotificationLog[]> {
         return this.prisma.notificationLog.findMany({
-            where: { status },
+            where: { status: status as DeliveryStatus },
             include: {
                 notification: true,
             },
         });
     }
 
-    async findByChannel(channel: string) {
+    async findByChannel(channel: string): Promise<NotificationLog[]> {
         return this.prisma.notificationLog.findMany({
-            where: { channel },
+            where: { channel: channel as NotificationChannel },
             include: {
                 notification: true,
             },
         });
     }
 
-    async update(id: number, updateNotificationLogDto: UpdateNotificationLogDto) {
+    async update(id: number, updateNotificationLogDto: UpdateNotificationLogDto): Promise<NotificationLog> {
         try {
             return await this.prisma.notificationLog.update({
                 where: { id },
@@ -86,7 +86,7 @@ export class NotificationLogService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<NotificationLog> {
         try {
             return await this.prisma.notificationLog.delete({
                 where: { id },
@@ -96,7 +96,7 @@ export class NotificationLogService {
         }
     }
 
-    async incrementAttempts(id: number) {
+    async incrementAttempts(id: number): Promise<NotificationLog> {
         try {
             const log = await this.prisma.notificationLog.findUnique({
                 where: { id },

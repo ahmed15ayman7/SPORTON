@@ -19,7 +19,7 @@ export class BlockListsController extends BaseController<BlockList> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get block list profile with all relations' })
     @ApiResponse({ status: 200, description: 'Return block list profile.' })
-    async getBlockListProfile(@Param('id', ParseIntPipe) id: number) {
+    async getBlockListProfile(@Param('id', ParseIntPipe) id: number): Promise<BlockList> {
         return this.blockListsService.getBlockListProfile(id);
     }
 
@@ -28,7 +28,7 @@ export class BlockListsController extends BaseController<BlockList> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user block list' })
     @ApiResponse({ status: 200, description: 'Return user block list.' })
-    async getUserBlockList(@Param('userId', ParseIntPipe) userId: number) {
+    async getUserBlockList(@Param('userId', ParseIntPipe) userId: number): Promise<BlockList[]> {
         return this.blockListsService.getUserBlockList(userId);
     }
 
@@ -37,7 +37,7 @@ export class BlockListsController extends BaseController<BlockList> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get blocked users' })
     @ApiResponse({ status: 200, description: 'Return blocked users.' })
-    async getBlockedUsers(@Param('userId', ParseIntPipe) userId: number) {
+    async getBlockedUsers(@Param('userId', ParseIntPipe) userId: number): Promise<BlockList[]> {
         return this.blockListsService.getBlockedUsers(userId);
     }
 
@@ -46,7 +46,7 @@ export class BlockListsController extends BaseController<BlockList> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get blocked by users' })
     @ApiResponse({ status: 200, description: 'Return blocked by users.' })
-    async getBlockedByUsers(@Param('userId', ParseIntPipe) userId: number) {
+    async getBlockedByUsers(@Param('userId', ParseIntPipe) userId: number): Promise<BlockList[]> {
         return this.blockListsService.getBlockedByUsers(userId);
     }
 
@@ -55,7 +55,7 @@ export class BlockListsController extends BaseController<BlockList> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new block list entry' })
     @ApiResponse({ status: 201, description: 'The block list entry has been successfully created.' })
-    async create(@Body() createBlockListDto: CreateBlockListDto) {
+    async create(@Body() createBlockListDto: CreateBlockListDto): Promise<BlockList> {
         return this.blockListsService.create(createBlockListDto);
     }
 
@@ -67,7 +67,7 @@ export class BlockListsController extends BaseController<BlockList> {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateBlockListDto: UpdateBlockListDto,
-    ) {
+    ): Promise<BlockList> {
         return this.blockListsService.update(id, updateBlockListDto);
     }
 } 

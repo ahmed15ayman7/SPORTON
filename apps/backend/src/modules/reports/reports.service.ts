@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Report } from '@prisma/client';
+import { Report, ReportStatus, ReportType } from '@prisma/client';
 
 @Injectable()
 export class ReportsService extends BaseService<Report> {
@@ -31,7 +31,7 @@ export class ReportsService extends BaseService<Report> {
         return report;
     }
 
-    async getUserReports(userId: number) {
+    async getUserReports(userId: number): Promise<Report[]> {
         const reports = await this.prisma.report.findMany({
             where: { reporterId: userId },
             include: this.getIncludeFields(),
@@ -42,7 +42,7 @@ export class ReportsService extends BaseService<Report> {
         return reports;
     }
 
-    async getReportsAgainstUser(userId: number) {
+    async getReportsAgainstUser(userId: number): Promise<Report[]> {
         const reports = await this.prisma.report.findMany({
             where: { reportedId: userId },
             include: this.getIncludeFields(),
@@ -53,9 +53,9 @@ export class ReportsService extends BaseService<Report> {
         return reports;
     }
 
-    async getReportsByType(type: string) {
+    async getReportsByType(type: string): Promise<Report[]> {
         const reports = await this.prisma.report.findMany({
-            where: { type },
+            where: { type: type as ReportType },
             include: this.getIncludeFields(),
             orderBy: {
                 createdAt: 'desc',
@@ -64,9 +64,9 @@ export class ReportsService extends BaseService<Report> {
         return reports;
     }
 
-    async getReportsByStatus(status: string) {
+    async getReportsByStatus(status: string): Promise<Report[]> {
         const reports = await this.prisma.report.findMany({
-            where: { status },
+            where: { status: status as ReportStatus },
             include: this.getIncludeFields(),
             orderBy: {
                 createdAt: 'desc',
@@ -75,34 +75,34 @@ export class ReportsService extends BaseService<Report> {
         return reports;
     }
 
-    async updateReportStatus(id: number, status: string) {
+    async updateReportStatus(id: number, status: string): Promise<Report> {
         return this.prisma.report.update({
             where: { id },
-            data: { status },
+            data: { status: status as ReportStatus },
             include: this.getIncludeFields(),
         });
     }
 
-    async getReportStatistics() {
-        const reports = await this.prisma.report.findMany({
-            include: this.getIncludeFields(),
-        });
+    // async getReportStatistics(): Promise<ReportStatistics> {
+    //     const reports = await this.prisma.report.findMany({
+    //         include: this.getIncludeFields(),
+    //     });
 
-        const totalReports = reports.length;
-        const reportsByType = reports.reduce((acc, report) => {
-            acc[report.type] = (acc[report.type] || 0) + 1;
-            return acc;
-        }, {});
+    //     const totalReports = reports.length;
+    //     const reportsByType = reports.reduce((acc, report) => {
+    //         acc[report.type] = (acc[report.type] || 0) + 1;
+    //         return acc;
+    //     }, {});
 
-        const reportsByStatus = reports.reduce((acc, report) => {
-            acc[report.status] = (acc[report.status] || 0) + 1;
-            return acc;
-        }, {});
+    //     const reportsByStatus = reports.reduce((acc, report) => {
+    //         acc[report.status] = (acc[report.status] || 0) + 1;
+    //         return acc;
+    //     }, {});
 
-        return {
-            totalReports,
-            reportsByType,
-            reportsByStatus,
-        };
-    }
+    //     return {
+    //         totalReports,
+    //         reportsByType,
+    //         reportsByStatus,
+    //     };
+    // }
 } 

@@ -59,7 +59,7 @@ export class PrizesService extends BaseService<Prize> {
     async getCompetitionPrizes(competitionId: number) {
         const prizes = await this.prisma.prize.findMany({
             where: {
-                competitions: {
+                Competition: {
                     some: {
                         id: competitionId,
                     },

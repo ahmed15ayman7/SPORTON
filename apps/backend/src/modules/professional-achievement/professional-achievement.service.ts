@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProfessionalAchievementDto } from './dto/create-professional-achievement.dto';
 import { UpdateProfessionalAchievementDto } from './dto/update-professional-achievement.dto';
-
+import { ProfessionalAchievement } from '@prisma/client';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 @Injectable()
 export class ProfessionalAchievementService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createProfessionalAchievementDto: CreateProfessionalAchievementDto) {
+    async create(createProfessionalAchievementDto: CreateProfessionalAchievementDto): Promise<ProfessionalAchievement> {
         return this.prisma.professionalAchievement.create({
             data: {
                 user: { connect: { id: createProfessionalAchievementDto.userId } },
@@ -23,15 +25,20 @@ export class ProfessionalAchievementService {
         });
     }
 
-    async findAll() {
-        return this.prisma.professionalAchievement.findMany({
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<ProfessionalAchievement>> {
+        const { skip, take } = params;
+        const total = await this.prisma.professionalAchievement.count();
+        const data = await this.prisma.professionalAchievement.findMany({
+            skip,
+            take,
             include: {
                 user: true,
             },
         });
+        return { data, meta: { total, skip: skip || 0, take: take || 10, hasMore: (skip || 0) + (take || 10) < total } };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<ProfessionalAchievement> {
         const achievement = await this.prisma.professionalAchievement.findUnique({
             where: { id },
             include: {
@@ -46,7 +53,7 @@ export class ProfessionalAchievementService {
         return achievement;
     }
 
-    async findByUser(userId: number) {
+    async findByUser(userId: number): Promise<ProfessionalAchievement[]> {
         return this.prisma.professionalAchievement.findMany({
             where: { userId },
             include: {
@@ -55,7 +62,7 @@ export class ProfessionalAchievementService {
         });
     }
 
-    async update(id: number, updateProfessionalAchievementDto: UpdateProfessionalAchievementDto) {
+    async update(id: number, updateProfessionalAchievementDto: UpdateProfessionalAchievementDto): Promise<ProfessionalAchievement> {
         try {
             return await this.prisma.professionalAchievement.update({
                 where: { id },
@@ -69,7 +76,7 @@ export class ProfessionalAchievementService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<ProfessionalAchievement> {
         try {
             return await this.prisma.professionalAchievement.delete({
                 where: { id },
@@ -79,7 +86,7 @@ export class ProfessionalAchievementService {
         }
     }
 
-    async verify(id: number) {
+    async verify(id: number): Promise<ProfessionalAchievement> {
         try {
             return await this.prisma.professionalAchievement.update({
                 where: { id },

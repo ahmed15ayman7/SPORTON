@@ -58,7 +58,7 @@ export class ApiClient {
         /**
          * الدخول
          */
-        login: (data: User) => ({
+        login: (data: { email: string, password: string }) => ({
             method: 'POST',
             path: '/auth/login',
             description: 'الدخول',

@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
 import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
-
+import { NotificationAction } from '@prisma/client';
 @Injectable()
 export class NotificationActionService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createNotificationActionDto: CreateNotificationActionDto) {
+    async create(createNotificationActionDto: CreateNotificationActionDto): Promise<NotificationAction> {
         return this.prisma.notificationAction.create({
             data: {
                 notificationId: createNotificationActionDto.notificationId,
@@ -21,7 +21,7 @@ export class NotificationActionService {
         });
     }
 
-    async findAll() {
+    async findAll(): Promise<NotificationAction[]> {
         return this.prisma.notificationAction.findMany({
             include: {
                 notification: true
@@ -29,7 +29,7 @@ export class NotificationActionService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<NotificationAction> {
         const action = await this.prisma.notificationAction.findUnique({
             where: { id },
             include: {
@@ -44,16 +44,22 @@ export class NotificationActionService {
         return action;
     }
 
-    async findByNotification(notificationId: number) {
-        return this.prisma.notificationAction.findUnique({
+    async findByNotification(notificationId: number): Promise<NotificationAction> {
+        const action = await this.prisma.notificationAction.findUnique({
             where: { notificationId },
             include: {
                 notification: true
             }
         });
+
+        if (!action) {
+            throw new NotFoundException(`إجراء الإشعار رقم ${notificationId} غير موجود`);
+        }
+
+        return action;
     }
 
-    async update(id: number, updateNotificationActionDto: UpdateNotificationActionDto) {
+    async update(id: number, updateNotificationActionDto: UpdateNotificationActionDto): Promise<NotificationAction> {
         try {
             return await this.prisma.notificationAction.update({
                 where: { id },
@@ -71,7 +77,7 @@ export class NotificationActionService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<NotificationAction> {
         try {
             return await this.prisma.notificationAction.delete({
                 where: { id }
@@ -81,7 +87,7 @@ export class NotificationActionService {
         }
     }
 
-    async complete(id: number) {
+    async complete(id: number): Promise<NotificationAction> {
         try {
             return await this.prisma.notificationAction.update({
                 where: { id },

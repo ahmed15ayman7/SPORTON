@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsEnum, IsOptional, IsDate, IsObject } from 'class-validator';
-import { ScoutingReportStatus } from '@prisma/client';
-
+import { IsNumber, IsString, IsOptional, IsDate, IsObject } from 'class-validator';
 export class CreateScoutingReportDto {
     @ApiProperty({ description: 'معرف الكشاف' })
     @IsNumber()
@@ -50,7 +48,4 @@ export class CreateScoutingReportDto {
     @IsOptional()
     notes?: string;
 
-    @ApiProperty({ description: 'حالة التقرير' })
-    @IsEnum(ScoutingReportStatus)
-    status: ScoutingReportStatus;
 } 

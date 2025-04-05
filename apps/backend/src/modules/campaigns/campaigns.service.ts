@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Campaign } from '@prisma/client';
+import { Campaign, CampaignStatus, Advertisement } from '@prisma/client';
 
 @Injectable()
 export class CampaignsService extends BaseService<Campaign> {
@@ -35,7 +35,7 @@ export class CampaignsService extends BaseService<Campaign> {
         const now = new Date();
         return this.prisma.campaign.findMany({
             where: {
-                status: 'ACTIVE',
+                status: CampaignStatus.ACTIVE,
                 startDate: {
                     lte: now,
                 },
@@ -60,7 +60,7 @@ export class CampaignsService extends BaseService<Campaign> {
         return campaign.analytics;
     }
 
-    async updateCampaignStatus(id: number, status: string): Promise<Campaign> {
+    async updateCampaignStatus(id: number, status: CampaignStatus): Promise<Campaign> {
         const campaign = await this.prisma.campaign.update({
             where: { id },
             data: {
@@ -84,7 +84,7 @@ export class CampaignsService extends BaseService<Campaign> {
         return campaign.budget;
     }
 
-    async getCampaignAdvertisements(id: number) {
+    async getCampaignAdvertisements(id: number): Promise<Advertisement[]> {
         const campaign = await this.prisma.campaign.findUnique({
             where: { id },
             include: {

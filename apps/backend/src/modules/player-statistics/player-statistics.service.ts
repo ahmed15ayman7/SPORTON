@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePlayerStatisticsDto } from './dto/create-player-statistics.dto';
 import { UpdatePlayerStatisticsDto } from './dto/update-player-statistics.dto';
-
+import { PlayerStatistics } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
 export class PlayerStatisticsService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createPlayerStatisticsDto: CreatePlayerStatisticsDto) {
+    async create(createPlayerStatisticsDto: CreatePlayerStatisticsDto): Promise<PlayerStatistics> {
         return this.prisma.playerStatistics.create({
             data: {
                 playerId: createPlayerStatisticsDto.playerId,
@@ -28,15 +30,22 @@ export class PlayerStatisticsService {
         });
     }
 
-    async findAll() {
-        return this.prisma.playerStatistics.findMany({
+    async findAll(query: PaginationDto): Promise<PaginatedResponse<PlayerStatistics>> {
+        const { skip, take } = query;
+        const playerStatistics = await this.prisma.playerStatistics.findMany({
+            skip,
+            take,
             include: {
                 player: true
             }
         });
+        return {
+            data: playerStatistics,
+            meta: { total: playerStatistics.length, skip: skip || 0, take: take || 10, hasMore: playerStatistics.length === take }
+        };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<PlayerStatistics> {
         const statistics = await this.prisma.playerStatistics.findUnique({
             where: { id },
             include: {
@@ -51,7 +60,7 @@ export class PlayerStatisticsService {
         return statistics;
     }
 
-    async findByPlayer(playerId: number) {
+    async findByPlayer(playerId: number): Promise<PlayerStatistics[]> {
         return this.prisma.playerStatistics.findMany({
             where: { playerId },
             include: {
@@ -60,7 +69,7 @@ export class PlayerStatisticsService {
         });
     }
 
-    async findBySeason(season: string) {
+    async findBySeason(season: string): Promise<PlayerStatistics[]> {
         return this.prisma.playerStatistics.findMany({
             where: { season },
             include: {
@@ -69,7 +78,7 @@ export class PlayerStatisticsService {
         });
     }
 
-    async update(id: number, updatePlayerStatisticsDto: UpdatePlayerStatisticsDto) {
+    async update(id: number, updatePlayerStatisticsDto: UpdatePlayerStatisticsDto): Promise<PlayerStatistics> {
         try {
             return await this.prisma.playerStatistics.update({
                 where: { id },
@@ -94,7 +103,7 @@ export class PlayerStatisticsService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<PlayerStatistics> {
         try {
             return await this.prisma.playerStatistics.delete({
                 where: { id }
@@ -104,7 +113,7 @@ export class PlayerStatisticsService {
         }
     }
 
-    async updateStats(id: number, stats: Partial<UpdatePlayerStatisticsDto>) {
+    async updateStats(id: number, stats: Partial<UpdatePlayerStatisticsDto>): Promise<PlayerStatistics> {
         try {
             const currentStats = await this.prisma.playerStatistics.findUnique({
                 where: { id }

@@ -53,7 +53,7 @@ export class TargetingPerformanceService extends BaseService<TargetingPerformanc
         return performance;
     }
 
-    async getPerformanceAnalytics(id: number) {
+    async getPerformanceAnalytics(id: number): Promise<TargetingPerformance> {
         const performance = await this.prisma.targetingPerformance.findUnique({
             where: { id },
             include: {
@@ -66,15 +66,6 @@ export class TargetingPerformanceService extends BaseService<TargetingPerformanc
             throw new NotFoundException('أداء الاستهداف غير موجود');
         }
 
-        const analytics = {
-            performance: performance.performance,
-            cost: performance.cost,
-            roi: performance.roi,
-            date: performance.date,
-            targeting: performance.targeting,
-            segment: performance.segment,
-        };
-
-        return analytics;
+        return performance;
     }
 } 

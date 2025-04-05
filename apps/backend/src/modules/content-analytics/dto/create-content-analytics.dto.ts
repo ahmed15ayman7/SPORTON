@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsEnum, IsFloat, IsOptional, IsArray } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsEnum, IsOptional, IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ContentType } from '@prisma/client';
 
@@ -26,12 +26,12 @@ export class CreateContentAnalyticsDto {
     topics?: string[];
 
     @ApiProperty({ description: 'معدل التفاعل', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     engagement?: number;
 
     @ApiProperty({ description: 'درجة الملاءمة', required: false })
-    @IsFloat()
+    @IsNumber()
     @IsOptional()
     relevanceScore?: number;
 

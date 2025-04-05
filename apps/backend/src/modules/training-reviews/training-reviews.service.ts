@@ -63,7 +63,7 @@ export class TrainingReviewsService extends BaseService<TrainingReview> {
         return result._avg.rating || 0;
     }
 
-    async getRatingDistribution(trainingId: number) {
+    async getRatingDistribution(trainingId: number): Promise<{ rating: number; count: number }[]> {
         const reviews = await this.prisma.trainingReview.groupBy({
             by: ['rating'],
             where: { trainingId },
@@ -71,6 +71,9 @@ export class TrainingReviewsService extends BaseService<TrainingReview> {
                 rating: true,
             },
         });
-        return reviews;
+        return reviews.map((review) => ({
+            rating: review.rating,
+            count: review._count.rating,
+        }));
     }
 } 

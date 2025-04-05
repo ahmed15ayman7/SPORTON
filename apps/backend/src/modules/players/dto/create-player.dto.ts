@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsDate, IsEnum, IsFloat } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsDate, IsEnum, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Foot } from '@prisma/client';
 
@@ -17,12 +17,12 @@ export class CreatePlayerDto {
 
     @ApiProperty({ required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     height?: number;
 
     @ApiProperty({ required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     weight?: number;
 
     @ApiProperty({ required: false })
@@ -47,6 +47,11 @@ export class CreatePlayerDto {
 
     @ApiProperty({ required: false })
     @IsOptional()
-    @IsFloat()
+    @IsNumber()
     marketValue?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    facilityId: number;
 } 

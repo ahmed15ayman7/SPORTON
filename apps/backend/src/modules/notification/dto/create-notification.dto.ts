@@ -1,6 +1,6 @@
-import { IsNumber, IsNotEmpty, IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsString, IsOptional, IsEnum, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { NotificationType, NotificationStatus } from '@prisma/client';
+import { NotificationType } from '@prisma/client';
 
 export class CreateNotificationDto {
     @ApiProperty({ description: 'معرف المستخدم' })
@@ -24,9 +24,9 @@ export class CreateNotificationDto {
     content: string;
 
     @ApiProperty({ description: 'حالة الإشعار' })
-    @IsEnum(NotificationStatus)
+    @IsBoolean()
     @IsNotEmpty()
-    status: NotificationStatus;
+    isRead: boolean;
 
     @ApiProperty({ description: 'رابط الإشعار (اختياري)' })
     @IsString()

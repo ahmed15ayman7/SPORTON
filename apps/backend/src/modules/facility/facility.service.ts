@@ -2,31 +2,32 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
-
+import { Facility, FacilityType } from '@prisma/client';
 @Injectable()
 export class FacilityService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createFacilityDto: CreateFacilityDto) {
+    async create(createFacilityDto: CreateFacilityDto): Promise<Facility> {
         return this.prisma.facility.create({
             data: {
+                clubId: createFacilityDto.clubId,
                 name: createFacilityDto.name,
                 type: createFacilityDto.type,
-                address: createFacilityDto.address,
+                location: createFacilityDto.location,
                 capacity: createFacilityDto.capacity,
-                amenities: createFacilityDto.amenities,
-                operatingHours: createFacilityDto.operatingHours,
-                contactInfo: createFacilityDto.contactInfo,
-                notes: createFacilityDto.notes
+                description: createFacilityDto.description,
+                images: createFacilityDto.images,
+                status: createFacilityDto.status,
+                icon: createFacilityDto.icon,
             }
         });
     }
 
-    async findAll() {
+    async findAll(): Promise<Facility[]> {
         return this.prisma.facility.findMany();
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<Facility> {
         const facility = await this.prisma.facility.findUnique({
             where: { id }
         });
@@ -38,25 +39,25 @@ export class FacilityService {
         return facility;
     }
 
-    async findByType(type: string) {
+    async findByType(type: FacilityType): Promise<Facility[]> {
         return this.prisma.facility.findMany({
             where: { type }
         });
     }
 
-    async update(id: number, updateFacilityDto: UpdateFacilityDto) {
+    async update(id: number, updateFacilityDto: UpdateFacilityDto): Promise<Facility> {
         try {
             return await this.prisma.facility.update({
                 where: { id },
                 data: {
                     name: updateFacilityDto.name,
                     type: updateFacilityDto.type,
-                    address: updateFacilityDto.address,
+                    location: updateFacilityDto.location,
                     capacity: updateFacilityDto.capacity,
-                    amenities: updateFacilityDto.amenities,
-                    operatingHours: updateFacilityDto.operatingHours,
-                    contactInfo: updateFacilityDto.contactInfo,
-                    notes: updateFacilityDto.notes
+                    description: updateFacilityDto.description,
+                    images: updateFacilityDto.images,
+                    status: updateFacilityDto.status,
+                    icon: updateFacilityDto.icon,
                 }
             });
         } catch (error) {
@@ -64,7 +65,7 @@ export class FacilityService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<Facility> {
         try {
             return await this.prisma.facility.delete({
                 where: { id }

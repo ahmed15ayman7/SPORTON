@@ -8,7 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '@/modules/users/users.service';
 
 @WebSocketGateway({
     cors: {
@@ -30,7 +30,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
             const payload = this.jwtService.verify(token, {
                 secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
             });
-            const user = await this.usersService.user({ id: payload.sub });
+            const user = await this.usersService.findOne(payload.sub);
             if (!user) {
                 client.disconnect();
                 return;

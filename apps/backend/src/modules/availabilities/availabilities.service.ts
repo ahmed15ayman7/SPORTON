@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Availability } from '@prisma/client';
+import { Availability, AvailabilityStatus } from '@prisma/client';
 
 @Injectable()
 export class AvailabilitiesService extends BaseService<Availability> {
@@ -43,13 +43,13 @@ export class AvailabilitiesService extends BaseService<Availability> {
 
     async getAvailableUsers(): Promise<Availability[]> {
         const availabilities = await this.prisma.availability.findMany({
-            where: { status: 'AVAILABLE' },
+            where: { status: AvailabilityStatus.AVAILABLE },
             include: this.getIncludeFields(),
         });
         return availabilities;
     }
 
-    async getUsersByStatus(status: string): Promise<Availability[]> {
+    async getUsersByStatus(status: AvailabilityStatus): Promise<Availability[]> {
         const availabilities = await this.prisma.availability.findMany({
             where: { status },
             include: this.getIncludeFields(),

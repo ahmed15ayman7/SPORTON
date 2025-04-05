@@ -4,8 +4,6 @@ import { BaseController } from '../../common/controllers/base.controller';
 import { TeamsService } from './teams.service';
 import { Team } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
 
 @ApiTags('teams')
 @Controller('teams')
@@ -19,7 +17,7 @@ export class TeamsController extends BaseController<Team> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get team profile with all relations' })
     @ApiResponse({ status: 200, description: 'Return team profile.' })
-    async getTeamProfile(@Param('id', ParseIntPipe) id: number) {
+    async getTeamProfile(@Param('id', ParseIntPipe) id: number): Promise<Team> {
         return this.teamsService.getTeamProfile(id);
     }
 
@@ -28,7 +26,7 @@ export class TeamsController extends BaseController<Team> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get user teams' })
     @ApiResponse({ status: 200, description: 'Return user teams.' })
-    async getUserTeams(@Param('userId', ParseIntPipe) userId: number) {
+    async getUserTeams(@Param('userId', ParseIntPipe) userId: number): Promise<Team[]> {
         return this.teamsService.getUserTeams(userId);
     }
 
@@ -37,7 +35,7 @@ export class TeamsController extends BaseController<Team> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get teams by sport' })
     @ApiResponse({ status: 200, description: 'Return teams by sport.' })
-    async getSportTeams(@Param('sport') sport: string) {
+    async getSportTeams(@Param('sport') sport: string): Promise<Team[]> {
         return this.teamsService.getSportTeams(sport);
     }
 
@@ -46,7 +44,7 @@ export class TeamsController extends BaseController<Team> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new team' })
     @ApiResponse({ status: 201, description: 'The team has been successfully created.' })
-    async create(@Body() createTeamDto: CreateTeamDto) {
+    async create(@Body() createTeamDto: Team): Promise<Team> {
         return this.teamsService.create(createTeamDto);
     }
 
@@ -57,8 +55,8 @@ export class TeamsController extends BaseController<Team> {
     @ApiResponse({ status: 200, description: 'The team has been successfully updated.' })
     async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() updateTeamDto: UpdateTeamDto,
-    ) {
+        @Body() updateTeamDto: Team,
+    ): Promise<Team> {
         return this.teamsService.update(id, updateTeamDto);
     }
 } 

@@ -4,6 +4,8 @@ import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 
 @ApiTags('الإشعارات')
 @Controller('notifications')
@@ -20,8 +22,8 @@ export class NotificationController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع الإشعارات' })
     @ApiResponse({ status: 200, description: 'تم استرجاع الإشعارات بنجاح' })
-    findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-        return this.notificationService.findAll(page, limit);
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<Notification>> {
+        return this.notificationService.findAll(params);
     }
 
     @Get(':id')

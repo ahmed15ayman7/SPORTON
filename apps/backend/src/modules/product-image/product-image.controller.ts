@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductImageService } from './product-image.service';
 import { CreateProductImageDto } from './dto/create-product-image.dto';
 import { UpdateProductImageDto } from './dto/update-product-image.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { ProductImage } from '@prisma/client';
 @ApiTags('صور المنتجات')
 @Controller('product-image')
 export class ProductImageController {
@@ -19,8 +21,8 @@ export class ProductImageController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع صور المنتجات' })
     @ApiResponse({ status: 200, description: 'تم جلب صور المنتجات بنجاح' })
-    findAll(@Query('search') search?: string) {
-        return this.productImageService.findAll(search);
+    findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<ProductImage>> {
+        return this.productImageService.findAll(params);
     }
 
     @Get(':id')

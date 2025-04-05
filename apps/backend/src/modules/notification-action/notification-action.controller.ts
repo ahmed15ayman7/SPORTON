@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationActionService } from './notification-action.service';
 import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
 import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
-
+import { NotificationAction } from '@prisma/client';
 @ApiTags('إجراءات الإشعارات')
 @Controller('notification-actions')
 export class NotificationActionController {
@@ -12,52 +12,52 @@ export class NotificationActionController {
     @Post()
     @ApiOperation({ summary: 'إنشاء إجراء إشعار جديد' })
     @ApiResponse({ status: 201, description: 'تم إنشاء إجراء الإشعار بنجاح' })
-    create(@Body() createNotificationActionDto: CreateNotificationActionDto) {
+    async create(@Body() createNotificationActionDto: CreateNotificationActionDto): Promise<NotificationAction> {
         return this.notificationActionService.create(createNotificationActionDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع إجراءات الإشعارات' })
     @ApiResponse({ status: 200, description: 'تم جلب إجراءات الإشعارات بنجاح' })
-    findAll() {
+    async findAll(): Promise<NotificationAction[]> {
         return this.notificationActionService.findAll();
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'الحصول على إجراء إشعار محدد' })
     @ApiResponse({ status: 200, description: 'تم جلب إجراء الإشعار بنجاح' })
-    findOne(@Param('id') id: string) {
+    async findOne(@Param('id') id: string): Promise<NotificationAction> {
         return this.notificationActionService.findOne(+id);
     }
 
     @Get('notification/:notificationId')
     @ApiOperation({ summary: 'الحصول على إجراء إشعار محدد' })
     @ApiResponse({ status: 200, description: 'تم جلب إجراء الإشعار بنجاح' })
-    findByNotification(@Param('notificationId') notificationId: string) {
+    async findByNotification(@Param('notificationId') notificationId: string): Promise<NotificationAction> {
         return this.notificationActionService.findByNotification(+notificationId);
     }
 
     @Patch(':id')
     @ApiOperation({ summary: 'تحديث إجراء إشعار محدد' })
     @ApiResponse({ status: 200, description: 'تم تحديث إجراء الإشعار بنجاح' })
-    update(
+    async update(
         @Param('id') id: string,
         @Body() updateNotificationActionDto: UpdateNotificationActionDto,
-    ) {
+    ): Promise<NotificationAction> {
         return this.notificationActionService.update(+id, updateNotificationActionDto);
     }
 
     @Patch(':id/complete')
     @ApiOperation({ summary: 'إكمال إجراء إشعار محدد' })
     @ApiResponse({ status: 200, description: 'تم إكمال إجراء الإشعار بنجاح' })
-    complete(@Param('id') id: string) {
+    async complete(@Param('id') id: string): Promise<NotificationAction> {
         return this.notificationActionService.complete(+id);
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'حذف إجراء إشعار محدد' })
     @ApiResponse({ status: 200, description: 'تم حذف إجراء الإشعار بنجاح' })
-    remove(@Param('id') id: string) {
+    async remove(@Param('id') id: string): Promise<NotificationAction> {
         return this.notificationActionService.remove(+id);
     }
 } 

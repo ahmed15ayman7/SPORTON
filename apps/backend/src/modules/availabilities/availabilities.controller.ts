@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { AvailabilitiesService } from './availabilities.service';
-import { Availability } from '@prisma/client';
+import { Availability, AvailabilityStatus } from '@prisma/client';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
@@ -19,7 +19,7 @@ export class AvailabilitiesController extends BaseController<Availability> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على ملف التوفر مع جميع العلاقات' })
     @ApiResponse({ status: 200, description: 'إرجاع ملف التوفر.' })
-    async getAvailabilityProfile(@Param('id', ParseIntPipe) id: number) {
+    async getAvailabilityProfile(@Param('id', ParseIntPipe) id: number): Promise<Availability> {
         return this.availabilitiesService.getAvailabilityProfile(id);
     }
 
@@ -28,7 +28,7 @@ export class AvailabilitiesController extends BaseController<Availability> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على توفر المستخدم' })
     @ApiResponse({ status: 200, description: 'إرجاع توفر المستخدم.' })
-    async getUserAvailability(@Param('userId', ParseIntPipe) userId: number) {
+    async getUserAvailability(@Param('userId', ParseIntPipe) userId: number): Promise<Availability> {
         return this.availabilitiesService.getUserAvailability(userId);
     }
 
@@ -37,7 +37,7 @@ export class AvailabilitiesController extends BaseController<Availability> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على المستخدمين المتاحين' })
     @ApiResponse({ status: 200, description: 'إرجاع قائمة المستخدمين المتاحين.' })
-    async getAvailableUsers() {
+    async getAvailableUsers(): Promise<Availability[]> {
         return this.availabilitiesService.getAvailableUsers();
     }
 
@@ -46,7 +46,7 @@ export class AvailabilitiesController extends BaseController<Availability> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على المستخدمين حسب حالة التوفر' })
     @ApiResponse({ status: 200, description: 'إرجاع قائمة المستخدمين حسب حالة التوفر.' })
-    async getUsersByStatus(@Param('status') status: string) {
+    async getUsersByStatus(@Param('status') status: AvailabilityStatus): Promise<Availability[]> {
         return this.availabilitiesService.getUsersByStatus(status);
     }
 
@@ -55,19 +55,8 @@ export class AvailabilitiesController extends BaseController<Availability> {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'إنشاء توفر جديد' })
     @ApiResponse({ status: 201, description: 'تم إنشاء التوفر بنجاح.' })
-    async create(@Body() createAvailabilityDto: CreateAvailabilityDto) {
+    async create(@Body() createAvailabilityDto: CreateAvailabilityDto): Promise<Availability> {
         return this.availabilitiesService.create(createAvailabilityDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'تحديث توفر موجود' })
-    @ApiResponse({ status: 200, description: 'تم تحديث التوفر بنجاح.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateAvailabilityDto: UpdateAvailabilityDto,
-    ) {
-        return this.availabilitiesService.update(id, updateAvailabilityDto);
-    }
 } 

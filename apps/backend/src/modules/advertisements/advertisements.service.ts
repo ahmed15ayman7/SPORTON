@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Advertisement } from '@prisma/client';
+import { Advertisement, Sport, Role } from '@prisma/client';
 
 @Injectable()
 export class AdvertisementsService extends BaseService<Advertisement> {
@@ -94,7 +94,7 @@ export class AdvertisementsService extends BaseService<Advertisement> {
         const advertisements = await this.prisma.advertisement.findMany({
             where: {
                 targetSports: {
-                    has: sport,
+                    has: sport as Sport,
                 },
                 status: 'ACTIVE',
                 startDate: {
@@ -113,7 +113,7 @@ export class AdvertisementsService extends BaseService<Advertisement> {
         const advertisements = await this.prisma.advertisement.findMany({
             where: {
                 targetRoles: {
-                    has: role,
+                    has: role as Role,
                 },
                 status: 'ACTIVE',
                 startDate: {

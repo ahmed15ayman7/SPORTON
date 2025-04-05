@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MaintenanceScheduleService } from './maintenance-schedule.service';
 import { MaintenanceScheduleController } from './maintenance-schedule.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
     imports: [PrismaModule],

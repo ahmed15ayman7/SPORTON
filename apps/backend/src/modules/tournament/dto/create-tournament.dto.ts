@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsDate, IsOptional, IsArray } from 'class-validator';
-
+import { IsString, IsNumber, IsDate, IsOptional, IsArray, IsEnum } from 'class-validator';
+import { TournamentStatus, TournamentType } from '@prisma/client';
 export class CreateTournamentDto {
     @ApiProperty({ description: 'اسم البطولة' })
     @IsString()
@@ -30,10 +30,9 @@ export class CreateTournamentDto {
     @IsNumber()
     maxTeams: number;
 
-    @ApiProperty({ description: 'قواعد البطولة', type: [String] })
-    @IsArray()
-    @IsString({ each: true })
-    rules: string[];
+    @ApiProperty({ description: 'قواعد البطولة' })
+    @IsString()
+    rules: string;
 
     @ApiProperty({ description: 'الجوائز', required: false })
     @IsString()
@@ -49,4 +48,17 @@ export class CreateTournamentDto {
     @IsString()
     @IsOptional()
     notes?: string;
+
+    @ApiProperty({ description: 'الحالة', required: false })
+    @IsEnum(TournamentStatus)
+    status: TournamentStatus;
+
+    @ApiProperty({ description: 'المنشأة', required: false })
+    @IsNumber()
+    @IsOptional()
+    organizerId: number;
+
+    @ApiProperty({ description: 'النوع', required: false })
+    @IsEnum(TournamentType)
+    type: TournamentType;
 } 

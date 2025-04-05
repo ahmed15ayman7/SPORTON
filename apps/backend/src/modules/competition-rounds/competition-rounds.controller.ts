@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CompetitionRoundsService } from './competition-rounds.service';
 import { CreateCompetitionRoundDto } from './dto/create-competition-round.dto';
 import { UpdateCompetitionRoundDto } from './dto/update-competition-round.dto';
-
+import { CompetitionRound } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('جولات المسابقات')
 @Controller('competition-rounds')
 export class CompetitionRoundsController {
@@ -12,49 +14,49 @@ export class CompetitionRoundsController {
     @Post()
     @ApiOperation({ summary: 'إضافة جولة جديدة للمسابقة' })
     @ApiResponse({ status: 201, description: 'تم إضافة الجولة بنجاح' })
-    create(@Body() createCompetitionRoundDto: CreateCompetitionRoundDto) {
+    create(@Body() createCompetitionRoundDto: CreateCompetitionRoundDto): Promise<CompetitionRound> {
         return this.competitionRoundsService.create(createCompetitionRoundDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع الجولات' })
     @ApiResponse({ status: 200, description: 'تم جلب الجولات بنجاح' })
-    findAll(@Query('search') search?: string) {
-        return this.competitionRoundsService.findAll(search);
+    findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<CompetitionRound>> {
+        return this.competitionRoundsService.findAll(params);
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'الحصول على تفاصيل جولة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب تفاصيل الجولة بنجاح' })
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: string): Promise<CompetitionRound> {
         return this.competitionRoundsService.getCompetitionRoundProfile(+id);
     }
 
     @Get('competition/:competitionId')
     @ApiOperation({ summary: 'الحصول على جميع جولات مسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب الجولات بنجاح' })
-    getCompetitionRounds(@Param('competitionId') competitionId: string) {
+    getCompetitionRounds(@Param('competitionId') competitionId: string): Promise<CompetitionRound[]> {
         return this.competitionRoundsService.getCompetitionRounds(+competitionId);
     }
 
     @Get('competition/:competitionId/current')
     @ApiOperation({ summary: 'الحصول على الجولة الحالية لمسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب الجولة الحالية بنجاح' })
-    getCurrentRound(@Param('competitionId') competitionId: string) {
+    getCurrentRound(@Param('competitionId') competitionId: string): Promise<CompetitionRound | null> {
         return this.competitionRoundsService.getCurrentRound(+competitionId);
     }
 
     @Get('competition/:competitionId/upcoming')
     @ApiOperation({ summary: 'الحصول على الجولات القادمة لمسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب الجولات القادمة بنجاح' })
-    getUpcomingRounds(@Param('competitionId') competitionId: string) {
+    getUpcomingRounds(@Param('competitionId') competitionId: string): Promise<CompetitionRound[]> {
         return this.competitionRoundsService.getUpcomingRounds(+competitionId);
     }
 
     @Get('competition/:competitionId/completed')
     @ApiOperation({ summary: 'الحصول على الجولات المكتملة لمسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب الجولات المكتملة بنجاح' })
-    getCompletedRounds(@Param('competitionId') competitionId: string) {
+    getCompletedRounds(@Param('competitionId') competitionId: string): Promise<CompetitionRound[]> {
         return this.competitionRoundsService.getCompletedRounds(+competitionId);
     }
 
@@ -64,7 +66,7 @@ export class CompetitionRoundsController {
     updateStatus(
         @Param('id') id: string,
         @Body('status') status: string,
-    ) {
+    ): Promise<CompetitionRound> {
         return this.competitionRoundsService.updateRoundStatus(+id, status);
     }
 
@@ -74,14 +76,14 @@ export class CompetitionRoundsController {
     update(
         @Param('id') id: string,
         @Body() updateCompetitionRoundDto: UpdateCompetitionRoundDto,
-    ) {
+    ): Promise<CompetitionRound> {
         return this.competitionRoundsService.update(+id, updateCompetitionRoundDto);
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'حذف جولة معينة' })
     @ApiResponse({ status: 200, description: 'تم حذف الجولة بنجاح' })
-    remove(@Param('id') id: string) {
+    remove(@Param('id') id: string): Promise<CompetitionRound> {
         return this.competitionRoundsService.remove(+id);
     }
 } 

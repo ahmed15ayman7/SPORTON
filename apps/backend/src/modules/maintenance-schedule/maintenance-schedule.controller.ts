@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MaintenanceScheduleService } from './maintenance-schedule.service';
 import { CreateMaintenanceScheduleDto } from './dto/create-maintenance-schedule.dto';
 import { UpdateMaintenanceScheduleDto } from './dto/update-maintenance-schedule.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
 @ApiTags('جداول الصيانة')
 @Controller('maintenance-schedules')
 export class MaintenanceScheduleController {
@@ -19,8 +19,8 @@ export class MaintenanceScheduleController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع جداول الصيانة' })
     @ApiResponse({ status: 200, description: 'تم جلب الجداول بنجاح' })
-    findAll() {
-        return this.maintenanceScheduleService.findAll();
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.maintenanceScheduleService.findAll(paginationDto);
     }
 
     @Get(':id')

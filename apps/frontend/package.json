@@ -10,9 +10,9 @@
     },
     "dependencies": {
         "@auth0/nextjs-auth0": "^3.5.0",
-        "@aws-sdk/client-s3": "^3.525.0",
-        "@aws-sdk/client-pinpoint": "^3.525.0",
         "@aws-sdk/client-mediaconvert": "^3.525.0",
+        "@aws-sdk/client-pinpoint": "^3.525.0",
+        "@aws-sdk/client-s3": "^3.525.0",
         "@heroicons/react": "^2.1.1",
         "@reduxjs/toolkit": "^2.2.1",
         "@stripe/react-stripe-js": "^2.4.0",
@@ -44,18 +44,19 @@
         "typescript": "^5.3.3"
     },
     "devDependencies": {
+        "@types/hpp": "^0.2.6",
+        "@types/jsonwebtoken": "^9.0.5",
         "@types/node": "^20.11.16",
         "@types/react": "^18.2.52",
         "@types/react-dom": "^18.2.18",
-        "@types/jsonwebtoken": "^9.0.5",
         "autoprefixer": "^10.4.17",
         "babel-plugin-transform-remove-console": "^6.9.4",
+        "eslint": "^8.56.0",
+        "eslint-config-next": "14.1.0",
         "javascript-obfuscator": "^4.1.0",
         "next-plugin-preval": "^1.0.0",
         "postcss": "^8.4.33",
         "sharp": "^0.33.2",
-        "terser-webpack-plugin": "^5.3.10",
-        "eslint": "^8.56.0",
-        "eslint-config-next": "14.1.0"
+        "terser-webpack-plugin": "^5.3.10"
     }
 }

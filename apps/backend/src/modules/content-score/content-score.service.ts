@@ -23,7 +23,7 @@ export class ContentScoreService extends BaseService<ContentScore> {
         return score;
     }
 
-    async getContentScores(contentId: number) {
+    async getContentScores(contentId: number): Promise<ContentScore[]> {
         const scores = await this.prisma.contentScore.findMany({
             where: { contentId },
             orderBy: {
@@ -33,7 +33,7 @@ export class ContentScoreService extends BaseService<ContentScore> {
         return scores;
     }
 
-    async getSegmentScores(userSegment: string) {
+    async getSegmentScores(userSegment: string): Promise<ContentScore[]> {
         const scores = await this.prisma.contentScore.findMany({
             where: { userSegment },
             orderBy: {
@@ -43,7 +43,7 @@ export class ContentScoreService extends BaseService<ContentScore> {
         return scores;
     }
 
-    async getScoreAnalytics(id: number) {
+    async getScoreAnalytics(id: number): Promise<any> {
         const score = await this.prisma.contentScore.findUnique({
             where: { id },
         });

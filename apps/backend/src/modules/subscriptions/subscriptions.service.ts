@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Subscription } from '@prisma/client';
+import { Subscription, SubscriptionStatus, PlanType } from '@prisma/client';
 
 @Injectable()
 export class SubscriptionsService extends BaseService<Subscription> {
@@ -30,7 +30,7 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscription;
     }
 
-    async getUserSubscriptions(userId: number) {
+    async getUserSubscriptions(userId: number): Promise<Subscription[]> {
         const subscriptions = await this.prisma.subscription.findMany({
             where: { userId },
             include: this.getIncludeFields(),
@@ -41,7 +41,7 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscriptions;
     }
 
-    async getActiveSubscriptions() {
+    async getActiveSubscriptions(): Promise<Subscription[]> {
         const subscriptions = await this.prisma.subscription.findMany({
             where: {
                 status: 'ACTIVE',
@@ -57,7 +57,7 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscriptions;
     }
 
-    async getExpiredSubscriptions() {
+    async getExpiredSubscriptions(): Promise<Subscription[]> {
         const subscriptions = await this.prisma.subscription.findMany({
             where: {
                 endDate: {
@@ -72,9 +72,9 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscriptions;
     }
 
-    async getSubscriptionsByPlan(plan: string) {
+    async getSubscriptionsByPlan(plan: string): Promise<Subscription[]> {
         const subscriptions = await this.prisma.subscription.findMany({
-            where: { plan },
+            where: { plan: plan as PlanType },
             include: this.getIncludeFields(),
             orderBy: {
                 startDate: 'desc',
@@ -83,7 +83,7 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscriptions;
     }
 
-    async getSubscriptionsByStatus(status: string) {
+    async getSubscriptionsByStatus(status: SubscriptionStatus): Promise<Subscription[]> {
         const subscriptions = await this.prisma.subscription.findMany({
             where: { status },
             include: this.getIncludeFields(),
@@ -94,7 +94,7 @@ export class SubscriptionsService extends BaseService<Subscription> {
         return subscriptions;
     }
 
-    async updateSubscriptionStatus(id: number, status: string) {
+    async updateSubscriptionStatus(id: number, status: SubscriptionStatus): Promise<Subscription> {
         return this.prisma.subscription.update({
             where: { id },
             data: { status },

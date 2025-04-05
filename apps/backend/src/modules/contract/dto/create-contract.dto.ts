@@ -37,8 +37,7 @@ export class CreateContractDto {
     @IsEnum(ContractStatus)
     status: ContractStatus;
 
-    @ApiProperty({ description: 'ملاحظات إضافية', required: false })
+    @ApiProperty({ description: 'العملة', })
     @IsString()
-    @IsOptional()
-    notes?: string;
+    currency: string;
 } 

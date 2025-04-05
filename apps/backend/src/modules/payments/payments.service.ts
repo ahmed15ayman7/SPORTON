@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Payment } from '@prisma/client';
+import { Payment, PaymentStatus, PaymentType } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService extends BaseService<Payment> {
@@ -30,7 +30,7 @@ export class PaymentsService extends BaseService<Payment> {
         return payment;
     }
 
-    async getUserPayments(userId: number) {
+    async getUserPayments(userId: number): Promise<Payment[]> {
         const payments = await this.prisma.payment.findMany({
             where: { userId },
             include: this.getIncludeFields(),
@@ -41,9 +41,9 @@ export class PaymentsService extends BaseService<Payment> {
         return payments;
     }
 
-    async getPaymentsByType(type: string) {
+    async getPaymentsByType(type: string): Promise<Payment[]> {
         const payments = await this.prisma.payment.findMany({
-            where: { type },
+            where: { type: type as PaymentType },
             include: this.getIncludeFields(),
             orderBy: {
                 date: 'desc',
@@ -52,9 +52,9 @@ export class PaymentsService extends BaseService<Payment> {
         return payments;
     }
 
-    async getPaymentsByStatus(status: string) {
+    async getPaymentsByStatus(status: string): Promise<Payment[]> {
         const payments = await this.prisma.payment.findMany({
-            where: { status },
+            where: { status: status as PaymentStatus },
             include: this.getIncludeFields(),
             orderBy: {
                 date: 'desc',
@@ -63,7 +63,7 @@ export class PaymentsService extends BaseService<Payment> {
         return payments;
     }
 
-    async getPaymentsByDateRange(startDate: Date, endDate: Date) {
+    async getPaymentsByDateRange(startDate: Date, endDate: Date): Promise<Payment[]> {
         const payments = await this.prisma.payment.findMany({
             where: {
                 date: {
@@ -79,15 +79,15 @@ export class PaymentsService extends BaseService<Payment> {
         return payments;
     }
 
-    async updatePaymentStatus(id: number, status: string) {
+    async updatePaymentStatus(id: number, status: string): Promise<Payment> {
         return this.prisma.payment.update({
             where: { id },
-            data: { status },
+            data: { status: status as PaymentStatus },
             include: this.getIncludeFields(),
         });
     }
 
-    async getPaymentStatistics(userId: number) {
+    async getPaymentStatistics(userId: number): Promise<any> {
         const payments = await this.prisma.payment.findMany({
             where: { userId },
             include: this.getIncludeFields(),

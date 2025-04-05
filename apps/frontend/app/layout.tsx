@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+// import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { AuthProvider } from '@/components/AuthProvider'
 import { ToastProvider } from '@/components/ui/toast'
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'SPORTON',
@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ar" dir="rtl">
-            <body className={inter.className}>
+            <body>
                 <AuthProvider>
                     <ThemeProvider>
                         <ToastProvider>

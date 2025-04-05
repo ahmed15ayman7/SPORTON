@@ -2,43 +2,59 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAgentClientDto } from './dto/create-agent-client.dto';
 import { UpdateAgentClientDto } from './dto/update-agent-client.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { AgentClient, ClientStatus } from '@prisma/client';
 @Injectable()
 export class AgentClientService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createAgentClientDto: CreateAgentClientDto) {
+    async create(createAgentClientDto: CreateAgentClientDto): Promise<AgentClient> {
         return this.prisma.agentClient.create({
             data: {
                 agentId: createAgentClientDto.agentId,
-                clientId: createAgentClientDto.clientId,
+                playerId: createAgentClientDto.playerId,
                 status: createAgentClientDto.status,
-                startDate: createAgentClientDto.startDate ? new Date(createAgentClientDto.startDate) : null,
+                startDate: createAgentClientDto.startDate ? new Date(createAgentClientDto.startDate) : new Date(),
                 endDate: createAgentClientDto.endDate ? new Date(createAgentClientDto.endDate) : null,
-                notes: createAgentClientDto.notes
+                commission: createAgentClientDto.commission,
+                contract: createAgentClientDto.contract
             },
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
     }
 
-    async findAll() {
-        return this.prisma.agentClient.findMany({
+    async findAll(search: PaginationDto): Promise<PaginatedResponse<AgentClient>> {
+        const { skip, take } = search;
+        const total = await this.prisma.agentClient.count();
+        const agentClients = await this.prisma.agentClient.findMany({
+            skip,
+            take,
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
+        return {
+            data: agentClients,
+            meta: {
+                total,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: (skip || 0) + (take || 10) < total
+            }
+        };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<AgentClient> {
         const agentClient = await this.prisma.agentClient.findUnique({
             where: { id },
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
 
@@ -49,37 +65,55 @@ export class AgentClientService {
         return agentClient;
     }
 
-    async findByAgent(agentId: number) {
-        return this.prisma.agentClient.findMany({
+    async findByAgent(agentId: number): Promise<AgentClient[]> {
+        const agentClient = await this.prisma.agentClient.findMany({
             where: { agentId },
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
+
+        if (!agentClient) {
+            throw new NotFoundException(`علاقة العميل والوكيل رقم ${agentId} غير موجودة`);
+        }
+
+        return agentClient;
     }
 
-    async findByClient(clientId: number) {
-        return this.prisma.agentClient.findMany({
-            where: { clientId },
+    async findByClient(playerId: number): Promise<AgentClient[]> {
+        const agentClient = await this.prisma.agentClient.findMany({
+            where: { playerId },
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
+
+        if (!agentClient) {
+            throw new NotFoundException(`علاقة العميل والوكيل رقم ${playerId} غير موجودة`);
+        }
+
+        return agentClient;
     }
 
-    async findByStatus(status: string) {
-        return this.prisma.agentClient.findMany({
+    async findByStatus(status: ClientStatus): Promise<AgentClient[]> {
+        const agentClient = await this.prisma.agentClient.findMany({
             where: { status },
             include: {
                 agent: true,
-                client: true
+                player: true
             }
         });
+
+        if (!agentClient) {
+            throw new NotFoundException(`علاقة العميل والوكيل رقم ${status} غير موجودة`);
+        }
+
+        return agentClient;
     }
 
-    async update(id: number, updateAgentClientDto: UpdateAgentClientDto) {
+    async update(id: number, updateAgentClientDto: UpdateAgentClientDto): Promise<AgentClient> {
         try {
             return await this.prisma.agentClient.update({
                 where: { id },
@@ -87,11 +121,12 @@ export class AgentClientService {
                     status: updateAgentClientDto.status,
                     startDate: updateAgentClientDto.startDate ? new Date(updateAgentClientDto.startDate) : undefined,
                     endDate: updateAgentClientDto.endDate ? new Date(updateAgentClientDto.endDate) : undefined,
-                    notes: updateAgentClientDto.notes
+                    commission: updateAgentClientDto.commission,
+                    contract: updateAgentClientDto.contract
                 },
                 include: {
                     agent: true,
-                    client: true
+                    player: true
                 }
             });
         } catch (error) {
@@ -99,7 +134,7 @@ export class AgentClientService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<AgentClient> {
         try {
             return await this.prisma.agentClient.delete({
                 where: { id }

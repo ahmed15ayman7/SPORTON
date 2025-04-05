@@ -48,12 +48,12 @@ export class RoomUsersService extends BaseService<RoomUser> {
     }
 
     async isUserInRoom(roomId: number, userId: number): Promise<boolean> {
-        const roomUser = await this.prisma.roomUser.findUnique({
+        const roomUser = await this.prisma.roomUser.findFirst({
             where: {
-                roomId_userId: {
-                    roomId,
-                    userId,
-                },
+                AND: [
+                    { roomId },
+                    { userId },
+                ],
             },
         });
         return !!roomUser;

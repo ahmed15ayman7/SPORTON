@@ -1,18 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsDate, IsOptional } from 'class-validator';
+import { IsNumber, IsString, IsDate, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateLicenseDto {
     @ApiProperty({ description: 'معرف المستخدم' })
     @IsNumber()
-    userId: number;
+    coachId: number;
 
-    @ApiProperty({ description: 'نوع الترخيص' })
+    @ApiProperty({ description: 'اسم الترخيص' })
     @IsString()
-    type: string;
+    name: string;
 
-    @ApiProperty({ description: 'رقم الترخيص' })
+    @ApiProperty({ description: 'الجهة المصدرة' })
     @IsString()
-    number: string;
+    issuedBy: string;
 
     @ApiProperty({ description: 'تاريخ إصدار الترخيص' })
     @IsDate()
@@ -22,13 +22,17 @@ export class CreateLicenseDto {
     @IsDate()
     expiryDate: Date;
 
-    @ApiProperty({ description: 'الجهة المصدرة', required: false })
+    @ApiProperty({ description: 'مستوى الترخيص' })
     @IsString()
-    @IsOptional()
-    issuingAuthority?: string;
+    level: string;
 
-    @ApiProperty({ description: 'ملاحظات إضافية', required: false })
+    @ApiProperty({ description: 'رابط الشهادة', required: false })
     @IsString()
     @IsOptional()
-    notes?: string;
+    certificate?: string;
+
+    @ApiProperty({ description: 'حالة التحقق', required: false })
+    @IsBoolean()
+    @IsOptional()
+    verified?: boolean;
 } 

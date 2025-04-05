@@ -5,7 +5,7 @@ import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { OrderItem } from '@prisma/client';
-
+import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('عناصر الطلب')
 @Controller('order-item')
 export class OrderItemController {
@@ -21,7 +21,7 @@ export class OrderItemController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع عناصر الطلب' })
     @ApiResponse({ status: 200, description: 'تم جلب عناصر الطلب بنجاح' })
-    findAll(@Query() paginationDto: PaginationDto): Promise<OrderItem[]> {
+    findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<OrderItem>> {
         return this.orderItemService.findAll(paginationDto);
     }
 

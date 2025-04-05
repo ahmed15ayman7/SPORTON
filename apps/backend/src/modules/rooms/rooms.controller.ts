@@ -65,15 +65,4 @@ export class RoomsController extends BaseController<Room> {
         return this.roomsService.create(createRoomDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a room' })
-    @ApiResponse({ status: 200, description: 'The room has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateRoomDto: UpdateRoomDto,
-    ) {
-        return this.roomsService.update(id, updateRoomDto);
-    }
 } 

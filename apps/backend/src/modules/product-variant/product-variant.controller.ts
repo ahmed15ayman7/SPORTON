@@ -3,7 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductVariantService } from './product-variant.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { ProductVariant } from '@prisma/client';
 @ApiTags('متغيرات المنتجات')
 @Controller('product-variant')
 export class ProductVariantController {
@@ -19,28 +21,28 @@ export class ProductVariantController {
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع متغيرات المنتجات' })
     @ApiResponse({ status: 200, description: 'تم جلب متغيرات المنتجات بنجاح' })
-    findAll(@Query('search') search?: string) {
-        return this.productVariantService.findAll(search);
+    findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<ProductVariant>> {
+        return this.productVariantService.findAll(params);
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'الحصول على تفاصيل متغير منتج معين' })
     @ApiResponse({ status: 200, description: 'تم جلب تفاصيل متغير المنتج بنجاح' })
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: number): Promise<ProductVariant> {
         return this.productVariantService.getVariantProfile(+id);
     }
 
     @Get('product/:productId')
     @ApiOperation({ summary: 'الحصول على جميع متغيرات منتج معين' })
     @ApiResponse({ status: 200, description: 'تم جلب متغيرات المنتج بنجاح' })
-    getProductVariants(@Param('productId') productId: string) {
+    getProductVariants(@Param('productId') productId: number): Promise<ProductVariant[]> {
         return this.productVariantService.getProductVariants(+productId);
     }
 
     @Get('sku/:sku')
     @ApiOperation({ summary: 'الحصول على متغير منتج برقم المنتج المميز' })
     @ApiResponse({ status: 200, description: 'تم جلب متغير المنتج بنجاح' })
-    getVariantBySku(@Param('sku') sku: string) {
+    getVariantBySku(@Param('sku') sku: string): Promise<ProductVariant> {
         return this.productVariantService.getVariantBySku(sku);
     }
 
@@ -48,7 +50,7 @@ export class ProductVariantController {
     @ApiOperation({ summary: 'تحديث المخزون لمتغير منتج معين' })
     @ApiResponse({ status: 200, description: 'تم تحديث المخزون بنجاح' })
     updateStock(
-        @Param('id') id: string,
+        @Param('id') id: number,
         @Body('quantity') quantity: number,
     ) {
         return this.productVariantService.updateStock(+id, quantity);
@@ -58,7 +60,7 @@ export class ProductVariantController {
     @ApiOperation({ summary: 'تحديث السعر لمتغير منتج معين' })
     @ApiResponse({ status: 200, description: 'تم تحديث السعر بنجاح' })
     updatePrice(
-        @Param('id') id: string,
+        @Param('id') id: number,
         @Body('price') price: number,
     ) {
         return this.productVariantService.updatePrice(+id, price);

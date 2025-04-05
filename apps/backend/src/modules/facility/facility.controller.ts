@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FacilityService } from './facility.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
-
+import { Facility, FacilityType } from '@prisma/client';
 @ApiTags('المنشآت')
 @Controller('facilities')
 export class FacilityController {
@@ -12,29 +12,29 @@ export class FacilityController {
     @Post()
     @ApiOperation({ summary: 'إنشاء منشأة جديدة' })
     @ApiResponse({ status: 201, description: 'تم إنشاء المنشأة بنجاح' })
-    create(@Body() createFacilityDto: CreateFacilityDto) {
+    create(@Body() createFacilityDto: CreateFacilityDto): Promise<Facility> {
         return this.facilityService.create(createFacilityDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع المنشآت' })
     @ApiResponse({ status: 200, description: 'تم جلب المنشآت بنجاح' })
-    findAll() {
+    findAll(): Promise<Facility[]> {
         return this.facilityService.findAll();
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'الحصول على منشأة محددة' })
     @ApiResponse({ status: 200, description: 'تم جلب المنشأة بنجاح' })
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id') id: string): Promise<Facility> {
         return this.facilityService.findOne(+id);
     }
 
     @Get('type/:type')
     @ApiOperation({ summary: 'الحصول على منشآت بنوع محدد' })
     @ApiResponse({ status: 200, description: 'تم جلب المنشآت بنجاح' })
-    findByType(@Param('type') type: string) {
-        return this.facilityService.findByType(type);
+    findByType(@Param('type') type: string): Promise<Facility[]> {
+        return this.facilityService.findByType(type as FacilityType);
     }
 
     @Patch(':id')
@@ -43,14 +43,14 @@ export class FacilityController {
     update(
         @Param('id') id: string,
         @Body() updateFacilityDto: UpdateFacilityDto,
-    ) {
+    ): Promise<Facility> {
         return this.facilityService.update(+id, updateFacilityDto);
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'حذف منشأة محددة' })
     @ApiResponse({ status: 200, description: 'تم حذف المنشأة بنجاح' })
-    remove(@Param('id') id: string) {
+    remove(@Param('id') id: string): Promise<Facility> {
         return this.facilityService.remove(+id);
     }
 } 

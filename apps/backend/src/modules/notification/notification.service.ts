@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Notification, NotificationStatus } from '@prisma/client';
+import { Notification, NotificationType } from '@prisma/client';
 
 @Injectable()
 export class NotificationService extends BaseService<Notification> {
@@ -42,7 +42,7 @@ export class NotificationService extends BaseService<Notification> {
         return this.prisma.notification.findMany({
             where: {
                 userId,
-                status: NotificationStatus.UNREAD,
+                isRead: false,
             },
             include: this.getIncludeFields(),
             orderBy: { createdAt: 'desc' },
@@ -53,7 +53,7 @@ export class NotificationService extends BaseService<Notification> {
         return this.prisma.notification.findMany({
             where: {
                 userId,
-                status: NotificationStatus.READ,
+                isRead: true,
             },
             include: this.getIncludeFields(),
             orderBy: { createdAt: 'desc' },
@@ -64,7 +64,7 @@ export class NotificationService extends BaseService<Notification> {
         const notification = await this.getNotificationProfile(id);
         return this.prisma.notification.update({
             where: { id },
-            data: { status: NotificationStatus.READ },
+            data: { isRead: true },
         });
     }
 
@@ -72,9 +72,9 @@ export class NotificationService extends BaseService<Notification> {
         await this.prisma.notification.updateMany({
             where: {
                 userId,
-                status: NotificationStatus.UNREAD,
+                isRead: false,
             },
-            data: { status: NotificationStatus.READ },
+            data: { isRead: true },
         });
         return this.getUserNotifications(userId);
     }
@@ -83,7 +83,7 @@ export class NotificationService extends BaseService<Notification> {
         return this.prisma.notification.findMany({
             where: {
                 userId,
-                type,
+                type: type as NotificationType,
             },
             include: this.getIncludeFields(),
             orderBy: { createdAt: 'desc' },

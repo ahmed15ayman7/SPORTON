@@ -50,15 +50,4 @@ export class CertificatesController extends BaseController<Certificate> {
         return this.certificatesService.create(createCertificateDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a certificate' })
-    @ApiResponse({ status: 200, description: 'The certificate has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateCertificateDto: UpdateCertificateDto,
-    ) {
-        return this.certificatesService.update(id, updateCertificateDto);
-    }
 } 

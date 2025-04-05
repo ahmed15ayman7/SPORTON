@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsFloat } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCampaignAnalyticsDto {
@@ -13,7 +13,7 @@ export class CreateCampaignAnalyticsDto {
     totalReach: number;
 
     @ApiProperty({ description: 'نسبة التفاعل' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     engagement: number;
 
@@ -23,7 +23,7 @@ export class CreateCampaignAnalyticsDto {
     conversions: number;
 
     @ApiProperty({ description: 'العائد على الاستثمار' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     roi: number;
 } 

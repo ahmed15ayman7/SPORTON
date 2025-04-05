@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsFloat, IsDate } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTargetingPerformanceDto {
@@ -13,17 +13,17 @@ export class CreateTargetingPerformanceDto {
     segmentId: number;
 
     @ApiProperty({ description: 'الأداء' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     performance: number;
 
     @ApiProperty({ description: 'التكلفة' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     cost: number;
 
     @ApiProperty({ description: 'العائد على الاستثمار' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     roi: number;
 

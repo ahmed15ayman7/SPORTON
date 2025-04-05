@@ -51,7 +51,7 @@ export class MessagesService extends BaseService<Message> {
     async getRoomMessages(roomId: number): Promise<Message[]> {
         const messages = await this.prisma.message.findMany({
             where: {
-                rooms: {
+                Room: {
                     some: {
                         id: roomId,
                     },

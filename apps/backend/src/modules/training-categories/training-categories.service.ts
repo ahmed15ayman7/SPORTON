@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { TrainingCategory } from '@prisma/client';
+import { TrainingCategory, Training } from '@prisma/client';
 
 @Injectable()
 export class TrainingCategoriesService extends BaseService<TrainingCategory> {
@@ -30,7 +30,7 @@ export class TrainingCategoriesService extends BaseService<TrainingCategory> {
         return category;
     }
 
-    async getCategoryTrainings(id: number) {
+    async getCategoryTrainings(id: number): Promise<Training[]> {
         const category = await this.prisma.trainingCategory.findUnique({
             where: { id },
             include: {

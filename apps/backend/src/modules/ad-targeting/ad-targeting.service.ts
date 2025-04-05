@@ -32,7 +32,7 @@ export class AdTargetingService extends BaseService<AdTargeting> {
         return targeting;
     }
 
-    async getAdTargeting(adId: number) {
+    async getAdTargeting(adId: number): Promise<AdTargeting[]> {
         const targeting = await this.prisma.adTargeting.findMany({
             where: { adId },
             include: this.getIncludeFields(),
@@ -43,7 +43,7 @@ export class AdTargetingService extends BaseService<AdTargeting> {
         return targeting;
     }
 
-    async getTargetingByInterests(interests: string[]) {
+    async getTargetingByInterests(interests: string[]): Promise<AdTargeting[]> {
         const targeting = await this.prisma.adTargeting.findMany({
             where: {
                 targetInterests: {
@@ -58,7 +58,7 @@ export class AdTargetingService extends BaseService<AdTargeting> {
         return targeting;
     }
 
-    async getTargetingByBehaviors(behaviors: string[]) {
+    async getTargetingByBehaviors(behaviors: string[]): Promise<AdTargeting[]> {
         const targeting = await this.prisma.adTargeting.findMany({
             where: {
                 targetBehaviors: {
@@ -73,7 +73,7 @@ export class AdTargetingService extends BaseService<AdTargeting> {
         return targeting;
     }
 
-    async getTargetingPerformance(id: number) {
+    async getTargetingPerformance(id: number): Promise<any> {
         const targeting = await this.prisma.adTargeting.findUnique({
             where: { id },
             include: {

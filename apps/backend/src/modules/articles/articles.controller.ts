@@ -3,23 +3,28 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-
+import { BaseController } from '@/common/controllers/base.controller';
+import { Article } from '@prisma/client';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('المقالات')
 @Controller('articles')
-export class ArticlesController {
-    constructor(private readonly articlesService: ArticlesService) { }
+export class ArticlesController extends BaseController<Article> {
+    constructor(private readonly articlesService: ArticlesService) {
+        super(articlesService);
+    }
 
     @Post()
     @ApiOperation({ summary: 'إنشاء مقال جديد' })
     @ApiResponse({ status: 201, description: 'تم إنشاء المقال بنجاح' })
-    create(@Body() createArticleDto: CreateArticleDto) {
+    async create(@Body() createArticleDto: CreateArticleDto): Promise<Article> {
         return this.articlesService.create(createArticleDto);
     }
 
     @Get()
     @ApiOperation({ summary: 'الحصول على جميع المقالات' })
     @ApiResponse({ status: 200, description: 'تم جلب المقالات بنجاح' })
-    findAll(@Query('search') search?: string) {
+    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<Article>> {
         return this.articlesService.findAll(search);
     }
 
@@ -40,35 +45,22 @@ export class ArticlesController {
     @Get('user/:userId')
     @ApiOperation({ summary: 'الحصول على مقالات المستخدم' })
     @ApiResponse({ status: 200, description: 'تم جلب مقالات المستخدم بنجاح' })
-    getUserArticles(@Param('userId') userId: string) {
+    async getUserArticles(@Param('userId') userId: number): Promise<Article[]> {
         return this.articlesService.getUserArticles(+userId);
     }
 
     @Get('category/:categoryId')
     @ApiOperation({ summary: 'الحصول على مقالات الفئة' })
     @ApiResponse({ status: 200, description: 'تم جلب مقالات الفئة بنجاح' })
-    getCategoryArticles(@Param('categoryId') categoryId: string) {
+    async getCategoryArticles(@Param('categoryId') categoryId: number): Promise<Article[]> {
         return this.articlesService.getCategoryArticles(+categoryId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث المقال' })
-    @ApiResponse({ status: 200, description: 'تم تحديث المقال بنجاح' })
-    update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-        return this.articlesService.update(+id, updateArticleDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف المقال' })
-    @ApiResponse({ status: 200, description: 'تم حذف المقال بنجاح' })
-    remove(@Param('id') id: string) {
-        return this.articlesService.remove(+id);
-    }
 
     @Post(':id/view')
     @ApiOperation({ summary: 'زيادة عدد المشاهدات' })
     @ApiResponse({ status: 200, description: 'تم زيادة عدد المشاهدات بنجاح' })
-    incrementViews(@Param('id') id: string) {
+    async incrementViews(@Param('id') id: number): Promise<Article> {
         return this.articlesService.incrementViews(+id);
     }
 } 

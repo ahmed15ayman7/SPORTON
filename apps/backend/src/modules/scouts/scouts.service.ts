@@ -22,7 +22,6 @@ export class ScoutsService extends BaseService<Scout> {
             performanceReportCoaches: true,
             subscriptions: true,
             payments: true,
-            reports: true,
             reported: true,
             competitionParticipants: true,
             userBehaviors: true,

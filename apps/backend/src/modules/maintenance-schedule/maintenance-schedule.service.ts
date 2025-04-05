@@ -1,30 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateMaintenanceScheduleDto } from './dto/create-maintenance-schedule.dto';
 import { UpdateMaintenanceScheduleDto } from './dto/update-maintenance-schedule.dto';
-
+import { MaintenanceSchedule } from '@prisma/client';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
 export class MaintenanceScheduleService {
     constructor(private prisma: PrismaService) { }
 
-    async create(createMaintenanceScheduleDto: CreateMaintenanceScheduleDto) {
+    async create(createMaintenanceScheduleDto: CreateMaintenanceScheduleDto): Promise<MaintenanceSchedule> {
         return this.prisma.maintenanceSchedule.create({
-            data: createMaintenanceScheduleDto,
+            data: {
+                ...createMaintenanceScheduleDto,
+                startDate: new Date(createMaintenanceScheduleDto.startDate),
+                endDate: new Date(createMaintenanceScheduleDto.endDate),
+                type: createMaintenanceScheduleDto.type,
+            },
             include: {
                 facility: true,
             },
         });
     }
 
-    async findAll() {
-        return this.prisma.maintenanceSchedule.findMany({
+    async findAll(paginationDto: PaginationDto): Promise<PaginatedResponse<MaintenanceSchedule>> {
+        const { skip, take } = paginationDto;
+        const total = await this.prisma.maintenanceSchedule.count();
+        const maintenanceSchedules = await this.prisma.maintenanceSchedule.findMany({
+            skip,
+            take,
             include: {
                 facility: true,
             },
         });
+        return { data: maintenanceSchedules, meta: { total, skip: skip || 0, take: take || 10, hasMore: (skip || 0) + (take || 10) < total } };
     }
 
-    async findOne(id: number) {
+    async findOne(id: number): Promise<MaintenanceSchedule> {
         const schedule = await this.prisma.maintenanceSchedule.findUnique({
             where: { id },
             include: {
@@ -39,7 +51,7 @@ export class MaintenanceScheduleService {
         return schedule;
     }
 
-    async findByFacility(facilityId: number) {
+    async findByFacility(facilityId: number): Promise<MaintenanceSchedule[]> {
         return this.prisma.maintenanceSchedule.findMany({
             where: { facilityId },
             include: {
@@ -48,7 +60,7 @@ export class MaintenanceScheduleService {
         });
     }
 
-    async findByStatus(status: string) {
+    async findByStatus(status: string): Promise<MaintenanceSchedule[]> {
         return this.prisma.maintenanceSchedule.findMany({
             where: { status },
             include: {
@@ -57,10 +69,10 @@ export class MaintenanceScheduleService {
         });
     }
 
-    async findByDateRange(startDate: Date, endDate: Date) {
+    async findByDateRange(startDate: Date, endDate: Date): Promise<MaintenanceSchedule[]> {
         return this.prisma.maintenanceSchedule.findMany({
             where: {
-                scheduledDate: {
+                startDate: {
                     gte: startDate,
                     lte: endDate,
                 },
@@ -71,7 +83,7 @@ export class MaintenanceScheduleService {
         });
     }
 
-    async update(id: number, updateMaintenanceScheduleDto: UpdateMaintenanceScheduleDto) {
+    async update(id: number, updateMaintenanceScheduleDto: UpdateMaintenanceScheduleDto): Promise<MaintenanceSchedule> {
         try {
             return await this.prisma.maintenanceSchedule.update({
                 where: { id },
@@ -85,7 +97,7 @@ export class MaintenanceScheduleService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number): Promise<MaintenanceSchedule> {
         try {
             return await this.prisma.maintenanceSchedule.delete({
                 where: { id },

@@ -1,4 +1,4 @@
-import { IsNumber, IsNotEmpty, IsFloat, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ContentType } from '@prisma/client';
 
@@ -18,27 +18,27 @@ export class CreateContentScoreDto {
     userSegment: string;
 
     @ApiProperty({ description: 'درجة الملاءمة' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     relevanceScore: number;
 
     @ApiProperty({ description: 'درجة الحداثة' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     freshness: number;
 
     @ApiProperty({ description: 'درجة الجودة' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     quality: number;
 
     @ApiProperty({ description: 'درجة التفاعل' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     engagement: number;
 
     @ApiProperty({ description: 'الدرجة النهائية' })
-    @IsFloat()
+    @IsNumber()
     @IsNotEmpty()
     finalScore: number;
 } 

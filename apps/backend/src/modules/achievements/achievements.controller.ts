@@ -40,16 +40,4 @@ export class AchievementsController extends BaseController<Achievement> {
     async create(@Body() createAchievementDto: CreateAchievementDto) {
         return this.achievementsService.create(createAchievementDto);
     }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update an achievement' })
-    @ApiResponse({ status: 200, description: 'The achievement has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateAchievementDto: UpdateAchievementDto,
-    ) {
-        return this.achievementsService.update(id, updateAchievementDto);
-    }
 } 

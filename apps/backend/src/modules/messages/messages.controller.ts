@@ -68,15 +68,5 @@ export class MessagesController extends BaseController<Message> {
         return this.messagesService.create(createMessageDto);
     }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a message' })
-    @ApiResponse({ status: 200, description: 'The message has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateMessageDto: UpdateMessageDto,
-    ) {
-        return this.messagesService.update(id, updateMessageDto);
-    }
+
 } 

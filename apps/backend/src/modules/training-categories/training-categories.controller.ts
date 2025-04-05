@@ -13,7 +13,7 @@ import { TrainingCategoriesService } from './training-categories.service';
 import { CreateTrainingCategoryDto } from './dto/create-training-category.dto';
 import { UpdateTrainingCategoryDto } from './dto/update-training-category.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-
+import { Training } from '@prisma/client';
 @ApiTags('فئات التدريب')
 @Controller('training-categories')
 export class TrainingCategoriesController {
@@ -43,7 +43,7 @@ export class TrainingCategoriesController {
     @Get(':id/trainings')
     @ApiOperation({ summary: 'الحصول على التدريبات في فئة محددة' })
     @ApiResponse({ status: 200, description: 'تم استرجاع التدريبات بنجاح' })
-    getCategoryTrainings(@Param('id') id: string) {
+    getCategoryTrainings(@Param('id') id: string): Promise<Training[]> {
         return this.trainingCategoriesService.getCategoryTrainings(+id);
     }
 
