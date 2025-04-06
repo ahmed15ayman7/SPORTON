@@ -2,8 +2,8 @@
   "name": "shared",
   "version": "1.0.0",
   "scripts": {
-    "prisma:generate": " prisma generate",
-    "build": " prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "build": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.10.2"
