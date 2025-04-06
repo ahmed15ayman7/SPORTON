@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { TeamsService } from './teams.service';
-import { Team } from '@prisma/client';
+import { Team } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @ApiTags('teams')

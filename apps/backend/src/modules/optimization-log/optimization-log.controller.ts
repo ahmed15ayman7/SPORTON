@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { OptimizationLogService } from './optimization-log.service';
 import { CreateOptimizationLogDto } from './dto/create-optimization-log.dto';
 import { UpdateOptimizationLogDto } from './dto/update-optimization-log.dto';
-import { OptimizationLog } from '@prisma/client';
+import { OptimizationLog } from '@shared/prisma';
 import { BaseController } from '../../common/controllers/base.controller';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';

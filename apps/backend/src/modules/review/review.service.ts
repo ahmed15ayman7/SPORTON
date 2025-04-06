@@ -2,11 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { ProductReview } from '@prisma/client';
+import { ProductReview } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@shared/prisma';
 @Injectable()
 export class ReviewService extends BaseService<ProductReview> {
     constructor(protected prisma: PrismaService) {

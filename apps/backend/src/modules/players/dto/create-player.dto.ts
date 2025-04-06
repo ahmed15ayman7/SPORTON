@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, IsDate, IsEnum, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Foot } from '@prisma/client';
+import { Foot } from '@shared/prisma';
 
 export class CreatePlayerDto {
     @ApiProperty()

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { BlockList } from '@prisma/client';
+import { BlockList } from '@shared/prisma';
 
 @Injectable()
 export class BlockListsService extends BaseService<BlockList> {

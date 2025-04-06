@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CampaignsService } from './campaigns.service';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
-import { Campaign, CampaignAnalytics, Advertisement, CampaignStatus } from '@prisma/client';
+import { Campaign, CampaignAnalytics, Advertisement, CampaignStatus } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseController } from '@/common/controllers/base.controller';

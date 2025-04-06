@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { TrainingSchedule, TrainingScheduleStatus } from '@prisma/client';
+import { TrainingSchedule, TrainingScheduleStatus } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';

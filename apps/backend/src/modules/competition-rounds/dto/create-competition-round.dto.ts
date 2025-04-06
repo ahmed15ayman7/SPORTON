@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsEnum, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoundStatus } from '@prisma/client';
+import { RoundStatus } from '@shared/prisma';
 
 export class CreateCompetitionRoundDto {
     @ApiProperty({ description: 'معرف المسابقة' })

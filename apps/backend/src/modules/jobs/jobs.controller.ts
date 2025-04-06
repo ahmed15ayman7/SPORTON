@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { JobsService } from './jobs.service';
-import { Job } from '@prisma/client';
+import { Job } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';

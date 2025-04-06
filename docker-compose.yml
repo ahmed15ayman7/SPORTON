@@ -1,37 +1,39 @@
-version: '3.8'
-
 services:
-  backend:
+  app:
     build:
-      context: ./apps/backend
+      context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/sporton?schema=public
-      - REDIS_HOST=redis
-    depends_on:
-      - postgres
-      - redis
+      - "3000:3000"  # Backend
+      - "3001:3001"  # Frontend
+      - "3002:3002"  # Admin
+      - "3003:3003"  # Shared
+    env_file:
+      - ./packages/shared/.env
+      - ./apps/backend/.env
+      - ./apps/frontend/.env.local
+    # depends_on:
+      # - postgres
+      # - redis
 
-  postgres:
-    image: postgres:14
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=sporton
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # postgres:
+  #   image: postgres:14
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=sporton
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
 
-volumes:
-  postgres_data:
-  redis_data: 
+# volumes:
+  # postgres_data:
+  # redis_data:

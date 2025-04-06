@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { StreamingInfoService } from './streaming-info.service';
 import { UpdateStreamingInfoDto } from './dto/update-streaming-info.dto';
-import { StreamingInfo } from '@prisma/client';
+import { StreamingInfo } from '@shared/prisma';
 import { BaseController } from '../../common/controllers/base.controller';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 @ApiTags('معلومات البث')

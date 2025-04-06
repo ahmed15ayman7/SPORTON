@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ContractService } from './contract.service';
 import { CreateContractDto, ContractStatus } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
-import { Contract } from '@prisma/client';
+import { Contract } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseController } from '@/common/controllers/base.controller';

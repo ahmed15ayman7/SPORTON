@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { MessagesService } from './messages.service';
-import { Message } from '@prisma/client';
+import { Message } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';

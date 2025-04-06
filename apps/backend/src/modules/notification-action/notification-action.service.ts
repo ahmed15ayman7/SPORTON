@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
 import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
-import { NotificationAction } from '@prisma/client';
+import { NotificationAction } from '@shared/prisma';
 @Injectable()
 export class NotificationActionService {
     constructor(private prisma: PrismaService) { }

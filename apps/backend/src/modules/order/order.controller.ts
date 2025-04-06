@@ -3,9 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { Order } from '@prisma/client';
+import { Order } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('الطلبات')
 @Controller('order')

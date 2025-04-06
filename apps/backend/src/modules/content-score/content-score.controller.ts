@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ContentScoreService } from './content-score.service';
 import { CreateContentScoreDto } from './dto/create-content-score.dto';
 import { UpdateContentScoreDto } from './dto/update-content-score.dto';
-import { ContentScore } from '@prisma/client';
+import { ContentScore } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('درجة المحتوى')

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { AvailabilitiesService } from './availabilities.service';
-import { Availability, AvailabilityStatus } from '@prisma/client';
+import { Availability, AvailabilityStatus } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';

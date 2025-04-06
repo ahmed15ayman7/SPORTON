@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsEnum, IsOptional, IsDate, IsArray } from 'class-validator';
-import { TrainingLevel } from '@prisma/client';
+import { TrainingLevel } from '@shared/prisma';
 
 export class CreateTrainingScheduleDto {
     @ApiProperty({ description: 'معرف الفريق' })

@@ -1,6 +1,6 @@
 import { IsNumber, IsNotEmpty, IsDate, IsString, IsArray, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PlanType, SubscriptionStatus } from '@prisma/client';
+import { PlanType, SubscriptionStatus } from '@shared/prisma';
 
 export class CreateSubscriptionDto {
     @ApiProperty({ description: 'معرف المستخدم' })

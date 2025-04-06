@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ABTestService } from './ab-test.service';
 import { CreateABTestDto } from './dto/create-ab-test.dto';
 import { UpdateABTestDto } from './dto/update-ab-test.dto';
-import { ABTest } from '@prisma/client';
+import { ABTest } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseController } from '@/common/controllers/base.controller';

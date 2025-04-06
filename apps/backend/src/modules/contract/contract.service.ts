@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { ContractStatus } from './dto/create-contract.dto';
-import { Contract } from '@prisma/client';
+import { Contract } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 @Injectable()

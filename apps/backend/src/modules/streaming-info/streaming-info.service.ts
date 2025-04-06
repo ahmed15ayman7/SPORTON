@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { StreamingInfo } from '@prisma/client';
+import { StreamingInfo } from '@shared/prisma';
 import { BaseService } from '../../common/services/base.service';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Query } from '@nestjs/common';
 import { CompetitionsService } from './competitions.service';
-import { Competition, CompetitionStatus, Sport } from '@prisma/client';
+import { Competition, CompetitionStatus, Sport } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseController } from '@/common/controllers/base.controller';

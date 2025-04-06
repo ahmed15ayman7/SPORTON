@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { TrainingVideosService } from './training-videos.service';
-import { TrainingVideo } from '@prisma/client';
+import { TrainingVideo } from '@shared/prisma';
 import { BaseController } from '@/common/controllers/base.controller';
 
 @Controller('training-videos')

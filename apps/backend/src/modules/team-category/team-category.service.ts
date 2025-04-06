@@ -2,11 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTeamCategoryDto } from './dto/create-team-category.dto';
 import { UpdateTeamCategoryDto } from './dto/update-team-category.dto';
-import { TeamCategory } from '@prisma/client';
+import { TeamCategory } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@shared/prisma';
 @Injectable()
 export class TeamCategoryService extends BaseService<TeamCategory> {
     constructor(protected prisma: PrismaService) {

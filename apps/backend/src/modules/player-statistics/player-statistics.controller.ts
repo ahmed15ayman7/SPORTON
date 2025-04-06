@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PlayerStatisticsService } from './player-statistics.service';
 import { CreatePlayerStatisticsDto } from './dto/create-player-statistics.dto';
 import { UpdatePlayerStatisticsDto } from './dto/update-player-statistics.dto';
-import { PlayerStatistics } from '@prisma/client';
+import { PlayerStatistics } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('إحصائيات اللاعبين')

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { ActionType } from '@prisma/client';
+import { ActionType } from '@shared/prisma';
 
 export class CreateNotificationActionDto {
     @ApiProperty({ description: 'معرف الإشعار المرتبط بالإجراء' })

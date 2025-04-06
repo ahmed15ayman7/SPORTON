@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsDate, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CampaignStatus } from '@prisma/client';
+import { CampaignStatus } from '@shared/prisma';
 
 export class CreateCampaignDto {
     @ApiProperty({ description: 'اسم الحملة' })

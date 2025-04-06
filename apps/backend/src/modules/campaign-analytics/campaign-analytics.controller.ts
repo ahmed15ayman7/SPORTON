@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CampaignAnalyticsService } from './campaign-analytics.service';
 import { CreateCampaignAnalyticsDto } from './dto/create-campaign-analytics.dto';
 import { UpdateCampaignAnalyticsDto } from './dto/update-campaign-analytics.dto';
-import { CampaignAnalytics } from '@prisma/client';
+import { CampaignAnalytics } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('تحليلات الحملات')

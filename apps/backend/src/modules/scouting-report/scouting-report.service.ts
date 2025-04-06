@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateScoutingReportDto } from './dto/create-scouting-report.dto';
 import { UpdateScoutingReportDto } from './dto/update-scouting-report.dto';
 import { BaseService } from '../../common/services/base.service';
-import { ScoutingReport, Prisma } from '@prisma/client';
+import { ScoutingReport, Prisma } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 @Injectable()

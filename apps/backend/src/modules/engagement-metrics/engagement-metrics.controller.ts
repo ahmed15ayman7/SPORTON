@@ -4,7 +4,7 @@ import { EngagementMetricsService } from './engagement-metrics.service';
 import { CreateEngagementMetricsDto } from './dto/create-engagement-metrics.dto';
 import { UpdateEngagementMetricsDto } from './dto/update-engagement-metrics.dto';
 import { BaseController } from '@/common/controllers/base.controller';
-import { EngagementMetrics, ContentType } from '@prisma/client';
+import { EngagementMetrics, ContentType } from '@shared/prisma';
 
 @ApiTags('مقاييس التفاعل')
 @Controller('engagement-metrics')

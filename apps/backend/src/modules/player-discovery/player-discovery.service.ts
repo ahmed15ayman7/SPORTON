@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePlayerDiscoveryDto } from './dto/create-player-discovery.dto';
 import { UpdatePlayerDiscoveryDto } from './dto/update-player-discovery.dto';
-import { PlayerDiscovery, DiscoveryStatus } from '@prisma/client';
+import { PlayerDiscovery, DiscoveryStatus } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()

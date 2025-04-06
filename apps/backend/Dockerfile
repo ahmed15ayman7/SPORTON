@@ -1,17 +1,21 @@
+# 1. Base image
 FROM node:18-alpine
 
-WORKDIR /usr/src/app
+# 2. Set working directory
+WORKDIR /app
 
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
+# 3. Copy package.json and lock file
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY apps/backend ./apps/backend
+COPY packages ./packages
 
-RUN npm install -g pnpm
-RUN pnpm install
+# 4. Install pnpm & dependencies
+RUN npm install -g pnpm && pnpm install
 
-COPY . .
+# 5. Build the app
+RUN pnpm --filter backend build
 
-RUN pnpm build
-
+# 6. Expose port and run
 EXPOSE 3000
 
-CMD ["pnpm", "start:prod"] 
+CMD ["pnpm", "--filter", "backend", "start"] 

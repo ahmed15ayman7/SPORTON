@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdAnalyticsService } from './ad-analytics.service';
 import { CreateAdAnalyticsDto } from './dto/create-ad-analytics.dto';
 import { UpdateAdAnalyticsDto } from './dto/update-ad-analytics.dto';
-import { AdAnalytics } from '@prisma/client';
+import { AdAnalytics } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('تحليلات الإعلانات')

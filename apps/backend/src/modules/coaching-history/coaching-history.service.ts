@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CoachingHistory } from '@prisma/client';
+import { CoachingHistory } from '@shared/prisma';
 import { CreateCoachingHistoryDto } from './dto/create-coaching-history.dto';
 import { UpdateCoachingHistoryDto } from './dto/update-coaching-history.dto';
 import { BaseService } from '@/common/services/base.service';

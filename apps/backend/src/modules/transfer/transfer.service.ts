@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateTransferDto } from './dto/create-transfer.dto';
-import { TransferStatus } from '@prisma/client';
+import { TransferStatus } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
-import { Transfer } from '@prisma/client';
+import { Transfer } from '@shared/prisma';
 @Injectable()
 export class TransferService extends BaseService<Transfer> {
     constructor(protected prisma: PrismaService) {

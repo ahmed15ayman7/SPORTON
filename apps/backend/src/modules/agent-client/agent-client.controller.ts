@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AgentClientService } from './agent-client.service';
 import { CreateAgentClientDto } from './dto/create-agent-client.dto';
 import { UpdateAgentClientDto } from './dto/update-agent-client.dto';
-import { AgentClient, ClientStatus } from '@prisma/client';
+import { AgentClient, ClientStatus } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseController } from '@/common/controllers/base.controller';

@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { EventCategoriesService } from './event-categories.service';
-import { EventCategory, Event } from '@prisma/client';
+import { EventCategory, Event } from '@shared/prisma';
 import { BaseController } from '../../common/controllers/base.controller';
 @Controller('event-categories')
 export class EventCategoriesController extends BaseController<EventCategory> {

@@ -4,8 +4,8 @@ import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { Tournament, TournamentType } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { Tournament, TournamentType } from '@shared/prisma';
+import { Prisma } from '@shared/prisma';
 
 @Injectable()
 export class TournamentService {

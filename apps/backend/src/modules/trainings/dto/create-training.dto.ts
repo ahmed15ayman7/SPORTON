@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, IsDate, IsOptional, IsEnum, IsArray } from 'class-validator';
-import { TrainingLevel } from '@prisma/client';
+import { TrainingLevel } from '@shared/prisma';
 
 export class CreateTrainingDto {
     @ApiProperty()

@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationActionService } from './notification-action.service';
 import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
 import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
-import { NotificationAction } from '@prisma/client';
+import { NotificationAction } from '@shared/prisma';
 @ApiTags('إجراءات الإشعارات')
 @Controller('notification-actions')
 export class NotificationActionController {

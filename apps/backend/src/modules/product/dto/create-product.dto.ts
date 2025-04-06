@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsOptional, IsArray, IsEnum, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sport } from '@prisma/client';
+import { Sport } from '@shared/prisma';
 
 export class CreateProductDto {
     @ApiProperty({ description: 'اسم المنتج' })

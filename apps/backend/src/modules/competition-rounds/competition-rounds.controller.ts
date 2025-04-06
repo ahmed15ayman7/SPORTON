@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CompetitionRoundsService } from './competition-rounds.service';
 import { CreateCompetitionRoundDto } from './dto/create-competition-round.dto';
 import { UpdateCompetitionRoundDto } from './dto/update-competition-round.dto';
-import { CompetitionRound } from '@prisma/client';
+import { CompetitionRound } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('جولات المسابقات')

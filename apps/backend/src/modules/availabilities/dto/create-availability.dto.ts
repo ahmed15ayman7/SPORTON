@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString, IsDate, IsNumber, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { AvailabilityStatus } from '@prisma/client';
+import { AvailabilityStatus } from '@shared/prisma';
 
 export class CreateAvailabilityDto {
     @ApiProperty({ description: 'معرف المستخدم' })

@@ -5,7 +5,7 @@ import { CreateProductImageDto } from './dto/create-product-image.dto';
 import { UpdateProductImageDto } from './dto/update-product-image.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { ProductImage } from '@prisma/client';
+import { ProductImage } from '@shared/prisma';
 @ApiTags('صور المنتجات')
 @Controller('product-image')
 export class ProductImageController {

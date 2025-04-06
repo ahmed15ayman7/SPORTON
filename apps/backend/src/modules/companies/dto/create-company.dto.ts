@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
-import { CompanyType } from '@prisma/client';
+import { CompanyType } from '@shared/prisma';
 
 export class CreateCompanyDto {
     @ApiProperty()

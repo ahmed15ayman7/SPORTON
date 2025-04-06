@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotificationTemplate, NotificationType } from '@prisma/client';
+import { NotificationTemplate, NotificationType } from '@shared/prisma';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';

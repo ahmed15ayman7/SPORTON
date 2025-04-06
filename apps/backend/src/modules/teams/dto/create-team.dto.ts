@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sport } from '@prisma/client';
+import { Sport } from '@shared/prisma';
 
 export class CreateTeamDto {
     @ApiProperty({ description: 'اسم الفريق' })

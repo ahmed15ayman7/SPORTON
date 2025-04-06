@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsEnum, IsOptional } from 'class-validator';
-import { ClientStatus } from '@prisma/client';
+import { ClientStatus } from '@shared/prisma';
 
 export class CreateAgentClientDto {
     @ApiProperty({ description: 'معرف الوكيل' })

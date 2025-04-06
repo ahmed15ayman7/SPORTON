@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsArray, IsOptional, IsEnum, IsDate, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sport, Role, AdStatus, AgeRange } from '@prisma/client';
+import { Sport, Role, AdStatus, AgeRange } from '@shared/prisma';
 
 export class CreateAdvertisementDto {
     @ApiProperty({ description: 'عنوان الإعلان' })

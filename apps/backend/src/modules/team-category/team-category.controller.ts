@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TeamCategoryService } from './team-category.service';
-import { TeamCategory } from '@prisma/client';
+import { TeamCategory } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('فئات الفرق')

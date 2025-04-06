@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { SponsorshipsService } from './sponsorships.service';
-import { Sponsorship } from '@prisma/client';
+import { Sponsorship } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateSponsorshipDto } from './dto/create-sponsorship.dto';
 import { UpdateSponsorshipDto } from './dto/update-sponsorship.dto';

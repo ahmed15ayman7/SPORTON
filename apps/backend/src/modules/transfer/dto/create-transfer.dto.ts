@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsEnum, IsOptional, IsDate } from 'class-validator';
-import { TransferStatus } from '@prisma/client';
+import { TransferStatus } from '@shared/prisma';
 
 export class CreateTransferDto {
     @ApiProperty({ description: 'معرف اللاعب' })

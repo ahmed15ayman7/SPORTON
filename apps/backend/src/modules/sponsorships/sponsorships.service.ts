@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Sponsorship } from '@prisma/client';
+import { Sponsorship } from '@shared/prisma';
 
 @Injectable()
 export class SponsorshipsService extends BaseService<Sponsorship> {

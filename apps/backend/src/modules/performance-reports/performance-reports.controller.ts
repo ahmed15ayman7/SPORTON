@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PerformanceReportsService } from './performance-reports.service';
 import { CreatePerformanceReportDto } from './dto/create-performance-report.dto';
 import { UpdatePerformanceReportDto } from './dto/update-performance-report.dto';
-import { PerformanceReport } from '@prisma/client';
+import { PerformanceReport } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('تقارير الأداء')

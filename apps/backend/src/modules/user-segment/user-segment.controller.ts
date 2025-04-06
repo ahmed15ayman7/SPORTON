@@ -4,7 +4,7 @@ import { UserSegmentService } from './user-segment.service';
 import { CreateUserSegmentDto } from './dto/create-user-segment.dto';
 import { UpdateUserSegmentDto } from './dto/update-user-segment.dto';
 import { BaseController } from '@/common/controllers/base.controller';
-import { UserSegment, User, AdTargeting, TargetingPerformance } from '@prisma/client';
+import { UserSegment, User, AdTargeting, TargetingPerformance } from '@shared/prisma';
 
 @ApiTags('فئة المستخدم')
 @Controller('user-segment')

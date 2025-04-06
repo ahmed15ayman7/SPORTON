@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CompetitionParticipantsService } from './competition-participants.service';
 import { CreateCompetitionParticipantDto } from './dto/create-competition-participant.dto';
 import { UpdateCompetitionParticipantDto } from './dto/update-competition-participant.dto';
-import { CompetitionParticipant } from '@prisma/client';
+import { CompetitionParticipant } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('مشاركي المسابقات')

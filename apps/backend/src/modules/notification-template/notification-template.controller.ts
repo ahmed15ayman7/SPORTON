@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationTemplateService } from './notification-template.service';
 import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
 import { UpdateNotificationTemplateDto } from './dto/update-notification-template.dto';
-import { NotificationTemplate, NotificationType } from '@prisma/client';
+import { NotificationTemplate, NotificationType } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 import { BaseController } from '../../common/controllers/base.controller';
 @ApiTags('قوالب الإشعارات')

@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCommissionDto } from './dto/create-commission.dto';
 import { UpdateCommissionDto } from './dto/update-commission.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { Commission, PaymentStatus } from '@prisma/client';
+import { Commission, PaymentStatus } from '@shared/prisma';
 @Injectable()
 export class CommissionService {
     constructor(private prisma: PrismaService) { }

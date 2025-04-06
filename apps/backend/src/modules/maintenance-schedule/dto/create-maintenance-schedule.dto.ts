@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsEnum, IsOptional, IsDate, isDate } from 'class-validator';
-import { FacilityType } from '@prisma/client';
+import { FacilityType } from '@shared/prisma';
 
 export class CreateMaintenanceScheduleDto {
     @ApiProperty({ description: 'معرف المنشأة' })

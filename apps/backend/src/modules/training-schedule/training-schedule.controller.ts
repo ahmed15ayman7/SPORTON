@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TrainingScheduleService } from './training-schedule.service';
-import { TrainingSchedule } from '@prisma/client';
+import { TrainingSchedule } from '@shared/prisma';
 import { BaseController } from '@/common/controllers/base.controller';
 
 

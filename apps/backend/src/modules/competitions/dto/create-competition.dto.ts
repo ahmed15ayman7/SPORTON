@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsEnum, IsDate, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Sport, CompetitionFormat, CompetitionStatus } from '@prisma/client';
+import { Sport, CompetitionFormat, CompetitionStatus } from '@shared/prisma';
 
 export class CreateCompetitionDto {
     @ApiProperty({ description: 'عنوان المسابقة' })

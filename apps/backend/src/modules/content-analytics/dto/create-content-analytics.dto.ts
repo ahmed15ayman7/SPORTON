@@ -1,6 +1,6 @@
 import { IsNumber, IsNotEmpty, IsEnum, IsOptional, IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentType } from '@prisma/client';
+import { ContentType } from '@shared/prisma';
 
 export class CreateContentAnalyticsDto {
     @ApiProperty({ description: 'نوع المحتوى', enum: ContentType })

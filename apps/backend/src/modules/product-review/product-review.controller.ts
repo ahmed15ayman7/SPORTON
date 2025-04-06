@@ -5,7 +5,7 @@ import { CreateProductReviewDto } from './dto/create-product-review.dto';
 import { UpdateProductReviewDto } from './dto/update-product-review.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { ProductReview } from '@prisma/client';
+import { ProductReview } from '@shared/prisma';
 
 @ApiTags('تقييمات المنتجات')
 @Controller('product-review')

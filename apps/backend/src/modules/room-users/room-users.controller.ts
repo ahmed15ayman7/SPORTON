@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { RoomUsersService } from './room-users.service';
-import { RoomUser } from '@prisma/client';
+import { RoomUser } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateRoomUserDto } from './dto/create-room-user.dto';
 import { UpdateRoomUserDto } from './dto/update-room-user.dto';

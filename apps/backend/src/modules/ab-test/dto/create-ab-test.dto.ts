@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsDate, IsObject, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TestStatus } from '@prisma/client';
+import { TestStatus } from '@shared/prisma';
 
 export class CreateABTestDto {
     @ApiProperty({ description: 'اسم التجربة' })

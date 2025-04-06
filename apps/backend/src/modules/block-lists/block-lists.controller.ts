@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, U
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '../../common/controllers/base.controller';
 import { BlockListsService } from './block-lists.service';
-import { BlockList } from '@prisma/client';
+import { BlockList } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CreateBlockListDto } from './dto/create-block-list.dto';
 import { UpdateBlockListDto } from './dto/update-block-list.dto';

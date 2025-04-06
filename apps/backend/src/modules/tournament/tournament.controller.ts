@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TournamentService } from './tournament.service';
-import { Tournament, TournamentType } from '@prisma/client';
+import { Tournament, TournamentType } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';

@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Body, Put } from '@nestjs/common';
 import { ContentAnalyticsService } from './content-analytics.service';
 import { BaseController } from '@/common/controllers/base.controller';
-import { ContentAnalytics } from '@prisma/client';
+import { ContentAnalytics } from '@shared/prisma';
 @Controller('content-analytics')
 export class ContentAnalyticsController extends BaseController<ContentAnalytics> {
     constructor(private readonly contentAnalyticsService: ContentAnalyticsService) {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsDate, IsOptional, IsArray, IsEnum } from 'class-validator';
-import { TournamentStatus, TournamentType } from '@prisma/client';
+import { TournamentStatus, TournamentType } from '@shared/prisma';
 export class CreateTournamentDto {
     @ApiProperty({ description: 'اسم البطولة' })
     @IsString()

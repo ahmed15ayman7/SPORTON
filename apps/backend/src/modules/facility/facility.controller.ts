@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FacilityService } from './facility.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
-import { Facility, FacilityType } from '@prisma/client';
+import { Facility, FacilityType } from '@shared/prisma';
 @ApiTags('المنشآت')
 @Controller('facilities')
 export class FacilityController {

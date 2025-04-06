@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationLogService } from './notification-log.service';
 import { CreateNotificationLogDto } from './dto/create-notification-log.dto';
 import { UpdateNotificationLogDto } from './dto/update-notification-log.dto';
-import { NotificationLog } from '@prisma/client';
+import { NotificationLog } from '@shared/prisma';
 
 @ApiTags('سجلات الإشعارات')
 @Controller('notification-logs')

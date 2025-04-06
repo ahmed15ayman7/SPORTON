@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserBehaviorsService } from './user-behaviors.service';
-import { UserBehavior } from '@prisma/client';
+import { UserBehavior } from '@shared/prisma';
 import { BaseController } from '@/common/controllers/base.controller';
 @ApiTags('سلوك المستخدم')
 @Controller('user-behaviors')

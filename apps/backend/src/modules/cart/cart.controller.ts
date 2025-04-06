@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
-import { Product } from '@prisma/client';
+import { Product } from '@shared/prisma';
 import { BaseController } from '@/common/controllers/base.controller';
 @ApiTags('سلة التسوق')
 @Controller('carts')

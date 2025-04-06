@@ -5,7 +5,7 @@ import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { ProductVariant } from '@prisma/client';
+import { ProductVariant } from '@shared/prisma';
 @ApiTags('متغيرات المنتجات')
 @Controller('product-variant')
 export class ProductVariantController {

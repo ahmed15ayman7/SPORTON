@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { EventCategory, Event } from '@prisma/client';
+import { EventCategory, Event } from '@shared/prisma';
 
 @Injectable()
 export class EventCategoriesService extends BaseService<EventCategory> {

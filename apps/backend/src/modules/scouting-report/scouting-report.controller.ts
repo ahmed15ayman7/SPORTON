@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Param, Post, Put, Delete, Body } from '@nestjs/common';
 import { ScoutingReportService } from './scouting-report.service';
 import { BaseController } from '../../common/controllers/base.controller';
-import { ScoutingReport } from '@prisma/client';
+import { ScoutingReport } from '@shared/prisma';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';

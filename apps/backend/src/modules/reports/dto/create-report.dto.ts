@@ -1,6 +1,6 @@
 import { IsNumber, IsNotEmpty, IsString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ReportType, ReportStatus } from '@prisma/client';
+import { ReportType, ReportStatus } from '@shared/prisma';
 
 export class CreateReportDto {
     @ApiProperty({ description: 'معرف المستخدم الذي قام بالإبلاغ' })

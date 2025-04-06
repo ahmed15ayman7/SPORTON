@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationSettingsService } from './notification-settings.service';
 import { CreateNotificationSettingsDto } from './dto/create-notification-settings.dto';
 import { UpdateNotificationSettingsDto } from './dto/update-notification-settings.dto';
-import { NotificationSettings } from '@prisma/client';
+import { NotificationSettings } from '@shared/prisma';
 @ApiTags('إعدادات الإشعارات')
 @Controller('notification-settings')
 export class NotificationSettingsController {

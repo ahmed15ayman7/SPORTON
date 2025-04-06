@@ -13,7 +13,7 @@ import { TrainingReviewsService } from './training-reviews.service';
 import { CreateTrainingReviewDto } from './dto/create-training-review.dto';
 import { UpdateTrainingReviewDto } from './dto/update-training-review.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { TrainingReview } from '@prisma/client';
+import { TrainingReview } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('مراجعات التدريب')
 @Controller('training-reviews')

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentType } from '@prisma/client';
+import { ContentType } from '@shared/prisma';
 
 export class CreateContentScoreDto {
     @ApiProperty({ description: 'معرف المحتوى' })

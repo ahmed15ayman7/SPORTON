@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-import { Address } from '@prisma/client';
+import { Address } from '@shared/prisma';
 @ApiTags('العناوين')
 @Controller('addresses')
 export class AddressController {

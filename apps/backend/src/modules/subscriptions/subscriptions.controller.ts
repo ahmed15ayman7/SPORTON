@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { Subscription, SubscriptionStatus } from '@prisma/client';
+import { Subscription, SubscriptionStatus } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { BaseController } from '../../common/controllers/base.controller';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';

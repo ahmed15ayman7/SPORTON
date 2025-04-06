@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsDate, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@shared/prisma';
 
 export class CreateCommissionDto {
     @ApiProperty({ description: 'محتوى التعليق' })

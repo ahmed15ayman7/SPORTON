@@ -13,7 +13,7 @@ import { TrainingCategoriesService } from './training-categories.service';
 import { CreateTrainingCategoryDto } from './dto/create-training-category.dto';
 import { UpdateTrainingCategoryDto } from './dto/update-training-category.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { Training } from '@prisma/client';
+import { Training } from '@shared/prisma';
 @ApiTags('فئات التدريب')
 @Controller('training-categories')
 export class TrainingCategoriesController {

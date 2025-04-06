@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CommissionService } from './commission.service';
 import { CreateCommissionDto } from './dto/create-commission.dto';
 import { UpdateCommissionDto } from './dto/update-commission.dto';
-import { Commission, PaymentStatus } from '@prisma/client';
+import { Commission, PaymentStatus } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 @ApiTags('العمولات')
 @Controller('commissions')

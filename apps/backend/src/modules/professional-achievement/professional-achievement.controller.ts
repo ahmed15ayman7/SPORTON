@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProfessionalAchievementService } from './professional-achievement.service';
 import { CreateProfessionalAchievementDto } from './dto/create-professional-achievement.dto';
 import { UpdateProfessionalAchievementDto } from './dto/update-professional-achievement.dto';
-import { ProfessionalAchievement } from '@prisma/client';
+import { ProfessionalAchievement } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 

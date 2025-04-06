@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from '../../common/services/base.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Player, PlayerStatistics, PlayerDiscovery, Contract, Transfer, ScoutingReport, AgentClient, Club } from '@prisma/client';
+import { Player, PlayerStatistics, PlayerDiscovery, Contract, Transfer, ScoutingReport, AgentClient, Club } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()

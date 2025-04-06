@@ -13,7 +13,7 @@ import { EventParticipantsService } from './event-participants.service';
 import { CreateEventParticipantDto } from './dto/create-event-participant.dto';
 import { UpdateEventParticipantDto } from './dto/update-event-participant.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { EventParticipant } from '@prisma/client';
+import { EventParticipant } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('مشاركي الفعاليات')
 @Controller('event-participants')

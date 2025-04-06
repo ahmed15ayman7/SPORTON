@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateMaintenanceScheduleDto } from './dto/create-maintenance-schedule.dto';
 import { UpdateMaintenanceScheduleDto } from './dto/update-maintenance-schedule.dto';
-import { MaintenanceSchedule } from '@prisma/client';
+import { MaintenanceSchedule } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()

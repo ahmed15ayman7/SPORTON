@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateInjuryDto } from './dto/create-injury.dto';
 import { UpdateInjuryDto } from './dto/update-injury.dto';
-import { InjuryStatus, Injury, InjurySeverity } from '@prisma/client';
+import { InjuryStatus, Injury, InjurySeverity } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()

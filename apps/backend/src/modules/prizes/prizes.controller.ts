@@ -12,7 +12,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PrizesService } from './prizes.service';
 
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { Prize } from '@prisma/client';
+import { Prize } from '@shared/prisma';
 
 @ApiTags('الجوائز')
 @Controller('prizes')

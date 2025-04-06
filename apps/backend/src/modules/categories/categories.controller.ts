@@ -5,7 +5,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { Category } from '@prisma/client';
+import { Category } from '@shared/prisma';
 @ApiTags('الفئات')
 @Controller('categories')
 export class CategoriesController {

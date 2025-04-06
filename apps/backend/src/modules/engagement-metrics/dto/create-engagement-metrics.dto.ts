@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentType } from '@prisma/client';
+import { ContentType } from '@shared/prisma';
 
 export class CreateEngagementMetricsDto {
     @ApiProperty({ description: 'معرف المحتوى' })

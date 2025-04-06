@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { TransferService } from './transfer.service';
 import { BaseController } from '@/common/controllers/base.controller';
-import { Transfer } from '@prisma/client';
+import { Transfer } from '@shared/prisma';
 
 @Controller('transfers')
 export class TransferController extends BaseController<Transfer> {

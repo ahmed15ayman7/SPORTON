@@ -4,7 +4,7 @@ import { OrderItemService } from './order-item.service';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { OrderItem } from '@prisma/client';
+import { OrderItem } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('عناصر الطلب')
 @Controller('order-item')

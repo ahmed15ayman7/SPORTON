@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
-import { Facility, FacilityType } from '@prisma/client';
+import { Facility, FacilityType } from '@shared/prisma';
 @Injectable()
 export class FacilityService {
     constructor(private prisma: PrismaService) { }
