@@ -28,6 +28,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            rm -rf ~/app/apps/backend/.env
             mkdir -p ~/app/packages/shared
             echo "${{ secrets.SHARED_ENV_FILE }}" > ~/app/packages/shared/.env
             mkdir -p ~/app/apps/backend
