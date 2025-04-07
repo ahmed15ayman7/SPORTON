@@ -30,6 +30,8 @@ jobs:
           script: |
             mkdir -p ~/app/packages/shared
             echo "${{ secrets.SHARED_ENV_FILE }}" > ~/app/packages/shared/.env
+            mkdir -p ~/app/apps/backend/.env
+            echo "${{ secrets.backend_ENV_FILE }}" > ~/app/packages/shared/.env
       - name: Run app on EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
