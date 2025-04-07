@@ -16,7 +16,7 @@ jobs:
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: 13.51.198.254
+          host: 51.20.3.181
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
@@ -24,7 +24,7 @@ jobs:
       - name: Create .env file on EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: 13.51.198.254
+          host: 51.20.3.181
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
