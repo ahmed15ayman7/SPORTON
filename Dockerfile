@@ -82,3 +82,4 @@ EXPOSE 3000 3001 3002 3003
 CMD ["pnpm", "start"]
 
 # \"pnpm frontend:start\" \"pnpm admin:start\"
+
