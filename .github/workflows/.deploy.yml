@@ -28,11 +28,14 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            rm -rf ~/app/apps/backend/.env
             mkdir -p ~/app/packages/shared
             echo "${{ secrets.SHARED_ENV_FILE }}" > ~/app/packages/shared/.env
             mkdir -p ~/app/apps/backend
             echo "${{ secrets.backend_ENV_FILE }}" > ~/app/apps/backend/.env
+            mkdir -p ~/app/apps/frontend
+            echo "${{ secrets.frontend_ENV_FILE }}" > ~/app/apps/frontend/.env.local
+            mkdir -p ~/app/apps/admin
+            echo "${{ secrets.admin_ENV_FILE }}" > ~/app/apps/admin/.env.local
       - name: Run app on EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
