@@ -13,13 +13,13 @@
         "prisma": "cd packages/shared && npx prisma generate && npx prisma db push && cd ../..",
         "prisma:studio": "cd packages/shared && npx prisma studio && cd ../..",
         "prisma:migrate": "cd packages/shared && npx prisma migrate dev && cd ../..",
-        "backend:dev": "cd apps/backend  && npm run start:dev && cd ../..",
         "frontend:dev": "cd apps/frontend && npm run dev && cd ../..",
         "backend:build": "cd apps/backend && npm run build && cd ../..",
         "frontend:build": "cd apps/frontend && npm run build && cd ../..",
         "backend:start": "cd apps/backend && npm run start && cd ../..",
         "frontend:start": "cd apps/frontend && npm run start && cd ../..",
         "backend:prod": "cd apps/backend && npm run start:prod && cd ../..",
+        "backend:dev": "cd apps/backend  && npm run start:dev && cd ../..",
         "start": "concurrently \"pnpm backend:dev\""
     },
     "dependencies": {
