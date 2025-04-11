@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationTemplateService } from './notification-template.service';
-import { CreateNotificationTemplateDto } from './dto/create-notification-template.dto';
-import { UpdateNotificationTemplateDto } from './dto/update-notification-template.dto';
+import { CreateNotificationTemplateDto } from '@/dtos/NotificationTemplate.create.dto';
+import { UpdateNotificationTemplateDto } from '@/dtos/NotificationTemplate.update.dto';
 import { NotificationTemplate, NotificationType } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('قوالب الإشعارات')
 @Controller('notification-templates')
 export class NotificationTemplateController extends BaseController<NotificationTemplate> {
@@ -14,67 +15,72 @@ export class NotificationTemplateController extends BaseController<NotificationT
     }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء قالب إشعارات جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء قالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء قالب إشعارات جديد', 'create', CreateNotificationTemplateDto, null, "قوالب الإشعارات")
     create(@Body() createNotificationTemplateDto: CreateNotificationTemplateDto): Promise<NotificationTemplate> {
         return this.notificationTemplateService.create(createNotificationTemplateDto as NotificationTemplate);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث قالب إشعارات محدد', 'update', UpdateNotificationTemplateDto, null, "قوالب الإشعارات")
+    update(@Param('id') id: number, @Body() updateNotificationTemplateDto: UpdateNotificationTemplateDto): Promise<NotificationTemplate> {
+        return this.notificationTemplateService.update(id, updateNotificationTemplateDto as NotificationTemplate);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع قوالب الإشعارات' })
-    @ApiResponse({ status: 200, description: 'تم جلب قوالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع قوالب الإشعارات', 'none', null, null, "قوالب الإشعارات")
     findAll(): Promise<PaginatedResponse<NotificationTemplate>> {
         return this.notificationTemplateService.findAll();
     }
 
     @Get('active')
-    @ApiOperation({ summary: 'الحصول على قوالب الإشعارات النشطة' })
-    @ApiResponse({ status: 200, description: 'تم جلب قوالب الإشعارات النشطة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على قوالب الإشعارات النشطة', 'none', null, null, "قوالب الإشعارات")
     findActive(): Promise<NotificationTemplate[]> {
         return this.notificationTemplateService.findActive();
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على قالب إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب قالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على قالب إشعارات محدد', 'none', null, null, "قوالب الإشعارات")
     findOne(@Param('id') id: number): Promise<NotificationTemplate> {
         return this.notificationTemplateService.findOne(id);
     }
 
     @Get('type/:type')
-    @ApiOperation({ summary: 'الحصول على قوالب إشعارات بنوع محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب قوالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على قوالب إشعارات بنوع محدد', 'none', null, null, "قوالب الإشعارات")
     findByType(@Param('type') type: string): Promise<NotificationTemplate[]> {
         return this.notificationTemplateService.findByType(type as NotificationType);
     }
 
     @Get('language/:language')
-    @ApiOperation({ summary: 'الحصول على قوالب إشعارات بلغة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب قوالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على قوالب إشعارات بلغة محددة', 'none', null, null, "قوالب الإشعارات")
     findByLanguage(@Param('language') language: string): Promise<NotificationTemplate[]> {
         return this.notificationTemplateService.findByLanguage(language);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث قالب إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث قالب الإشعارات بنجاح' })
-    update(
-        @Param('id') id: number,
-        @Body() updateNotificationTemplateDto: UpdateNotificationTemplateDto,
-    ): Promise<NotificationTemplate> {
-        return this.notificationTemplateService.update(id, updateNotificationTemplateDto as NotificationTemplate);
-    }
-
     @Patch(':id/toggle-active')
-    @ApiOperation({ summary: 'تفعيل/تعطيل قالب إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم تغيير حالة قالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تفعيل/تعطيل قالب إشعارات محدد', 'update', UpdateNotificationTemplateDto, null, "قوالب الإشعارات")
     toggleActive(@Param('id') id: number): Promise<NotificationTemplate> {
         return this.notificationTemplateService.toggleActive(id);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف قالب إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف قالب الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف قالب إشعارات محدد', 'none', null, null, "قوالب الإشعارات")
     remove(@Param('id') id: number): Promise<NotificationTemplate> {
         return this.notificationTemplateService.remove(id);
     }

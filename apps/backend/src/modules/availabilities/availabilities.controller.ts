@@ -1,19 +1,47 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { AvailabilitiesService } from './availabilities.service';
 import { Availability, AvailabilityStatus } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateAvailabilityDto } from './dto/create-availability.dto';
-import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-
+import { CreateAvailabilityDto } from '../../dtos/Availability.create.dto';
+import { UpdateAvailabilityDto } from '../../dtos/Availability.update.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('availabilities')
 @Controller('availabilities')
 export class AvailabilitiesController extends BaseController<Availability> {
     constructor(private readonly availabilitiesService: AvailabilitiesService) {
         super(availabilitiesService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateAvailabilityDto, "التوفر")
+    async create(@Body() data: any): Promise<Availability> {
+        return this.availabilitiesService.create(data);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateAvailabilityDto, null, "التوفر")
+    async update(@Param('id') id: number, @Body() data: any): Promise<Availability> {
+        return this.availabilitiesService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "التوفر")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<Availability>> {
+        return this.availabilitiesService.findAll(params);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "التوفر")
+    async findOne(@Param('id') id: number): Promise<Availability> {
+        return this.availabilitiesService.findOne(id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -50,13 +78,5 @@ export class AvailabilitiesController extends BaseController<Availability> {
         return this.availabilitiesService.getUsersByStatus(status);
     }
 
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'إنشاء توفر جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء التوفر بنجاح.' })
-    async create(@Body() createAvailabilityDto: CreateAvailabilityDto): Promise<Availability> {
-        return this.availabilitiesService.create(createAvailabilityDto);
-    }
 
 } 

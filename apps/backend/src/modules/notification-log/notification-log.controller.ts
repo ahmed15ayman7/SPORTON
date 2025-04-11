@@ -1,77 +1,88 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationLogService } from './notification-log.service';
-import { CreateNotificationLogDto } from './dto/create-notification-log.dto';
-import { UpdateNotificationLogDto } from './dto/update-notification-log.dto';
+import { CreateNotificationLogDto } from '@/dtos/NotificationLog.create.dto';
+import { UpdateNotificationLogDto } from '@/dtos/NotificationLog.update.dto';
 import { NotificationLog } from '@shared/prisma';
-
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('سجلات الإشعارات')
 @Controller('notification-logs')
-export class NotificationLogController {
-    constructor(private readonly notificationLogService: NotificationLogService) { }
+export class NotificationLogController extends BaseController<NotificationLog> {
+    constructor(private readonly notificationLogService: NotificationLogService) {
+        super(notificationLogService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء سجل إشعارات جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء سجل الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء سجل إشعارات جديد', 'create', CreateNotificationLogDto, null, "سجلات الإشعارات")
     async create(@Body() createNotificationLogDto: CreateNotificationLogDto): Promise<NotificationLog> {
         return this.notificationLogService.create(createNotificationLogDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث سجل إشعارات محدد', 'update', UpdateNotificationLogDto, null, "سجلات الإشعارات")
+    async update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<NotificationLog> {
+        return this.notificationLogService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع سجلات الإشعارات' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات الإشعارات بنجاح' })
-    async findAll(): Promise<NotificationLog[]> {
-        return this.notificationLogService.findAll();
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع سجلات الإشعارات', 'none', null, null, "سجلات الإشعارات")
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<NotificationLog>> {
+        return this.notificationLogService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على سجل إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجل الإشعارات بنجاح' })
-    async findOne(@Param('id') id: string): Promise<NotificationLog> {
-        return this.notificationLogService.findOne(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجل إشعارات محدد', 'none', null, null, "سجلات الإشعارات")
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<NotificationLog> {
+        return this.notificationLogService.findOne(id);
     }
 
     @Get('notification/:notificationId')
-    @ApiOperation({ summary: 'الحصول على سجلات إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجلات إشعار محدد', 'none', null, null, "سجلات الإشعارات")
     async findByNotification(@Param('notificationId') notificationId: string): Promise<NotificationLog[]> {
         return this.notificationLogService.findByNotification(+notificationId);
     }
 
     @Get('status/:status')
-    @ApiOperation({ summary: 'الحصول على سجلات إشعارات بحالة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجلات إشعارات بحالة محددة', 'none', null, null, "سجلات الإشعارات")
     async findByStatus(@Param('status') status: string): Promise<NotificationLog[]> {
         return this.notificationLogService.findByStatus(status);
     }
 
     @Get('channel/:channel')
-    @ApiOperation({ summary: 'الحصول على سجلات إشعارات بقناة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجلات إشعارات بقناة محددة', 'none', null, null, "سجلات الإشعارات")
     async findByChannel(@Param('channel') channel: string): Promise<NotificationLog[]> {
         return this.notificationLogService.findByChannel(channel);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث سجل إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث سجل الإشعارات بنجاح' })
-    async update(
-        @Param('id') id: string,
-        @Body() updateNotificationLogDto: UpdateNotificationLogDto,
-    ): Promise<NotificationLog> {
-        return this.notificationLogService.update(+id, updateNotificationLogDto);
-    }
 
     @Patch(':id/increment-attempts')
-    @ApiOperation({ summary: 'زيادة عدد محاولات إرسال سجل إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم زيادة عدد المحاولات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('زيادة عدد محاولات إرسال سجل إشعارات محدد', 'update', UpdateNotificationLogDto, null, "سجلات الإشعارات")
     async incrementAttempts(@Param('id') id: string): Promise<NotificationLog> {
         return this.notificationLogService.incrementAttempts(+id);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف سجل إشعارات محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف سجل الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف سجل إشعارات محدد', 'none', null, null, "سجلات الإشعارات")
     async remove(@Param('id') id: string): Promise<NotificationLog> {
         return this.notificationLogService.remove(+id);
     }

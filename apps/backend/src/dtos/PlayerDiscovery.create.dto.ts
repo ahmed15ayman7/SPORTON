@@ -1,0 +1,47 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { Scout, Player, DiscoveryStatus } from "@shared/prisma";
+
+import { Entity, Column } from "typeorm";
+@Entity()
+// This is the Create Entity for PlayerDiscovery
+export class CreatePlayerDiscoveryDto {
+  @ApiProperty({ type: "number" })
+  // Field: scoutId, Type: number
+  @Column()
+  scoutId: number;
+
+  @ApiProperty({ type: "number" })
+  // Field: playerId, Type: number
+  @Column()
+  playerId: number;
+
+  @ApiProperty({ type: "string", format: "date-time" })
+  // Field: date, Type: Date
+  @Column()
+  date: Date;
+
+  @ApiProperty({ type: "string" })
+  // Field: location, Type: string
+  @Column()
+  location: string;
+
+  @ApiProperty({ type: "string" })
+  // Field: context, Type: string
+  @Column()
+  context: string;
+
+  @ApiProperty({ type: "string" })
+  // Field: initialReport, Type: string
+  @Column()
+  initialReport: string;
+
+  @ApiProperty({ enum: DiscoveryStatus })
+  // Field: status, Type: DiscoveryStatus
+  @Column()
+  status: DiscoveryStatus;
+
+  @ApiProperty({ type: "string" })
+  // Field: outcome, Type: string
+  @Column()
+  outcome?: string;
+}

@@ -1,19 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateNotificationGroupDto } from './dto/create-notification-group.dto';
-import { UpdateNotificationGroupDto } from './dto/update-notification-group.dto';
+import { CreateNotificationGroupDto } from '@/dtos/NotificationGroup.create.dto';
+import { UpdateNotificationGroupDto } from '@/dtos/NotificationGroup.update.dto';
 import { NotificationGroup } from '@shared/prisma';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class NotificationGroupService {
-    constructor(private prisma: PrismaService) { }
+export class NotificationGroupService extends BaseService<NotificationGroup> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'notificationGroup');
+    }
 
-    async create(createNotificationGroupDto: CreateNotificationGroupDto): Promise<NotificationGroup> {
+    async create(createNotificationGroupDto: CreateNotificationGroupDto & { notifications: number[] }): Promise<NotificationGroup> {
         return this.prisma.notificationGroup.create({
             data: {
                 name: createNotificationGroupDto.name,
                 description: createNotificationGroupDto.description,
                 notifications: {
-                    connect: createNotificationGroupDto.notificationIds.map(id => ({ id }))
+                    connect: createNotificationGroupDto.notifications.map(id => ({ id }))
                 }
             },
             include: {
@@ -22,12 +27,27 @@ export class NotificationGroupService {
         });
     }
 
-    async findAll(): Promise<NotificationGroup[]> {
-        return this.prisma.notificationGroup.findMany({
-            include: {
-                notifications: true
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<NotificationGroup>> {
+        const { take, skip } = params;
+        const [data, total] = await this.prisma.$transaction([
+            this.prisma.notificationGroup.findMany({
+                include: {
+                    notifications: true
+                },
+                skip,
+                take
+            }),
+            this.prisma.notificationGroup.count()
+        ]);
+        return {
+            data,
+            meta: {
+                total,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: total > (skip || 0) + (take || 10)
             }
-        });
+        };
     }
 
     async findOne(id: number): Promise<NotificationGroup> {
@@ -45,15 +65,15 @@ export class NotificationGroupService {
         return group;
     }
 
-    async update(id: number, updateNotificationGroupDto: UpdateNotificationGroupDto): Promise<NotificationGroup> {
+    async update(id: number, updateNotificationGroupDto: UpdateNotificationGroupDto & { notifications: number[] }): Promise<NotificationGroup> {
         try {
             return await this.prisma.notificationGroup.update({
                 where: { id },
                 data: {
                     name: updateNotificationGroupDto.name,
                     description: updateNotificationGroupDto.description,
-                    notifications: updateNotificationGroupDto.notificationIds ? {
-                        set: updateNotificationGroupDto.notificationIds.map(id => ({ id }))
+                    notifications: updateNotificationGroupDto.notifications ? {
+                        set: updateNotificationGroupDto.notifications.map(id => ({ id }))
                     } : undefined
                 },
                 include: {

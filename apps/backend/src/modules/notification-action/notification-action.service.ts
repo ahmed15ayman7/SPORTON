@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
-import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
+import { CreateNotificationActionDto } from '@/dtos/NotificationAction.create.dto';
+import { UpdateNotificationActionDto } from '@/dtos/NotificationAction.update.dto';
 import { NotificationAction } from '@shared/prisma';
+import { BaseService } from '@/common/services/base.service';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
-export class NotificationActionService {
-    constructor(private prisma: PrismaService) { }
+export class NotificationActionService extends BaseService<NotificationAction> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'notificationAction');
+    }
 
     async create(createNotificationActionDto: CreateNotificationActionDto): Promise<NotificationAction> {
         return this.prisma.notificationAction.create({
@@ -21,12 +26,27 @@ export class NotificationActionService {
         });
     }
 
-    async findAll(): Promise<NotificationAction[]> {
-        return this.prisma.notificationAction.findMany({
-            include: {
-                notification: true
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<NotificationAction>> {
+        const { take, skip } = params;
+        const [data, total] = await this.prisma.$transaction([
+            this.prisma.notificationAction.findMany({
+                include: {
+                    notification: true
+                },
+                skip,
+                take
+            }),
+            this.prisma.notificationAction.count()
+        ]);
+        return {
+            data,
+            meta: {
+                total,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: total > (skip || 0) + (take || 10)
             }
-        });
+        };
     }
 
     async findOne(id: number): Promise<NotificationAction> {

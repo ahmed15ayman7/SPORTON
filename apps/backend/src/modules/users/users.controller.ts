@@ -1,17 +1,47 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { Controller, Get, Param, Post, Body, ParseIntPipe, UseGuards, Put, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { UsersService } from './users.service';
+import { CreateUserDto } from '../../dtos/User.create.dto';
+import { UpdateUserDto } from '../../dtos/User.update.dto';
 import { User } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-
-@ApiTags('users')
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+@ApiTags('المستخدمين')
 @Controller('users')
 export class UsersController extends BaseController<User> {
     constructor(private readonly usersService: UsersService) {
         super(usersService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateUserDto, "المستخدم")
+    async create(@Body() data: any): Promise<User> {
+        return this.usersService.create(data);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateUserDto, null, "المستخدم")
+    async update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<User> {
+        return this.usersService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "المستخدمين")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<User>> {
+        return this.usersService.findAll(params);
+    }
+    @Get(":id")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "المستخدم")
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        return this.usersService.findOne(id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

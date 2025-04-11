@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateScoutingReportDto } from './dto/create-scouting-report.dto';
-import { UpdateScoutingReportDto } from './dto/update-scouting-report.dto';
+import { CreateScoutingReportDto } from '@/dtos/ScoutingReport.create.dto';
+import { UpdateScoutingReportDto } from '@/dtos/ScoutingReport.update.dto';
 import { BaseService } from '../../common/services/base.service';
 import { ScoutingReport, Prisma } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';

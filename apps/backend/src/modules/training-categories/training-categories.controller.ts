@@ -7,63 +7,77 @@ import {
     Param,
     Delete,
     Query,
+    UseGuards,
+    Put,
+    ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TrainingCategoriesService } from './training-categories.service';
-import { CreateTrainingCategoryDto } from './dto/create-training-category.dto';
-import { UpdateTrainingCategoryDto } from './dto/update-training-category.dto';
+import { CreateTrainingCategoryDto } from '@/dtos/TrainingCategory.create.dto';
+import { UpdateTrainingCategoryDto } from '@/dtos/TrainingCategory.update.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { Training } from '@shared/prisma';
+import { Training, TrainingCategory } from '@shared/prisma';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 @ApiTags('فئات التدريب')
 @Controller('training-categories')
-export class TrainingCategoriesController {
-    constructor(private readonly trainingCategoriesService: TrainingCategoriesService) { }
+export class TrainingCategoriesController extends BaseController<TrainingCategory> {
+    constructor(private readonly trainingCategoriesService: TrainingCategoriesService) {
+        super(trainingCategoriesService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة فئة تدريب جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إضافة الفئة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة فئة تدريب جديدة', 'none', CreateTrainingCategoryDto, null, 'فئات التدريب')
     create(@Body() createTrainingCategoryDto: CreateTrainingCategoryDto) {
         return this.trainingCategoriesService.create(createTrainingCategoryDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث فئة تدريب محددة', 'none', UpdateTrainingCategoryDto, null, 'فئات التدريب')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.trainingCategoriesService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع فئات التدريب' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الفئات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع فئات التدريب', 'none', null, null, 'فئات التدريب')
     findAll(@Query() query: PaginationDto) {
         return this.trainingCategoriesService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل فئة تدريب محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع تفاصيل الفئة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل فئة تدريب محددة', 'none', null, null, 'فئات التدريب')
     getTrainingCategoryProfile(@Param('id') id: string) {
         return this.trainingCategoriesService.getTrainingCategoryProfile(+id);
     }
 
     @Get(':id/trainings')
-    @ApiOperation({ summary: 'الحصول على التدريبات في فئة محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع التدريبات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على التدريبات في فئة محددة', 'none', null, null, 'فئات التدريب')
     getCategoryTrainings(@Param('id') id: string): Promise<Training[]> {
         return this.trainingCategoriesService.getCategoryTrainings(+id);
     }
 
     @Get(':id/stats')
-    @ApiOperation({ summary: 'الحصول على إحصائيات فئة تدريب محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإحصائيات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إحصائيات فئة تدريب محددة', 'none', null, null, 'فئات التدريب')
     getCategoryStats(@Param('id') id: string) {
         return this.trainingCategoriesService.getCategoryStats(+id);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث فئة تدريب محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الفئة بنجاح' })
-    update(@Param('id') id: string, @Body() updateTrainingCategoryDto: UpdateTrainingCategoryDto) {
-        return this.trainingCategoriesService.update(+id, updateTrainingCategoryDto);
-    }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف فئة تدريب محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف الفئة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف فئة تدريب محددة', 'none', null, null, 'فئات التدريب')
     remove(@Param('id') id: string) {
         return this.trainingCategoriesService.remove(+id);
     }

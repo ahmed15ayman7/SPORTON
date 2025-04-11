@@ -1,19 +1,47 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { BlockListsService } from './block-lists.service';
 import { BlockList } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateBlockListDto } from './dto/create-block-list.dto';
-import { UpdateBlockListDto } from './dto/update-block-list.dto';
-
+import { CreateBlockListDto } from '../../dtos/BlockList.create.dto';
+import { UpdateBlockListDto } from '../../dtos/BlockList.update.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('block-lists')
 @Controller('block-lists')
 export class BlockListsController extends BaseController<BlockList> {
     constructor(private readonly blockListsService: BlockListsService) {
         super(blockListsService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateBlockListDto, "قائمة الحظر")
+    async create(@Body() data: any): Promise<BlockList> {
+        return this.blockListsService.create(data);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateBlockListDto, null, "قائمة الحظر")
+    async update(@Param('id') id: number, @Body() data: any): Promise<BlockList> {
+        return this.blockListsService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "قائمة الحظر")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<BlockList>> {
+        return this.blockListsService.findAll(params);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "قائمة الحظر")
+    async findOne(@Param('id') id: number): Promise<BlockList> {
+        return this.blockListsService.findOne(id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -50,24 +78,4 @@ export class BlockListsController extends BaseController<BlockList> {
         return this.blockListsService.getBlockedByUsers(userId);
     }
 
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new block list entry' })
-    @ApiResponse({ status: 201, description: 'The block list entry has been successfully created.' })
-    async create(@Body() createBlockListDto: CreateBlockListDto): Promise<BlockList> {
-        return this.blockListsService.create(createBlockListDto);
-    }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a block list entry' })
-    @ApiResponse({ status: 200, description: 'The block list entry has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateBlockListDto: UpdateBlockListDto,
-    ): Promise<BlockList> {
-        return this.blockListsService.update(id, updateBlockListDto);
-    }
 } 

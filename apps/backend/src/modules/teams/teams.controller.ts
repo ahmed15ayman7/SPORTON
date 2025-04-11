@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { TeamsService } from './teams.service';
 import { Team } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { CreateTeamDto } from '@/dtos/Team.create.dto';
+import { UpdateTeamDto } from '@/dtos/Team.update.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @ApiTags('teams')
 @Controller('teams')
@@ -11,12 +14,39 @@ export class TeamsController extends BaseController<Team> {
     constructor(private readonly teamsService: TeamsService) {
         super(teamsService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء فريق جديد', 'none', CreateTeamDto, null, 'الفرق')
+    create(@Body() createTeamDto: CreateTeamDto) {
+        return this.teamsService.create(createTeamDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث فريق محدد', 'none', UpdateTeamDto, null, 'الفرق')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.teamsService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع الفرق', 'none', null, null, 'الفرق')
+    @ApiQuery({ type: PaginationDto })
+    findAll(@Query() params: PaginationDto) {
+        return this.teamsService.findAll(params);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على فريق محدد', 'none', null, null, 'الفرق')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.teamsService.findOne(id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get team profile with all relations' })
-    @ApiResponse({ status: 200, description: 'Return team profile.' })
+    @CustomApiDocs('الحصول على فريق محدد بالعلاقات', 'none', null, null, 'الفرق')
     async getTeamProfile(@Param('id', ParseIntPipe) id: number): Promise<Team> {
         return this.teamsService.getTeamProfile(id);
     }
@@ -24,8 +54,7 @@ export class TeamsController extends BaseController<Team> {
     @Get('user/:userId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get user teams' })
-    @ApiResponse({ status: 200, description: 'Return user teams.' })
+    @CustomApiDocs('الحصول على جميع فرق المستخدم', 'none', null, null, 'الفرق')
     async getUserTeams(@Param('userId', ParseIntPipe) userId: number): Promise<Team[]> {
         return this.teamsService.getUserTeams(userId);
     }
@@ -33,30 +62,16 @@ export class TeamsController extends BaseController<Team> {
     @Get('sport/:sport')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get teams by sport' })
-    @ApiResponse({ status: 200, description: 'Return teams by sport.' })
+    @CustomApiDocs('الحصول على جميع فرق الرياضة', 'none', null, null, 'الفرق')
     async getSportTeams(@Param('sport') sport: string): Promise<Team[]> {
         return this.teamsService.getSportTeams(sport);
     }
 
-    @Post()
+    @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new team' })
-    @ApiResponse({ status: 201, description: 'The team has been successfully created.' })
-    async create(@Body() createTeamDto: Team): Promise<Team> {
-        return this.teamsService.create(createTeamDto);
-    }
-
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update a team' })
-    @ApiResponse({ status: 200, description: 'The team has been successfully updated.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateTeamDto: Team,
-    ): Promise<Team> {
-        return this.teamsService.update(id, updateTeamDto);
+    @CustomApiDocs('حذف فريق محدد', 'none', null, null, 'الفرق')
+    remove(@Param('id', ParseIntPipe) id: number) {
+        return this.teamsService.remove(id);
     }
 } 

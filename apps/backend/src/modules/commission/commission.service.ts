@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateCommissionDto } from './dto/create-commission.dto';
-import { UpdateCommissionDto } from './dto/update-commission.dto';
+import { CreateCommissionDto } from '../../dtos/Commission.create.dto';
+import { UpdateCommissionDto } from '../../dtos/Commission.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { Commission, PaymentStatus } from '@shared/prisma';
+import { BaseService } from '@/common/services/base.service';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
-export class CommissionService {
-    constructor(private prisma: PrismaService) { }
+export class CommissionService extends BaseService<Commission> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'commission');
+    }
 
     async create(createCommissionDto: CreateCommissionDto): Promise<Commission> {
         return this.prisma.commission.create({
@@ -26,13 +30,23 @@ export class CommissionService {
         });
     }
 
-    async findAll(params: PaginationDto): Promise<Commission[]> {
-        return this.prisma.commission.findMany({
-            include: {
-                agent: true,
-                transfer: true
-            }
-        });
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<Commission>> {
+        const { skip, take } = params;
+        const [commissions, total] = await this.prisma.$transaction([
+            this.prisma.commission.findMany({
+                skip,
+                take,
+                include: {
+                    agent: true,
+                    transfer: true
+                }
+            }),
+            this.prisma.commission.count()
+        ]);
+        return {
+            data: commissions,
+            meta: { total, skip: skip ?? 0, take: take ?? 10, hasMore: (skip ?? 0) + (take ?? 10) < total }
+        };
     }
 
     async findOne(id: number): Promise<Commission> {

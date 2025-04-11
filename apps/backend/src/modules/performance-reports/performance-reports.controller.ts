@@ -1,54 +1,72 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PerformanceReportsService } from './performance-reports.service';
-import { CreatePerformanceReportDto } from './dto/create-performance-report.dto';
-import { UpdatePerformanceReportDto } from './dto/update-performance-report.dto';
+import { CreatePerformanceReportDto } from '@/dtos/PerformanceReport.create.dto';
+import { UpdatePerformanceReportDto } from '@/dtos/PerformanceReport.update.dto';
 import { PerformanceReport } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('تقارير الأداء')
 @Controller('performance-reports')
-export class PerformanceReportsController {
-    constructor(private readonly performanceReportsService: PerformanceReportsService) { }
+export class PerformanceReportsController extends BaseController<PerformanceReport> {
+    constructor(private readonly performanceReportsService: PerformanceReportsService) {
+        super(performanceReportsService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة تقرير أداء جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة التقرير بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة تقرير أداء جديد', 'none', null, CreatePerformanceReportDto, 'تقارير الأداء')
     create(@Body() createPerformanceReportDto: CreatePerformanceReportDto): Promise<PerformanceReport> {
         return this.performanceReportsService.create(createPerformanceReportDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث تقرير أداء معين', 'none', UpdatePerformanceReportDto, null, 'تقارير الأداء')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<PerformanceReport> {
+        return this.performanceReportsService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع تقارير الأداء' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقارير الأداء بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقارير الأداء', 'none', null, null, 'تقارير الأداء')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<PerformanceReport>> {
         return this.performanceReportsService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل تقرير أداء معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل التقرير بنجاح' })
-    findOne(@Param('id') id: string): Promise<PerformanceReport> {
-        return this.performanceReportsService.getPerformanceReportProfile(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل تقرير أداء معين', 'none', null, null, 'تقارير الأداء')
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<PerformanceReport> {
+        return this.performanceReportsService.getPerformanceReportProfile(id);
     }
 
     @Get('athlete/:athleteId')
-    @ApiOperation({ summary: 'الحصول على جميع تقارير أداء رياضي معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقارير الأداء بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقارير أداء رياضي معين', 'none', null, null, 'تقارير الأداء')
     getAthleteReports(@Param('athleteId') athleteId: string): Promise<PerformanceReport[]> {
         return this.performanceReportsService.getAthleteReports(+athleteId);
     }
 
     @Get('coach/:coachId')
-    @ApiOperation({ summary: 'الحصول على جميع تقارير أداء مدرب معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقارير الأداء بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقارير أداء مدرب معين', 'none', null, null, 'تقارير الأداء')
     getCoachReports(@Param('coachId') coachId: string): Promise<PerformanceReport[]> {
         return this.performanceReportsService.getCoachReports(+coachId);
     }
 
     @Get('date-range')
-    @ApiOperation({ summary: 'الحصول على تقارير الأداء في نطاق تاريخ معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقارير الأداء بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تقارير الأداء في نطاق تاريخ معين', 'none', null, null, 'تقارير الأداء')
     getReportsByDateRange(
         @Query('startDate') startDate: string,
         @Query('endDate') endDate: string,
@@ -60,32 +78,26 @@ export class PerformanceReportsController {
     }
 
     @Get('athlete/:athleteId/latest')
-    @ApiOperation({ summary: 'الحصول على أحدث تقرير أداء لرياضي معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب أحدث تقرير بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على أحدث تقرير أداء لرياضي معين', 'none', null, null, 'تقارير الأداء')
     getLatestReport(@Param('athleteId') athleteId: string): Promise<PerformanceReport | null> {
         return this.performanceReportsService.getLatestReport(+athleteId);
     }
 
     @Get('athlete/:athleteId/progress')
-    @ApiOperation({ summary: 'الحصول على تقدم رياضي معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقدم الرياضي بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تقدم رياضي معين', 'none', null, null, 'تقارير الأداء')
     getAthleteProgress(@Param('athleteId') athleteId: string): Promise<PerformanceReport[]> {
         return this.performanceReportsService.getAthleteProgress(+athleteId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات تقرير أداء معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات التقرير بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updatePerformanceReportDto: UpdatePerformanceReportDto,
-    ): Promise<PerformanceReport> {
-        return this.performanceReportsService.update(+id, updatePerformanceReportDto);
-    }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف تقرير أداء معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف التقرير بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف تقرير أداء معين', 'none', null, null, 'تقارير الأداء')
     remove(@Param('id') id: string): Promise<PerformanceReport> {
         return this.performanceReportsService.remove(+id);
     }

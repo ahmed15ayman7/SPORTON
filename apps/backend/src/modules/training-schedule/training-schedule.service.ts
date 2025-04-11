@@ -16,9 +16,9 @@ export class TrainingScheduleService extends BaseService<TrainingSchedule> {
             facility: true,
         };
     }
-    async create(createTrainingScheduleDto: TrainingSchedule): Promise<TrainingSchedule> {
+    async create(data: TrainingSchedule): Promise<TrainingSchedule> {
         return this.prisma.trainingSchedule.create({
-            data: createTrainingScheduleDto,
+            data,
             include: this.getIncludeFields(),
         });
     }

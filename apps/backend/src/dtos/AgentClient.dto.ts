@@ -1,0 +1,59 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { AgentEntity } from "./Agent.entity";
+import { PlayerEntity } from "./Player.entity";
+import { Agent, Player, ClientStatus } from "@shared/prisma";
+
+import { Entity, Column } from "typeorm";
+@Entity()
+// This is the  Entity for AgentClient
+export class AgentClientDto {
+  @ApiProperty({ type: "number" })
+  // Field: id, Type: number
+  @Column()
+  id: number;
+
+  @ApiProperty({ type: AgentEntity })
+  // Field: agent, Type: Agent
+  @Column()
+  agent: Agent;
+
+  @ApiProperty({ type: "number" })
+  // Field: agentId, Type: number
+  @Column()
+  agentId: number;
+
+  @ApiProperty({ type: PlayerEntity })
+  // Field: player, Type: Player
+  @Column()
+  player: Player;
+
+  @ApiProperty({ type: "number" })
+  // Field: playerId, Type: number
+  @Column()
+  playerId: number;
+
+  @ApiProperty({ type: "string", format: "date-time" })
+  // Field: startDate, Type: Date
+  @Column()
+  startDate: Date;
+
+  @ApiProperty({ type: "string", format: "date-time", nullable: true })
+  // Field: endDate, Type: Date
+  @Column()
+  endDate?: Date;
+
+  @ApiProperty({ type: "string", nullable: true })
+  // Field: contract, Type: string
+  @Column()
+  contract?: string;
+
+  @ApiProperty({ type: "number" })
+  // Field: commission, Type: number
+  @Column()
+  commission: number;
+
+  @ApiProperty({ enum: ClientStatus })
+  // Field: status, Type: ClientStatus
+  @Column()
+  status: ClientStatus;
+}

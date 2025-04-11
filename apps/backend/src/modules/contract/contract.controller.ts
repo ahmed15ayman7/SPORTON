@@ -1,73 +1,80 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ContractService } from './contract.service';
-import { CreateContractDto, ContractStatus } from './dto/create-contract.dto';
-import { UpdateContractDto } from './dto/update-contract.dto';
-import { Contract } from '@shared/prisma';
+import { CreateContractDto } from '../../dtos/Contract.create.dto';
+import { UpdateContractDto } from '../../dtos/Contract.update.dto';
+import { Contract, ContractStatus } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { BaseController } from '@/common/controllers/base.controller';
-
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 @ApiTags('العقود')
 @Controller('contracts')
-export class ContractController {
-    constructor(private readonly contractService: ContractService) { }
+export class ContractController extends BaseController<Contract> {
+    constructor(private readonly contractService: ContractService) {
+        super(contractService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء عقد جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء العقد بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء عقد جديد', 'create', CreateContractDto, null, "العقود")
     async create(@Body() createContractDto: CreateContractDto): Promise<Contract> {
         return this.contractService.create(createContractDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث عقد معين', 'update', UpdateContractDto, null, "العقود")
+    async update(@Param('id') id: number, @Body() data: any): Promise<Contract> {
+        return this.contractService.update(+id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع العقود' })
-    @ApiResponse({ status: 200, description: 'تم جلب العقود بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع العقود', 'none', null, null, "العقود")
     async findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<Contract>> {
         return this.contractService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على عقد محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب العقد بنجاح' })
-    async findOne(@Param('id') id: string): Promise<Contract> {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على عقد محدد', 'none', null, null, "العقود")
+    async findOne(@Param('id') id: number): Promise<Contract> {
         return this.contractService.findOne(+id);
     }
 
     @Get('player/:playerId')
-    @ApiOperation({ summary: 'الحصول على عقود لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب عقود اللاعب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على عقود لاعب محدد', 'none', null, null, "العقود")
     async findByPlayer(@Param('playerId') playerId: string): Promise<Contract[]> {
         return this.contractService.findByPlayer(+playerId);
     }
 
     @Get('club/:clubId')
-    @ApiOperation({ summary: 'الحصول على عقود نادي محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب عقود النادي بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على عقود نادي محدد', 'none', null, null, "العقود")
     async findByClub(@Param('clubId') clubId: string): Promise<Contract[]> {
         return this.contractService.findByClub(+clubId);
     }
 
     @Get('status/:status')
-    @ApiOperation({ summary: 'الحصول على عقود بحالة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب العقود بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على عقود بحالة محددة', 'none', null, null, "العقود")
     async findByStatus(@Param('status') status: ContractStatus): Promise<Contract[]> {
         return this.contractService.findByStatus(status);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث عقد محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث العقد بنجاح' })
-    async update(
-        @Param('id') id: string,
-        @Body() updateContractDto: UpdateContractDto,
-    ): Promise<Contract> {
-        return this.contractService.update(+id, updateContractDto);
-    }
-
     @Patch(':id/status')
-    @ApiOperation({ summary: 'تحديث حالة عقد محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث حالة العقد بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث حالة عقد محدد', 'update', null, null, "العقود")
     async updateStatus(
         @Param('id') id: string,
         @Body('status') status: ContractStatus,
@@ -75,10 +82,4 @@ export class ContractController {
         return this.contractService.updateStatus(+id, status);
     }
 
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف عقد محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف العقد بنجاح' })
-    async remove(@Param('id') id: string): Promise<Contract> {
-        return this.contractService.remove(+id);
-    }
 } 

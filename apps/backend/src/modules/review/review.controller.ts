@@ -1,60 +1,73 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { CreateReviewDto } from '@/dtos/Review.create.dto';
+import { UpdateReviewDto } from '@/dtos/Review.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { Review } from '@shared/prisma';
 
 @ApiTags('التقييمات')
 @Controller('reviews')
-export class ReviewController {
-    constructor(private readonly reviewService: ReviewService) { }
+export class ReviewController extends BaseController<Review> {
+    constructor(private readonly reviewService: ReviewService) {
+        super(reviewService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء تقييم جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء التقييم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء تقييم جديد', 'none', null, CreateReviewDto, 'التقييمات')
     create(@Body() createReviewDto: CreateReviewDto) {
         return this.reviewService.create(createReviewDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث تقييم محدد', 'none', UpdateReviewDto, null, 'التقييمات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.reviewService.update(+id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع التقييمات' })
-    @ApiResponse({ status: 200, description: 'تم جلب التقييمات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع التقييمات', 'none', null, null, 'التقييمات')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() params: PaginationDto) {
         return this.reviewService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تقييم محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب التقييم بنجاح' })
-    findOne(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تقييم محدد', 'none', null, null, 'التقييمات')
+    findOne(@Param('id', ParseIntPipe) id: number) {
         return this.reviewService.findOne(+id);
     }
 
     @Get('product/:productId')
-    @ApiOperation({ summary: 'الحصول على تقييمات منتج محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقييمات المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تقييمات منتج محدد', 'none', null, null, 'التقييمات')
     findByProduct(@Param('productId') productId: string) {
         return this.reviewService.findByProduct(+productId);
     }
 
     @Get('user/:userId')
-    @ApiOperation({ summary: 'الحصول على تقييمات مستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقييمات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تقييمات مستخدم محدد', 'none', null, null, 'التقييمات')
     findByUser(@Param('userId') userId: string) {
         return this.reviewService.findByUser(+userId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث تقييم محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث التقييم بنجاح' })
-    update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-        return this.reviewService.update(+id, updateReviewDto);
-    }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف تقييم محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف التقييم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف تقييم محدد', 'none', null, null, 'التقييمات')
     remove(@Param('id') id: string) {
         return this.reviewService.remove(+id);
     }

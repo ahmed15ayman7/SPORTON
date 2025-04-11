@@ -1,24 +1,51 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 import { EndorsementsService } from './endorsements.service';
 import { Endorsement } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateEndorsementDto } from './dto/create-endorsement.dto';
-import { UpdateEndorsementDto } from './dto/update-endorsement.dto';
-
-@ApiTags('endorsements')
+import { CreateEndorsementDto } from '@/dtos/Endorsement.create.dto';
+import { UpdateEndorsementDto } from '@/dtos/Endorsement.update.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+@ApiTags('التزكيات')
 @Controller('endorsements')
 export class EndorsementsController extends BaseController<Endorsement> {
     constructor(private readonly endorsementsService: EndorsementsService) {
         super(endorsementsService);
     }
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء تزكية جديدة', 'create', CreateEndorsementDto, null, "التزكيات")
+    async create(@Body() createEndorsementDto: CreateEndorsementDto) {
+        return this.endorsementsService.create(createEndorsementDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث تزكية موجودة', 'update', UpdateEndorsementDto, null, "التزكيات")
+    async update(@Param('id') id: number, @Body() updateEndorsementDto: UpdateEndorsementDto) {
+        return this.endorsementsService.update(id, updateEndorsementDto);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع التزكيات', 'none', null, null, "التزكيات")
+    async findAll(@Query() paginationDto: PaginationDto) {
+        return this.endorsementsService.findAll(paginationDto);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تزكية معينة', 'none', null, null, "التزكيات")
+    async findOne(@Param('id') id: number) {
+        return this.endorsementsService.findOne(id);
+    }
 
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'الحصول على ملف التزكية مع جميع العلاقات' })
-    @ApiResponse({ status: 200, description: 'إرجاع ملف التزكية.' })
+    @CustomApiDocs('الحصول على ملف التزكية مع جميع العلاقات', 'none', null, null, "التزكيات")
     async getEndorsementProfile(@Param('id', ParseIntPipe) id: number) {
         return this.endorsementsService.getEndorsementProfile(id);
     }
@@ -26,8 +53,7 @@ export class EndorsementsController extends BaseController<Endorsement> {
     @Get('user/:userId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'الحصول على تزكيات المستخدم' })
-    @ApiResponse({ status: 200, description: 'إرجاع تزكيات المستخدم.' })
+    @CustomApiDocs('الحصول على تزكيات المستخدم', 'none', null, null, "التزكيات")
     async getUserEndorsements(@Param('userId', ParseIntPipe) userId: number) {
         return this.endorsementsService.getUserEndorsements(userId);
     }
@@ -35,8 +61,7 @@ export class EndorsementsController extends BaseController<Endorsement> {
     @Get('given/:userId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'الحصول على التزكيات التي قدمها المستخدم' })
-    @ApiResponse({ status: 200, description: 'إرجاع التزكيات التي قدمها المستخدم.' })
+    @CustomApiDocs('الحصول على التزكيات التي قدمها المستخدم', 'none', null, null, "التزكيات")
     async getUserGivenEndorsements(@Param('userId', ParseIntPipe) userId: number) {
         return this.endorsementsService.getUserGivenEndorsements(userId);
     }
@@ -44,30 +69,10 @@ export class EndorsementsController extends BaseController<Endorsement> {
     @Get('skill/:skill')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'الحصول على تزكيات لمهارة معينة' })
-    @ApiResponse({ status: 200, description: 'إرجاع تزكيات المهارة.' })
+    @CustomApiDocs('الحصول على تزكيات لمهارة معينة', 'none', null, null, "التزكيات")
     async getSkillEndorsements(@Param('skill') skill: string) {
         return this.endorsementsService.getSkillEndorsements(skill);
     }
 
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'إنشاء تزكية جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء التزكية بنجاح.' })
-    async create(@Body() createEndorsementDto: CreateEndorsementDto) {
-        return this.endorsementsService.create(createEndorsementDto);
-    }
 
-    @Put(':id')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'تحديث تزكية موجودة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث التزكية بنجاح.' })
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateEndorsementDto: UpdateEndorsementDto,
-    ) {
-        return this.endorsementsService.update(id, updateEndorsementDto);
-    }
 } 

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTransferDto } from './dto/create-transfer.dto';
 import { TransferStatus } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { Transfer } from '@shared/prisma';

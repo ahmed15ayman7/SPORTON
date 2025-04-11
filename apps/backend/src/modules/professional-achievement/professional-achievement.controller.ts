@@ -1,66 +1,74 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ProfessionalAchievementService } from './professional-achievement.service';
-import { CreateProfessionalAchievementDto } from './dto/create-professional-achievement.dto';
-import { UpdateProfessionalAchievementDto } from './dto/update-professional-achievement.dto';
+import { CreateProfessionalAchievementDto } from '@/dtos/ProfessionalAchievement.create.dto';
+import { UpdateProfessionalAchievementDto } from '@/dtos/ProfessionalAchievement.update.dto';
 import { ProfessionalAchievement } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('الإنجازات المهنية')
 @Controller('professional-achievements')
-export class ProfessionalAchievementController {
-    constructor(private readonly professionalAchievementService: ProfessionalAchievementService) { }
+export class ProfessionalAchievementController extends BaseController<ProfessionalAchievement> {
+    constructor(private readonly professionalAchievementService: ProfessionalAchievementService) {
+        super(professionalAchievementService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء إنجاز مهني جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء الإنجاز المهني بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء إنجاز مهني جديد', 'none', null, CreateProfessionalAchievementDto, 'الإنجازات المهنية')
     create(@Body() createProfessionalAchievementDto: CreateProfessionalAchievementDto): Promise<ProfessionalAchievement> {
         return this.professionalAchievementService.create(createProfessionalAchievementDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث إنجاز مهني محدد', 'none', UpdateProfessionalAchievementDto, null, 'الإنجازات المهنية')
+    update(@Param('id') id: number, @Body() data: any): Promise<ProfessionalAchievement> {
+        return this.professionalAchievementService.update(+id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع الإنجازات المهنية' })
-    @ApiResponse({ status: 200, description: 'تم جلب الإنجازات المهنية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع الإنجازات المهنية', 'none', null, null, 'الإنجازات المهنية')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<ProfessionalAchievement>> {
         return this.professionalAchievementService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على إنجاز مهني محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب الإنجاز المهني بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إنجاز مهني محدد', 'none', null, null, 'الإنجازات المهنية')
     findOne(@Param('id') id: number): Promise<ProfessionalAchievement> {
         return this.professionalAchievementService.findOne(+id);
     }
 
     @Get('user/:userId')
-    @ApiOperation({ summary: 'الحصول على إنجازات مستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إنجازات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إنجازات مستخدم محدد', 'none', null, null, 'الإنجازات المهنية')
     findByUser(@Param('userId') userId: number): Promise<ProfessionalAchievement[]> {
         return this.professionalAchievementService.findByUser(+userId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث إنجاز مهني محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الإنجاز المهني بنجاح' })
-    update(
-        @Param('id') id: number,
-        @Body() updateProfessionalAchievementDto: UpdateProfessionalAchievementDto,
-    ): Promise<ProfessionalAchievement> {
-        return this.professionalAchievementService.update(+id, updateProfessionalAchievementDto);
+    @Patch(':id/verify')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('التحقق من إنجاز مهني محدد', 'none', null, null, 'الإنجازات المهنية')
+    verify(@Param('id') id: number): Promise<ProfessionalAchievement> {
+        return this.professionalAchievementService.verify(+id);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف إنجاز مهني محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف الإنجاز المهني بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف إنجاز مهني محدد', 'none', null, null, 'الإنجازات المهنية')
     remove(@Param('id') id: number): Promise<ProfessionalAchievement> {
         return this.professionalAchievementService.remove(+id);
     }
 
-    @Patch(':id/verify')
-    @ApiOperation({ summary: 'التحقق من إنجاز مهني محدد' })
-    @ApiResponse({ status: 200, description: 'تم التحقق من الإنجاز المهني بنجاح' })
-    verify(@Param('id') id: number): Promise<ProfessionalAchievement> {
-        return this.professionalAchievementService.verify(+id);
-    }
 } 

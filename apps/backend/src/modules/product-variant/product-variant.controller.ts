@@ -1,54 +1,72 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ProductVariantService } from './product-variant.service';
-import { CreateProductVariantDto } from './dto/create-product-variant.dto';
-import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
+import { CreateProductVariantDto } from '@/dtos/ProductVariant.create.dto';
+import { UpdateProductVariantDto } from '@/dtos/ProductVariant.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { ProductVariant } from '@shared/prisma';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('متغيرات المنتجات')
 @Controller('product-variant')
-export class ProductVariantController {
-    constructor(private readonly productVariantService: ProductVariantService) { }
+export class ProductVariantController extends BaseController<ProductVariant> {
+    constructor(private readonly productVariantService: ProductVariantService) {
+        super(productVariantService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة متغير منتج جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة متغير المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة متغير منتج جديد', 'none', null, CreateProductVariantDto, 'متغيرات المنتجات')
     create(@Body() createProductVariantDto: CreateProductVariantDto) {
         return this.productVariantService.create(createProductVariantDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث متغير منتج معين', 'none', UpdateProductVariantDto, null, 'متغيرات المنتجات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.productVariantService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع متغيرات المنتجات' })
-    @ApiResponse({ status: 200, description: 'تم جلب متغيرات المنتجات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع متغيرات المنتجات', 'none', null, null, 'متغيرات المنتجات')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<ProductVariant>> {
         return this.productVariantService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل متغير منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل متغير المنتج بنجاح' })
-    findOne(@Param('id') id: number): Promise<ProductVariant> {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل متغير منتج معين', 'none', null, null, 'متغيرات المنتجات')
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<ProductVariant> {
         return this.productVariantService.getVariantProfile(+id);
     }
 
     @Get('product/:productId')
-    @ApiOperation({ summary: 'الحصول على جميع متغيرات منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب متغيرات المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع متغيرات منتج معين', 'none', null, null, 'متغيرات المنتجات')
     getProductVariants(@Param('productId') productId: number): Promise<ProductVariant[]> {
         return this.productVariantService.getProductVariants(+productId);
     }
 
     @Get('sku/:sku')
-    @ApiOperation({ summary: 'الحصول على متغير منتج برقم المنتج المميز' })
-    @ApiResponse({ status: 200, description: 'تم جلب متغير المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على متغير منتج برقم المنتج المميز', 'none', null, null, 'متغيرات المنتجات')
     getVariantBySku(@Param('sku') sku: string): Promise<ProductVariant> {
         return this.productVariantService.getVariantBySku(sku);
     }
 
     @Patch(':id/stock')
-    @ApiOperation({ summary: 'تحديث المخزون لمتغير منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث المخزون بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث المخزون لمتغير منتج معين', 'none', null, null, 'متغيرات المنتجات')
     updateStock(
         @Param('id') id: number,
         @Body('quantity') quantity: number,
@@ -57,8 +75,9 @@ export class ProductVariantController {
     }
 
     @Patch(':id/price')
-    @ApiOperation({ summary: 'تحديث السعر لمتغير منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث السعر بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث السعر لمتغير منتج معين', 'none', null, null, 'متغيرات المنتجات')
     updatePrice(
         @Param('id') id: number,
         @Body('price') price: number,
@@ -66,19 +85,10 @@ export class ProductVariantController {
         return this.productVariantService.updatePrice(+id, price);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات متغير منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات متغير المنتج بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateProductVariantDto: UpdateProductVariantDto,
-    ) {
-        return this.productVariantService.update(+id, updateProductVariantDto);
-    }
-
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف متغير منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف متغير المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف متغير منتج معين', 'none', null, null, 'متغيرات المنتجات')
     remove(@Param('id') id: string) {
         return this.productVariantService.remove(+id);
     }

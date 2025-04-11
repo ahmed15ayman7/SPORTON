@@ -1,76 +1,96 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CreateNotificationDto } from '@/dtos/Notification.create.dto';
+import { UpdateNotificationDto } from '@/dtos/Notification.update.dto';
 import { Notification } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('الإشعارات')
 @Controller('notifications')
-export class NotificationController {
-    constructor(private readonly notificationService: NotificationService) { }
+export class NotificationController extends BaseController<Notification> {
+    constructor(private readonly notificationService: NotificationService) {
+        super(notificationService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء إشعار جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء إشعار جديد', 'create', CreateNotificationDto, null, "الإشعارات")
     create(@Body() createNotificationDto: CreateNotificationDto): Promise<Notification> {
         return this.notificationService.create(createNotificationDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث إشعار محدد', 'update', UpdateNotificationDto, null, "الإشعارات")
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<Notification> {
+        return this.notificationService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع الإشعارات' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع الإشعارات', 'none', null, null, "الإشعارات")
     async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<Notification>> {
         return this.notificationService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع تفاصيل الإشعار بنجاح' })
-    findOne(@Param('id') id: string): Promise<Notification> {
-        return this.notificationService.findOne(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل إشعار محدد', 'none', null, null, "الإشعارات")
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<Notification> {
+        return this.notificationService.findOne(id);
     }
 
     @Get('user/:userId')
-    @ApiOperation({ summary: 'الحصول على إشعارات مستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع إشعارات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إشعارات مستخدم محدد', 'none', null, null, "الإشعارات")
     getUserNotifications(@Param('userId') userId: string): Promise<Notification[]> {
         return this.notificationService.getUserNotifications(+userId);
     }
 
     @Get('user/:userId/unread')
-    @ApiOperation({ summary: 'الحصول على الإشعارات غير المقروءة لمستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإشعارات غير المقروءة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الإشعارات غير المقروءة لمستخدم محدد', 'none', null, null, "الإشعارات")
     getUnreadNotifications(@Param('userId') userId: string): Promise<Notification[]> {
         return this.notificationService.getUnreadNotifications(+userId);
     }
 
     @Get('user/:userId/read')
-    @ApiOperation({ summary: 'الحصول على الإشعارات المقروءة لمستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإشعارات المقروءة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الإشعارات المقروءة لمستخدم محدد', 'none', null, null, "الإشعارات")
     getReadNotifications(@Param('userId') userId: string): Promise<Notification[]> {
         return this.notificationService.getReadNotifications(+userId);
     }
 
     @Patch(':id/read')
-    @ApiOperation({ summary: 'تحديد إشعار كمقروء' })
-    @ApiResponse({ status: 200, description: 'تم تحديث حالة الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديد إشعار كمقروء', 'update', UpdateNotificationDto, null, "الإشعارات")
     markAsRead(@Param('id') id: string): Promise<Notification> {
         return this.notificationService.markAsRead(+id);
     }
 
     @Patch('user/:userId/read-all')
-    @ApiOperation({ summary: 'تحديد جميع إشعارات المستخدم كمقروءة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث حالة جميع الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديد جميع إشعارات المستخدم كمقروءة', 'update', UpdateNotificationDto, null, "الإشعارات")
     markAllAsRead(@Param('userId') userId: string): Promise<Notification[]> {
         return this.notificationService.markAllAsRead(+userId);
     }
 
     @Get('user/:userId/type/:type')
-    @ApiOperation({ summary: 'الحصول على إشعارات مستخدم محدد حسب النوع' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإشعارات حسب النوع بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إشعارات مستخدم محدد حسب النوع', 'none', null, null, "الإشعارات")
     getNotificationsByType(
         @Param('userId') userId: string,
         @Param('type') type: string,
@@ -78,26 +98,12 @@ export class NotificationController {
         return this.notificationService.getNotificationsByType(+userId, type);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الإشعار بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateNotificationDto: UpdateNotificationDto,
-    ): Promise<Notification> {
-        return this.notificationService.update(+id, updateNotificationDto);
-    }
 
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف الإشعار بنجاح' })
-    remove(@Param('id') id: string): Promise<Notification> {
-        return this.notificationService.deleteNotification(+id);
-    }
 
     @Delete('user/:userId')
-    @ApiOperation({ summary: 'حذف جميع إشعارات مستخدم محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف جميع إشعارات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف جميع إشعارات مستخدم محدد', 'none', null, null, "الإشعارات")
     removeAll(@Param('userId') userId: string): Promise<Notification[]> {
         return this.notificationService.deleteAllNotifications(+userId);
     }

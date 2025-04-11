@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateMaintenanceScheduleDto } from './dto/create-maintenance-schedule.dto';
-import { UpdateMaintenanceScheduleDto } from './dto/update-maintenance-schedule.dto';
+import { CreateMaintenanceScheduleDto } from '@/dtos/MaintenanceSchedule.create.dto';
+import { UpdateMaintenanceScheduleDto } from '@/dtos/MaintenanceSchedule.update.dto';
 import { MaintenanceSchedule } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class MaintenanceScheduleService {
-    constructor(private prisma: PrismaService) { }
+export class MaintenanceScheduleService extends BaseService<MaintenanceSchedule> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'maintenanceSchedule');
+    }
 
     async create(createMaintenanceScheduleDto: CreateMaintenanceScheduleDto): Promise<MaintenanceSchedule> {
         return this.prisma.maintenanceSchedule.create({

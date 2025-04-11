@@ -1,24 +1,54 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 import { PostsService } from './posts.service';
 import { Post as PostModel } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-
-@ApiTags('posts')
+import { CreatePostDto } from '@/dtos/Post.create.dto';
+import { UpdatePostDto } from '@/dtos/Post.update.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+@ApiTags('المنشورات')
 @Controller('posts')
 export class PostsController extends BaseController<PostModel> {
     constructor(private readonly postsService: PostsService) {
         super(postsService);
     }
 
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء منشور جديد', 'none', null, CreatePostDto, 'المنشورات')
+    create(@Body() createPostDto: CreatePostDto): Promise<PostModel> {
+        return this.postsService.create(createPostDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث منشور معين', 'none', UpdatePostDto, null, 'المنشورات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<PostModel> {
+        return this.postsService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع المنشورات', 'none', null, null, 'المنشورات')
+    @ApiQuery({ type: PaginationDto })
+    findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<PostModel>> {
+        return this.postsService.findAll(query);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على منشور معين', 'none', null, null, 'المنشورات')
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<PostModel> {
+        return this.postsService.findOne(id);
+    }
+
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get post profile with all relations' })
-    @ApiResponse({ status: 200, description: 'Return post profile.' })
+    @CustomApiDocs('الحصول على ملف المنشور بجميع العلاقات', 'none', null, null, 'المنشورات')
     async getPostProfile(@Param('id', ParseIntPipe) id: number) {
         return this.postsService.getPostProfile(id);
     }
@@ -26,8 +56,7 @@ export class PostsController extends BaseController<PostModel> {
     @Get('user/:userId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get user posts' })
-    @ApiResponse({ status: 200, description: 'Return user posts.' })
+    @CustomApiDocs('الحصول على منشورات المستخدم', 'none', null, null, 'المنشورات')
     async getUserPosts(@Param('userId', ParseIntPipe) userId: number) {
         return this.postsService.getUserPosts(userId);
     }
@@ -35,19 +64,16 @@ export class PostsController extends BaseController<PostModel> {
     @Get('achievements')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get achievement posts' })
-    @ApiResponse({ status: 200, description: 'Return achievement posts.' })
+    @CustomApiDocs('الحصول على منشورات المؤنثات', 'none', null, null, 'المنشورات')
     async getAchievementPosts() {
         return this.postsService.getAchievementPosts();
     }
 
-    @Post()
+    @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new post' })
-    @ApiResponse({ status: 201, description: 'The post has been successfully created.' })
-    async create(@Body() createPostDto: CreatePostDto) {
-        return this.postsService.create(createPostDto);
+    @CustomApiDocs('حذف منشور معين', 'none', null, null, 'المنشورات')
+    remove(@Param('id', ParseIntPipe) id: number): Promise<PostModel> {
+        return this.postsService.remove(id);
     }
-
 } 

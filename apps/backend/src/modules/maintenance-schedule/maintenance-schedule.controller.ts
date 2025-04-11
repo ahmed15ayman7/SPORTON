@@ -1,52 +1,70 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { MaintenanceScheduleService } from './maintenance-schedule.service';
-import { CreateMaintenanceScheduleDto } from './dto/create-maintenance-schedule.dto';
-import { UpdateMaintenanceScheduleDto } from './dto/update-maintenance-schedule.dto';
+import { CreateMaintenanceScheduleDto } from '@/dtos/MaintenanceSchedule.create.dto';
+import { UpdateMaintenanceScheduleDto } from '@/dtos/MaintenanceSchedule.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { MaintenanceSchedule } from '@shared/prisma';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('جداول الصيانة')
 @Controller('maintenance-schedules')
-export class MaintenanceScheduleController {
-    constructor(private readonly maintenanceScheduleService: MaintenanceScheduleService) { }
+export class MaintenanceScheduleController extends BaseController<MaintenanceSchedule> {
+    constructor(private readonly maintenanceScheduleService: MaintenanceScheduleService) {
+        super(maintenanceScheduleService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء جدول صيانة جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء الجدول بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء جدول صيانة جديد', 'create', CreateMaintenanceScheduleDto, null, "جداول الصيانة")
     create(@Body() createMaintenanceScheduleDto: CreateMaintenanceScheduleDto) {
         return this.maintenanceScheduleService.create(createMaintenanceScheduleDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث جدول صيانة محدد', 'update', UpdateMaintenanceScheduleDto, null, "جداول الصيانة")
+    update(@Param('id') id: number, @Body() data: any) {
+        return this.maintenanceScheduleService.update(+id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع جداول الصيانة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الجداول بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع جداول الصيانة', 'none', null, null, "جداول الصيانة")
     findAll(@Query() paginationDto: PaginationDto) {
         return this.maintenanceScheduleService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على جدول صيانة محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب الجدول بنجاح' })
-    findOne(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جدول صيانة محدد', 'none', null, null, "جداول الصيانة")
+    findOne(@Param('id') id: number) {
         return this.maintenanceScheduleService.findOne(+id);
     }
 
     @Get('facility/:facilityId')
-    @ApiOperation({ summary: 'الحصول على جداول صيانة منشأة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الجداول بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جداول صيانة منشأة محددة', 'none', null, null, "جداول الصيانة")
     findByFacility(@Param('facilityId') facilityId: string) {
         return this.maintenanceScheduleService.findByFacility(+facilityId);
     }
 
     @Get('status/:status')
-    @ApiOperation({ summary: 'الحصول على جداول صيانة بحالة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الجداول بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جداول صيانة بحالة محددة', 'none', null, null, "جداول الصيانة")
     findByStatus(@Param('status') status: string) {
         return this.maintenanceScheduleService.findByStatus(status);
     }
 
     @Get('date-range')
-    @ApiOperation({ summary: 'الحصول على جداول صيانة في نطاق تاريخ محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب الجداول بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جداول صيانة في نطاق تاريخ محدد', 'none', null, null, "جداول الصيانة")
     findByDateRange(
         @Query('startDate') startDate: string,
         @Query('endDate') endDate: string,
@@ -57,20 +75,4 @@ export class MaintenanceScheduleController {
         );
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث جدول صيانة محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الجدول بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateMaintenanceScheduleDto: UpdateMaintenanceScheduleDto,
-    ) {
-        return this.maintenanceScheduleService.update(+id, updateMaintenanceScheduleDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف جدول صيانة محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف الجدول بنجاح' })
-    remove(@Param('id') id: string) {
-        return this.maintenanceScheduleService.remove(+id);
-    }
 } 

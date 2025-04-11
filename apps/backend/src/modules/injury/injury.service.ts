@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateInjuryDto } from './dto/create-injury.dto';
-import { UpdateInjuryDto } from './dto/update-injury.dto';
+import { CreateInjuryDto } from '@/dtos/Injury.create.dto';
+import { UpdateInjuryDto } from '@/dtos/Injury.update.dto';
 import { InjuryStatus, Injury, InjurySeverity } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class InjuryService {
-    constructor(private prisma: PrismaService) { }
+export class InjuryService extends BaseService<Injury> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'injury');
+    }
 
     async create(createInjuryDto: CreateInjuryDto): Promise<Injury> {
         return this.prisma.injury.create({

@@ -1,54 +1,73 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TournamentService } from './tournament.service';
 import { Tournament, TournamentType } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { CreateTournamentDto } from '@/dtos/Tournament.create.dto';
+import { UpdateTournamentDto } from '@/dtos/Tournament.update.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 @ApiTags('البطولات')
 @Controller('tournaments')
-export class TournamentController {
-    constructor(private readonly tournamentService: TournamentService) { }
+export class TournamentController extends BaseController<Tournament> {
+    constructor(private readonly tournamentService: TournamentService) {
+        super(tournamentService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء بطولة جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء البطولة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء بطولة جديدة', 'none', CreateTournamentDto, null, 'البطولات')
     create(@Body() createTournamentDto: CreateTournamentDto): Promise<Tournament> {
         return this.tournamentService.create(createTournamentDto);
     }
 
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث بطولة محددة', 'none', UpdateTournamentDto, null, 'البطولات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<Tournament> {
+        return this.tournamentService.update(id, data);
+    }
+
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع البطولات' })
-    @ApiResponse({ status: 200, description: 'تم جلب البطولات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع البطولات', 'none', null, null, 'البطولات')
     findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<Tournament>> {
         return this.tournamentService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على بطولة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب البطولة بنجاح' })
-    findOne(@Param('id') id: string): Promise<Tournament> {
-        return this.tournamentService.findOne(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على بطولة محددة', 'none', null, null, 'البطولات')
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<Tournament> {
+        return this.tournamentService.findOne(id);
     }
 
     @Get('organizer/:organizerId')
-    @ApiOperation({ summary: 'الحصول على بطولات منشأة محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب البطولات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على بطولات منشأة محددة', 'none', null, null, 'البطولات')
     findByOrganizer(@Param('organizerId') organizerId: string): Promise<Tournament[]> {
         return this.tournamentService.findByOrganizer(+organizerId);
     }
 
     @Get('type/:type')
-    @ApiOperation({ summary: 'الحصول على بطولات نوع محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب البطولات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على بطولات نوع محدد', 'none', null, null, 'البطولات')
     findByType(@Param('type') type: string): Promise<Tournament[]> {
         return this.tournamentService.findByType(type as TournamentType);
     }
 
     @Get('date-range/:startDate/:endDate')
-    @ApiOperation({ summary: 'الحصول على بطولات ضمن نطاق تاريخ محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب البطولات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على بطولات ضمن نطاق تاريخ محدد', 'none', null, null, 'البطولات')
     findByDateRange(
         @Param('startDate') startDate: string,
         @Param('endDate') endDate: string,
@@ -59,19 +78,11 @@ export class TournamentController {
         );
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بطولة محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث البطولة بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateTournamentDto: UpdateTournamentDto,
-    ): Promise<Tournament> {
-        return this.tournamentService.update(+id, updateTournamentDto);
-    }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف بطولة محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف البطولة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف بطولة محددة', 'none', null, null, 'البطولات')
     remove(@Param('id') id: string): Promise<Tournament> {
         return this.tournamentService.remove(+id);
     }

@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateAgentClientDto } from './dto/create-agent-client.dto';
-import { UpdateAgentClientDto } from './dto/update-agent-client.dto';
+import { CreateAgentClientDto } from '../../dtos/AgentClient.create.dto';
+import { UpdateAgentClientDto } from '../../dtos/AgentClient.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { AgentClient, ClientStatus } from '@shared/prisma';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class AgentClientService {
-    constructor(private prisma: PrismaService) { }
+export class AgentClientService extends BaseService<AgentClient> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, "علاقة العميل والوكيل");
+    }
 
     async create(createAgentClientDto: CreateAgentClientDto): Promise<AgentClient> {
         return this.prisma.agentClient.create({

@@ -1,48 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Put, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { NotificationGroupService } from './notification-group.service';
-import { CreateNotificationGroupDto } from './dto/create-notification-group.dto';
-import { UpdateNotificationGroupDto } from './dto/update-notification-group.dto';
-
+import { CreateNotificationGroupDto } from '@/dtos/NotificationGroup.create.dto';
+import { UpdateNotificationGroupDto } from '@/dtos/NotificationGroup.update.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { NotificationGroup } from '@shared/prisma';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('مجموعات الإشعارات')
 @Controller('notification-groups')
-export class NotificationGroupController {
-    constructor(private readonly notificationGroupService: NotificationGroupService) { }
+export class NotificationGroupController extends BaseController<NotificationGroup> {
+    constructor(private readonly notificationGroupService: NotificationGroupService) {
+        super(notificationGroupService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء مجموعة إشعارات جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء مجموعة الإشعارات بنجاح' })
-    create(@Body() createNotificationGroupDto: CreateNotificationGroupDto) {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء مجموعة إشعارات جديدة', 'create', CreateNotificationGroupDto, null, "مجموعات الإشعارات")
+    create(@Body() createNotificationGroupDto: CreateNotificationGroupDto & { notifications: number[] }) {
         return this.notificationGroupService.create(createNotificationGroupDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث مجموعة إشعارات محددة', 'update', UpdateNotificationGroupDto, null, "مجموعات الإشعارات")
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.notificationGroupService.update(id, data);
     }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع مجموعات الإشعارات' })
-    @ApiResponse({ status: 200, description: 'تم جلب مجموعات الإشعارات بنجاح' })
-    findAll() {
-        return this.notificationGroupService.findAll();
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع مجموعات الإشعارات', 'none', null, null, "مجموعات الإشعارات")
+    findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<NotificationGroup>> {
+        return this.notificationGroupService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على مجموعة إشعارات محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب مجموعة الإشعارات بنجاح' })
-    findOne(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على مجموعة إشعارات محددة', 'none', null, null, "مجموعات الإشعارات")
+    findOne(@Param('id', ParseIntPipe) id: number) {
         return this.notificationGroupService.findOne(+id);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث مجموعة إشعارات محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث مجموعة الإشعارات بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateNotificationGroupDto: UpdateNotificationGroupDto,
-    ) {
-        return this.notificationGroupService.update(+id, updateNotificationGroupDto);
-    }
 
     @Patch(':id/notifications/:notificationId')
-    @ApiOperation({ summary: 'إضافة إشعار إلى مجموعة إشعارات محددة' })
-    @ApiResponse({ status: 200, description: 'تم إضافة الإشعار إلى المجموعة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة إشعار إلى مجموعة إشعارات محددة', 'update', UpdateNotificationGroupDto, null, "مجموعات الإشعارات")
     addNotification(
         @Param('id') id: string,
         @Param('notificationId') notificationId: string,
@@ -51,8 +59,9 @@ export class NotificationGroupController {
     }
 
     @Delete(':id/notifications/:notificationId')
-    @ApiOperation({ summary: 'إزالة إشعار من مجموعة إشعارات محددة' })
-    @ApiResponse({ status: 200, description: 'تم إزالة الإشعار من المجموعة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إزالة إشعار من مجموعة إشعارات محددة', 'none', null, null, "مجموعات الإشعارات")
     removeNotification(
         @Param('id') id: string,
         @Param('notificationId') notificationId: string,
@@ -61,8 +70,9 @@ export class NotificationGroupController {
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف مجموعة إشعارات محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف مجموعة الإشعارات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف مجموعة إشعارات محددة', 'none', null, null, "مجموعات الإشعارات")
     remove(@Param('id') id: string) {
         return this.notificationGroupService.remove(+id);
     }

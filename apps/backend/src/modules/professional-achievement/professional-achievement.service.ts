@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateProfessionalAchievementDto } from './dto/create-professional-achievement.dto';
-import { UpdateProfessionalAchievementDto } from './dto/update-professional-achievement.dto';
+import { CreateProfessionalAchievementDto } from '@/dtos/ProfessionalAchievement.create.dto';
+import { UpdateProfessionalAchievementDto } from '@/dtos/ProfessionalAchievement.update.dto';
 import { ProfessionalAchievement } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class ProfessionalAchievementService {
-    constructor(private prisma: PrismaService) { }
+export class ProfessionalAchievementService extends BaseService<ProfessionalAchievement> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'professionalAchievement');
+    }
 
     async create(createProfessionalAchievementDto: CreateProfessionalAchievementDto): Promise<ProfessionalAchievement> {
         return this.prisma.professionalAchievement.create({

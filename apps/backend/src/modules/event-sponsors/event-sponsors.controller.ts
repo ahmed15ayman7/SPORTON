@@ -7,56 +7,77 @@ import {
     Param,
     Delete,
     Query,
+    UseGuards,
+    Put,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EventSponsorsService } from './event-sponsors.service';
-import { CreateEventSponsorDto } from './dto/create-event-sponsor.dto';
-import { UpdateEventSponsorDto } from './dto/update-event-sponsor.dto';
+import { CreateEventSponsorDto } from '@/dtos/EventSponsor.create.dto';
+import { UpdateEventSponsorDto } from '@/dtos/EventSponsor.update.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { EventSponsor } from '@shared/prisma';
 
 @ApiTags('رعاة الفعاليات')
 @Controller('event-sponsors')
-export class EventSponsorsController {
-    constructor(private readonly eventSponsorsService: EventSponsorsService) { }
+export class EventSponsorsController extends BaseController<EventSponsor> {
+    constructor(private readonly eventSponsorsService: EventSponsorsService) {
+        super(eventSponsorsService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة راعي جديد للفعالية' })
-    @ApiResponse({ status: 201, description: 'تم إضافة الراعي بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة راعي جديد للفعالية', 'create', CreateEventSponsorDto, null, "رعاة الفعاليات")
     create(@Body() createEventSponsorDto: CreateEventSponsorDto) {
         return this.eventSponsorsService.create(createEventSponsorDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث راعي محددة', 'update', UpdateEventSponsorDto, null, "رعاة الفعاليات")
+    update(@Param('id') id: number, @Body() data: any) {
+        return this.eventSponsorsService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع رعاة الفعاليات' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الرعاة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع رعاة الفعاليات', 'none', null, null, "رعاة الفعاليات")
     findAll(@Query() query: PaginationDto) {
         return this.eventSponsorsService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل راعي محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع تفاصيل الراعي بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل راعي محددة', 'none', null, null, "رعاة الفعاليات")
     getEventSponsorProfile(@Param('id') id: string) {
         return this.eventSponsorsService.getEventSponsorProfile(+id);
     }
 
     @Get('event/:eventId')
-    @ApiOperation({ summary: 'الحصول على رعاة فعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الرعاة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على رعاة فعالية محددة', 'none', null, null, "رعاة الفعاليات")
     getEventSponsors(@Param('eventId') eventId: string) {
         return this.eventSponsorsService.getEventSponsors(+eventId);
     }
 
     @Get('sponsor/:sponsorId')
-    @ApiOperation({ summary: 'الحصول على فعاليات راعي محدد' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الفعاليات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على فعاليات راعي محدد', 'none', null, null, "رعاة الفعاليات")
     getSponsorEvents(@Param('sponsorId') sponsorId: string) {
         return this.eventSponsorsService.getSponsorEvents(+sponsorId);
     }
 
     @Get('event/:eventId/type/:sponsorshipType')
-    @ApiOperation({ summary: 'الحصول على رعاة حسب نوع الرعاية لفعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الرعاة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على رعاة حسب نوع الرعاية لفعالية محددة', 'none', null, null, "رعاة الفعاليات")
     getSponsorsByType(
         @Param('eventId') eventId: string,
         @Param('sponsorshipType') sponsorshipType: string,
@@ -65,23 +86,11 @@ export class EventSponsorsController {
     }
 
     @Get('event/:eventId/total')
-    @ApiOperation({ summary: 'الحصول على إجمالي قيمة الرعايات لفعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الإجمالي بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إجمالي قيمة الرعايات لفعالية محددة', 'none', null, null, "رعاة الفعاليات")
     getTotalSponsorshipAmount(@Param('eventId') eventId: string) {
         return this.eventSponsorsService.getTotalSponsorshipAmount(+eventId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث راعي محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الراعي بنجاح' })
-    update(@Param('id') id: string, @Body() updateEventSponsorDto: UpdateEventSponsorDto) {
-        return this.eventSponsorsService.update(+id, updateEventSponsorDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف راعي محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف الراعي بنجاح' })
-    remove(@Param('id') id: string) {
-        return this.eventSponsorsService.remove(+id);
-    }
 } 

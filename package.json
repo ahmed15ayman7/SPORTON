@@ -10,9 +10,11 @@
         "dev": "turbo run dev",
         "build": "turbo run build",
         "lint": "turbo run lint",
-        "prisma": "cd packages/shared && npx prisma generate && npx prisma db push && cd ../..",
+        "prisma:generate": "cd packages/shared && npx prisma generate && cd ../..",
+        "prisma:push": "cd packages/shared && npx prisma db push && cd ../..",
         "prisma:studio": "cd packages/shared && npx prisma studio && cd ../..",
         "prisma:migrate": "cd packages/shared && npx prisma migrate dev && cd ../..",
+        "fix-imports": "cd apps/backend && ts-node src/fix-imports.ts && cd ../..",
         "frontend:dev": "cd apps/frontend && npm run dev && cd ../..",
         "backend:build": "cd apps/backend && npm run build && cd ../..",
         "frontend:build": "cd apps/frontend && npm run build && cd ../..",
@@ -20,12 +22,15 @@
         "frontend:start": "cd apps/frontend && npm run start && cd ../..",
         "backend:prod": "cd apps/backend && npm run start:prod && cd ../..",
         "backend:dev": "cd apps/backend  && npm run start:dev && cd ../..",
-        "start": "concurrently \"pnpm backend:dev\""
+        "prisma:all": "pnpm prisma:generate && pnpm prisma:push && pnpm fix-imports && pnpm dtos",
+        "dtos": "cd apps/backend && node src/generate-dtos.js && cd ../..",
+        "start": "concurrently \"pnpm backend:prod\""
     },
     "dependencies": {
         "concurrently": "^8.2.2"
     },
     "devDependencies": {
+        "ts-node": "^10.9.2",
         "turbo": "latest"
     }
 }

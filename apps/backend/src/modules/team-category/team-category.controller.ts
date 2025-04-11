@@ -1,38 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { TeamCategoryService } from './team-category.service';
 import { TeamCategory } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { CreateTeamCategoryDto } from '@/dtos/TeamCategory.create.dto';
+import { UpdateTeamCategoryDto } from '@/dtos/TeamCategory.update.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 
 @ApiTags('فئات الفرق')
 @Controller('team-categories')
-export class TeamCategoryController {
-    constructor(private readonly teamCategoryService: TeamCategoryService) { }
+export class TeamCategoryController extends BaseController<TeamCategory> {
+    constructor(private readonly teamCategoryService: TeamCategoryService) {
+        super(teamCategoryService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء فئة فريق جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء فئة الفريق بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء فئة فريق جديدة', 'none', null, CreateTeamCategoryDto, 'فئات الفرق')
     create(@Body() createTeamCategoryDto: TeamCategory) {
         return this.teamCategoryService.create(createTeamCategoryDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث فئة فريق محددة', 'none', UpdateTeamCategoryDto, null, 'فئات الفرق')
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateTeamCategoryDto: TeamCategory) {
+        return this.teamCategoryService.update(id, updateTeamCategoryDto);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع فئات الفرق' })
-    @ApiResponse({ status: 200, description: 'تم جلب فئات الفرق بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع فئات الفرق', 'none', null, null, 'فئات الفرق')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() paginationDto: PaginationDto) {
         return this.teamCategoryService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على فئة فريق محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب فئة الفريق بنجاح' })
-    findOne(@Param('id') id: string) {
-        return this.teamCategoryService.findOne(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على فئة فريق محددة', 'none', null, null, 'فئات الفرق')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.teamCategoryService.findOne(id);
     }
 
     @Get('age-range/:minAge/:maxAge')
-    @ApiOperation({ summary: 'الحصول على فئات الفرق ضمن نطاق عمر محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب فئات الفرق بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على فئات الفرق ضمن نطاق عمر محدد', 'none', null, null, 'فئات الفرق')
     findByAgeRange(
         @Param('minAge') minAge: string,
         @Param('maxAge') maxAge: string,
@@ -40,19 +59,10 @@ export class TeamCategoryController {
         return this.teamCategoryService.findByAgeRange(+minAge, +maxAge);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث فئة فريق محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث فئة الفريق بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateTeamCategoryDto: TeamCategory,
-    ) {
-        return this.teamCategoryService.update(+id, updateTeamCategoryDto);
-    }
-
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف فئة فريق محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف فئة الفريق بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف فئة فريق محددة', 'none', null, null, 'فئات الفرق')
     remove(@Param('id') id: string) {
         return this.teamCategoryService.remove(+id);
     }

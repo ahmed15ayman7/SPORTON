@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreatePlayerDiscoveryDto } from './dto/create-player-discovery.dto';
-import { UpdatePlayerDiscoveryDto } from './dto/update-player-discovery.dto';
+import { CreatePlayerDiscoveryDto } from '@/dtos/PlayerDiscovery.create.dto';
+import { UpdatePlayerDiscoveryDto } from '@/dtos/PlayerDiscovery.update.dto';
 import { PlayerDiscovery, DiscoveryStatus } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class PlayerDiscoveryService {
-    constructor(private prisma: PrismaService) { }
+export class PlayerDiscoveryService extends BaseService<PlayerDiscovery> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'playerDiscovery');
+    }
 
     async create(createPlayerDiscoveryDto: CreatePlayerDiscoveryDto): Promise<PlayerDiscovery> {
         return this.prisma.playerDiscovery.create({

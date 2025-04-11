@@ -1,15 +1,18 @@
 import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { CreateTournamentDto } from '@/dtos/Tournament.create.dto';
+import { UpdateTournamentDto } from '@/dtos/Tournament.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { Tournament, TournamentType } from '@shared/prisma';
 import { Prisma } from '@shared/prisma';
+import { BaseService } from '@/common/services/base.service';
 
 @Injectable()
-export class TournamentService {
-    constructor(private prisma: PrismaService) { }
+export class TournamentService extends BaseService<Tournament> {
+    constructor(prisma: PrismaService) {
+        super(prisma, 'tournament');
+    }
 
     async create(createTournamentDto: CreateTournamentDto): Promise<Tournament> {
         return this.prisma.tournament.create({

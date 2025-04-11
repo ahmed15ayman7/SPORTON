@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CoachingHistory } from '@shared/prisma';
-import { CreateCoachingHistoryDto } from './dto/create-coaching-history.dto';
-import { UpdateCoachingHistoryDto } from './dto/update-coaching-history.dto';
+import { CreateCoachingHistoryDto } from '../../dtos/CoachingHistory.create.dto';
+import { UpdateCoachingHistoryDto } from '../../dtos/CoachingHistory.update.dto';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';

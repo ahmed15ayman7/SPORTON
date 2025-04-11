@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { UpdateAddressDto } from './dto/update-address.dto';
-import { Address } from '@shared/prisma';
+import { CreateAddressDto } from '../../dtos/Address.create.dto';
+import { UpdateAddressDto } from '../../dtos/Address.update.dto';
+import { Address, Prisma } from '@shared/prisma';
+import { BaseService } from '@/common/services/base.service';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @Injectable()
-export class AddressService {
-    constructor(private prisma: PrismaService) { }
+export class AddressService extends BaseService<Address> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'address');
+    }
 
     async create(createAddressDto: CreateAddressDto): Promise<Address> {
         return this.prisma.address.create({
@@ -26,12 +31,37 @@ export class AddressService {
         });
     }
 
-    async findAll(): Promise<Address[]> {
-        return this.prisma.address.findMany({
-            include: {
-                user: true
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<Address>> {
+        const { skip, take, search } = params;
+        const where = search ? {
+            OR: [
+                { name: { contains: search, mode: Prisma.QueryMode.insensitive } },
+                { street: { contains: search, mode: Prisma.QueryMode.insensitive } },
+                { city: { contains: search, mode: Prisma.QueryMode.insensitive } },
+                { country: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            ]
+        } : {};
+
+        const [total, data] = await this.prisma.$transaction([
+            this.prisma.address.count({ where }),
+            this.prisma.address.findMany({
+                where,
+                skip,
+                take,
+                include: {
+                    user: true
+                }
+            })
+        ]);
+        return {
+            data,
+            meta: {
+                total,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: (skip || 0) + (take || 10) < total
             }
-        });
+        };
     }
 
     async findOne(id: number): Promise<Address> {

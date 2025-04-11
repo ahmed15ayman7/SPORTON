@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreatePlayerStatisticsDto } from './dto/create-player-statistics.dto';
-import { UpdatePlayerStatisticsDto } from './dto/update-player-statistics.dto';
+import { CreatePlayerStatisticsDto } from '@/dtos/PlayerStatistics.create.dto';
+import { UpdatePlayerStatisticsDto } from '@/dtos/PlayerStatistics.update.dto';
 import { PlayerStatistics } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class PlayerStatisticsService {
-    constructor(private prisma: PrismaService) { }
+export class PlayerStatisticsService extends BaseService<PlayerStatistics> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'playerStatistics');
+    }
 
     async create(createPlayerStatisticsDto: CreatePlayerStatisticsDto): Promise<PlayerStatistics> {
         return this.prisma.playerStatistics.create({

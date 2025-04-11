@@ -1,14 +1,17 @@
 import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateContractDto } from './dto/create-contract.dto';
-import { UpdateContractDto } from './dto/update-contract.dto';
-import { ContractStatus } from './dto/create-contract.dto';
+import { CreateContractDto } from '@/dtos/Contract.create.dto';
+import { UpdateContractDto } from '@/dtos/Contract.update.dto';
+import { ContractStatus } from '@shared/prisma';
 import { Contract } from '@shared/prisma';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class ContractService {
-    constructor(private prisma: PrismaService) { }
+export class ContractService extends BaseService<Contract> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'contract');
+    }
 
     async create(createContractDto: CreateContractDto): Promise<Contract> {
         return this.prisma.contract.create({

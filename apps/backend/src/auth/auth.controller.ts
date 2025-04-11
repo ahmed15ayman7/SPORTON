@@ -2,7 +2,8 @@ import { Controller, Post, Body, UseGuards, Get, Req, Res } from '@nestjs/common
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -11,7 +12,7 @@ export class AuthController {
     @Post('login')
     @ApiOperation({ summary: 'Login with email and password' })
     @ApiResponse({ status: 200, description: 'Return JWT tokens.' })
-    async login(@Body() loginDto: { email: string; password: string }) {
+    async login(@Body() loginDto: LoginDto) {
         const user = await this.authService.validateUser(
             loginDto.email,
             loginDto.password,
@@ -20,6 +21,13 @@ export class AuthController {
             return { statusCode: 401, message: 'Invalid credentials' };
         }
         return this.authService.login(user);
+    }
+
+    @Post('register')
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiResponse({ status: 200, description: 'Return JWT tokens.' })
+    async register(@Body() registerDto: RegisterDto) {
+        return this.authService.register(registerDto);
     }
 
     @Post('refresh')

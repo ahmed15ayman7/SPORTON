@@ -1,38 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { CompetitionParticipantsService } from './competition-participants.service';
-import { CreateCompetitionParticipantDto } from './dto/create-competition-participant.dto';
-import { UpdateCompetitionParticipantDto } from './dto/update-competition-participant.dto';
+import { CreateCompetitionParticipantDto } from '../../dtos/CompetitionParticipant.create.dto';
+import { UpdateCompetitionParticipantDto } from '../../dtos/CompetitionParticipant.update.dto';
 import { CompetitionParticipant } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('مشاركي المسابقات')
 @Controller('competition-participants')
-export class CompetitionParticipantsController {
-    constructor(private readonly competitionParticipantsService: CompetitionParticipantsService) { }
+export class CompetitionParticipantsController extends BaseController<CompetitionParticipant> {
+    constructor(private readonly competitionParticipantsService: CompetitionParticipantsService) {
+        super(competitionParticipantsService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة مشارك جديد في المسابقة' })
-    @ApiResponse({ status: 201, description: 'تم إضافة المشارك بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة', 'create', null, CreateCompetitionParticipantDto, "مشاركي المسابقات")
     async create(@Body() createCompetitionParticipantDto: CreateCompetitionParticipantDto): Promise<CompetitionParticipant> {
         return this.competitionParticipantsService.create(createCompetitionParticipantDto);
     }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع المشاركين' })
-    @ApiResponse({ status: 200, description: 'تم جلب المشاركين بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "مشاركي المسابقات")
     findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<CompetitionParticipant>> {
         return this.competitionParticipantsService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل مشارك معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل المشارك بنجاح' })
-    findOne(@Param('id') id: string): Promise<CompetitionParticipant> {
-        return this.competitionParticipantsService.getCompetitionParticipantProfile(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "مشاركي المسابقات")
+    findOne(@Param('id') id: number): Promise<CompetitionParticipant> {
+        return this.competitionParticipantsService.findOne(+id);
     }
 
+
     @Get('competition/:competitionId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على جميع المشاركين في مسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب المشاركين بنجاح' })
     getCompetitionParticipants(@Param('competitionId') competitionId: string): Promise<CompetitionParticipant[]> {
@@ -40,6 +50,8 @@ export class CompetitionParticipantsController {
     }
 
     @Get('user/:participantId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على جميع مشاركات مستخدم معين' })
     @ApiResponse({ status: 200, description: 'تم جلب المشاركات بنجاح' })
     getUserParticipations(@Param('participantId') participantId: string): Promise<CompetitionParticipant[]> {
@@ -47,6 +59,8 @@ export class CompetitionParticipantsController {
     }
 
     @Get('competition/:competitionId/status/:status')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على المشاركين في مسابقة معينة حسب الحالة' })
     @ApiResponse({ status: 200, description: 'تم جلب المشاركين بنجاح' })
     getParticipantsByStatus(
@@ -57,6 +71,8 @@ export class CompetitionParticipantsController {
     }
 
     @Get('competition/:competitionId/standings')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على ترتيب المشاركين في مسابقة معينة' })
     @ApiResponse({ status: 200, description: 'تم جلب الترتيب بنجاح' })
     getCompetitionStandings(@Param('competitionId') competitionId: string): Promise<CompetitionParticipant[]> {
@@ -64,6 +80,8 @@ export class CompetitionParticipantsController {
     }
 
     @Patch(':id/rank')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'تحديث ترتيب مشارك معين' })
     @ApiResponse({ status: 200, description: 'تم تحديث الترتيب بنجاح' })
     updateRank(
@@ -74,6 +92,8 @@ export class CompetitionParticipantsController {
     }
 
     @Patch(':id/score')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'تحديث درجة مشارك معين' })
     @ApiResponse({ status: 200, description: 'تم تحديث الدرجة بنجاح' })
     updateScore(
@@ -83,20 +103,4 @@ export class CompetitionParticipantsController {
         return this.competitionParticipantsService.updateParticipantScore(+id, score);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات مشارك معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث البيانات بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateCompetitionParticipantDto: UpdateCompetitionParticipantDto,
-    ): Promise<CompetitionParticipant> {
-        return this.competitionParticipantsService.update(+id, updateCompetitionParticipantDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف مشارك معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف المشارك بنجاح' })
-    remove(@Param('id') id: string): Promise<CompetitionParticipant> {
-        return this.competitionParticipantsService.remove(+id);
-    }
 } 

@@ -1,0 +1,83 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { UserEntity } from "./User.entity";
+import { User, InteractionType, ContentType } from "@shared/prisma";
+
+import { Entity, Column } from "typeorm";
+@Entity()
+// This is the  Entity for UserBehavior
+export class UserBehaviorEntity {
+  @ApiProperty({ type: "number" })
+  // Field: id, Type: number
+  @Column()
+  id: number;
+
+  @ApiProperty({ type: UserEntity })
+  // Field: user, Type: User
+  @Column()
+  user: User;
+
+  @ApiProperty({ type: "number" })
+  // Field: userId, Type: number
+  @Column()
+  userId: number;
+
+  @ApiProperty({ enum: InteractionType })
+  // Field: interactionType, Type: InteractionType
+  @Column()
+  interactionType: InteractionType;
+
+  @ApiProperty({ enum: ContentType })
+  // Field: contentType, Type: ContentType
+  @Column()
+  contentType: ContentType;
+
+  @ApiProperty({ type: "number" })
+  // Field: contentId, Type: number
+  @Column()
+  contentId: number;
+
+  @ApiProperty({ type: "string", format: "date-time" })
+  // Field: timestamp, Type: Date
+  @Column()
+  timestamp: Date;
+
+  @ApiProperty({ type: "number", nullable: true })
+  // Field: timeSpent, Type: number
+  @Column()
+  timeSpent?: number;
+
+  @ApiProperty({ type: "number" })
+  // Field: score, Type: number
+  @Column()
+  score: number;
+
+  @ApiProperty({ type: "number", nullable: true })
+  // Field: sessionDuration, Type: number
+  @Column()
+  sessionDuration?: number;
+
+  @ApiProperty({ additionalProperties: true, type: "object", nullable: true })
+  // Field: deviceInfo, Type: object
+  @Column()
+  deviceInfo?: object;
+
+  @ApiProperty({ additionalProperties: true, type: "object", nullable: true })
+  // Field: location, Type: object
+  @Column()
+  location?: object;
+
+  @ApiProperty({ type: "string", format: "date-time" })
+  // Field: timeOfDay, Type: Date
+  @Column()
+  timeOfDay: Date;
+
+  @ApiProperty({ type: "number" })
+  // Field: dayOfWeek, Type: number
+  @Column()
+  dayOfWeek: number;
+
+  @ApiProperty({ type: "boolean" })
+  // Field: isPositive, Type: boolean
+  @Column()
+  isPositive: boolean;
+}

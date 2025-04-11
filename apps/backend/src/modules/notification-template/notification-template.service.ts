@@ -5,7 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @Injectable()
 export class NotificationTemplateService extends BaseService<NotificationTemplate> {
-    constructor(prisma: PrismaService) {
+    constructor(protected prisma: PrismaService) {
         super(prisma, 'notificationTemplate');
     }
 

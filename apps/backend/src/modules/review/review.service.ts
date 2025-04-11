@@ -1,63 +1,59 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
-import { ProductReview } from '@shared/prisma';
+import { CreateReviewDto } from '@/dtos/Review.create.dto';
+import { UpdateReviewDto } from '@/dtos/Review.update.dto';
+import { ProductReview, Review } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { Prisma } from '@shared/prisma';
 @Injectable()
-export class ReviewService extends BaseService<ProductReview> {
+export class ReviewService extends BaseService<Review> {
     constructor(protected prisma: PrismaService) {
-        super(prisma, 'productReview');
+        super(prisma, 'review');
     }
 
-    async create(createReviewDto: CreateReviewDto): Promise<ProductReview> {
-        return this.prisma.productReview.create({
+    async create(createReviewDto: CreateReviewDto): Promise<Review> {
+        return this.prisma.review.create({
             data: {
-                product: { connect: { id: createReviewDto.productId } },
-                user: { connect: { id: createReviewDto.userId } },
-                rating: createReviewDto.rating,
-                comment: createReviewDto.comment,
-                images: createReviewDto.images,
+                ...createReviewDto,
             },
             include: {
-                product: true,
-                user: true,
+                reviewer: true,
+                reviewed: true,
             },
         });
     }
 
-    async findAll(params: PaginationDto): Promise<PaginatedResponse<ProductReview>> {
+    async findAll(params: PaginationDto): Promise<PaginatedResponse<Review>> {
         const { take, skip, search } = params;
-        const where: Prisma.ProductReviewWhereInput = search ? {
+        const where: Prisma.ReviewWhereInput = search ? {
             OR: [
                 { comment: { contains: search, mode: 'insensitive' } },
-                { user: { name: { contains: search, mode: 'insensitive' } } },
+                { reviewer: { name: { contains: search, mode: 'insensitive' } } },
             ],
         } : {};
         const [data, total] = await this.prisma.$transaction([
-            this.prisma.productReview.findMany({
+            this.prisma.review.findMany({
                 where,
                 include: {
-                    product: true,
-                    user: true,
+                    reviewer: true,
+                    reviewed: true,
                 },
                 skip,
                 take,
             }),
-            this.prisma.productReview.count({ where }),
+            this.prisma.review.count({ where }),
         ]);
         return { data, meta: { total, skip: skip || 0, take: take || 10, hasMore: (skip || 0) + (take || 10) < total } };
     }
 
-    async findOne(id: number): Promise<ProductReview> {
-        const review = await this.prisma.productReview.findUnique({
+    async findOne(id: number): Promise<Review> {
+        const review = await this.prisma.review.findUnique({
             where: { id },
             include: {
-                product: true,
-                user: true,
+                reviewer: true,
+                reviewed: true,
             },
         });
 
@@ -88,14 +84,14 @@ export class ReviewService extends BaseService<ProductReview> {
         });
     }
 
-    async update(id: number, updateReviewDto: UpdateReviewDto): Promise<ProductReview> {
+    async update(id: number, updateReviewDto: UpdateReviewDto): Promise<Review> {
         try {
-            return await this.prisma.productReview.update({
+            return await this.prisma.review.update({
                 where: { id },
                 data: updateReviewDto,
                 include: {
-                    product: true,
-                    user: true,
+                    reviewer: true,
+                    reviewed: true,
                 },
             });
         } catch (error) {
@@ -103,9 +99,9 @@ export class ReviewService extends BaseService<ProductReview> {
         }
     }
 
-    async remove(id: number): Promise<ProductReview> {
+    async remove(id: number): Promise<Review> {
         try {
-            return await this.prisma.productReview.delete({
+            return await this.prisma.review.delete({
                 where: { id },
             });
         } catch (error) {

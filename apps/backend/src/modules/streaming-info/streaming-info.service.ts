@@ -4,7 +4,7 @@ import { StreamingInfo } from '@shared/prisma';
 import { BaseService } from '../../common/services/base.service';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { UpdateStreamingInfoDto } from './dto/update-streaming-info.dto';
+import { UpdateStreamingInfoDto } from '@/dtos/StreamingInfo.update.dto';
 
 @Injectable()
 export class StreamingInfoService extends BaseService<StreamingInfo> {

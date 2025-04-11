@@ -1,90 +1,113 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { CreateOrderDto } from '@/dtos/Order.create.dto';
+import { UpdateOrderDto } from '@/dtos/Order.update.dto';
 import { OrderStatus } from '@shared/prisma';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { Order } from '@shared/prisma';
 import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
 @ApiTags('الطلبات')
 @Controller('order')
-export class OrderController {
-    constructor(private readonly orderService: OrderService) { }
+export class OrderController extends BaseController<Order> {
+    constructor(private readonly orderService: OrderService) {
+        super(orderService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء طلب جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء الطلب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء طلب جديد', 'none', null, CreateOrderDto, 'الطلبات')
     create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
         return this.orderService.create(createOrderDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث طلب معين', 'none', UpdateOrderDto, null, 'الطلبات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<Order> {
+        return this.orderService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع الطلبات' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع الطلبات', 'none', null, null, 'الطلبات')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<Order>> {
         return this.orderService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل طلب معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل الطلب بنجاح' })
-    findOne(@Param('id') id: string): Promise<Order> {
-        return this.orderService.getOrderProfile(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل طلب معين', 'none', null, null, 'الطلبات')
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<Order> {
+        return this.orderService.getOrderProfile(id);
     }
 
     @Get('user/:userId')
-    @ApiOperation({ summary: 'الحصول على طلبات مستخدم معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب طلبات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على طلبات مستخدم معين', 'none', null, null, 'الطلبات')
     getUserOrders(@Param('userId') userId: string): Promise<Order[]> {
         return this.orderService.getUserOrders(+userId);
     }
 
     @Get('status/:status')
-    @ApiOperation({ summary: 'الحصول على الطلبات حسب الحالة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات حسب الحالة', 'none', null, null, 'الطلبات')
     getOrdersByStatus(@Param('status') status: OrderStatus): Promise<Order[]> {
         return this.orderService.getOrdersByStatus(status);
     }
 
     @Get('pending')
-    @ApiOperation({ summary: 'الحصول على الطلبات المعلقة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات المعلقة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات المعلقة', 'none', null, null, 'الطلبات')
     getPendingOrders(): Promise<Order[]> {
         return this.orderService.getPendingOrders();
     }
 
     @Get('processing')
-    @ApiOperation({ summary: 'الحصول على الطلبات قيد المعالجة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات قيد المعالجة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات قيد المعالجة', 'none', null, null, 'الطلبات')
     getProcessingOrders(): Promise<Order[]> {
         return this.orderService.getProcessingOrders();
     }
 
     @Get('shipped')
-    @ApiOperation({ summary: 'الحصول على الطلبات المشحونة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات المشحونة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات المشحونة', 'none', null, null, 'الطلبات')
     getShippedOrders(): Promise<Order[]> {
         return this.orderService.getShippedOrders();
     }
 
     @Get('delivered')
-    @ApiOperation({ summary: 'الحصول على الطلبات المستلمة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات المستلمة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات المستلمة', 'none', null, null, 'الطلبات')
     getDeliveredOrders(): Promise<Order[]> {
         return this.orderService.getDeliveredOrders();
     }
 
     @Get('cancelled')
-    @ApiOperation({ summary: 'الحصول على الطلبات الملغية' })
-    @ApiResponse({ status: 200, description: 'تم جلب الطلبات الملغية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الطلبات الملغية', 'none', null, null, 'الطلبات')
     getCancelledOrders(): Promise<Order[]> {
         return this.orderService.getCancelledOrders();
     }
 
     @Patch(':id/status')
-    @ApiOperation({ summary: 'تحديث حالة طلب معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث حالة الطلب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث حالة طلب معين', 'none', null, null, 'الطلبات')
     updateOrderStatus(
         @Param('id') id: string,
         @Body('status') status: OrderStatus,
@@ -93,25 +116,16 @@ export class OrderController {
     }
 
     @Patch(':id/cancel')
-    @ApiOperation({ summary: 'إلغاء طلب معين' })
-    @ApiResponse({ status: 200, description: 'تم إلغاء الطلب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إلغاء طلب معين', 'none', null, null, 'الطلبات')
     cancelOrder(@Param('id') id: string): Promise<Order> {
         return this.orderService.cancelOrder(+id);
     }
-
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات طلب معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات الطلب بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateOrderDto: UpdateOrderDto,
-    ): Promise<Order> {
-        return this.orderService.update(+id, updateOrderDto);
-    }
-
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف طلب معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف الطلب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف طلب معين', 'none', null, null, 'الطلبات')
     remove(@Param('id') id: string): Promise<Order> {
         return this.orderService.remove(+id);
     }

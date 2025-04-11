@@ -1,19 +1,47 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { ClubsService } from './clubs.service';
 import { Club } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateClubDto } from './dto/create-club.dto';
-import { UpdateClubDto } from './dto/update-club.dto';
-
+import { CreateClubDto } from '../../dtos/Club.create.dto';
+import { UpdateClubDto } from '../../dtos/Club.update.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('clubs')
 @Controller('clubs')
 export class ClubsController extends BaseController<Club> {
     constructor(private readonly clubsService: ClubsService) {
         super(clubsService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateClubDto, "الأندية")
+    async create(@Body() createClubDto: CreateClubDto): Promise<Club> {
+        return this.clubsService.create(createClubDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateClubDto, null, "الأندية")
+    async update(@Param('id') id: number, @Body() data: any): Promise<Club> {
+        return this.clubsService.update(+id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "الأندية")
+    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<Club>> {
+        return this.clubsService.findAll(search);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "الأندية")
+    async findOne(@Param('id') id: number): Promise<Club> {
+        return this.clubsService.findOne(+id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -84,15 +112,6 @@ export class ClubsController extends BaseController<Club> {
     @ApiResponse({ status: 200, description: 'Return club transfers.' })
     async getClubTransfers(@Param('id', ParseIntPipe) id: number) {
         return this.clubsService.getClubTransfers(id);
-    }
-
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new club' })
-    @ApiResponse({ status: 201, description: 'The club has been successfully created.' })
-    async create(@Body() createClubDto: CreateClubDto) {
-        return this.clubsService.create(createClubDto);
     }
 
 } 

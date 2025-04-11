@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { OptimizationLogService } from './optimization-log.service';
-import { CreateOptimizationLogDto } from './dto/create-optimization-log.dto';
-import { UpdateOptimizationLogDto } from './dto/update-optimization-log.dto';
+import { CreateOptimizationLogDto } from '@/dtos/OptimizationLog.create.dto';
+import { UpdateOptimizationLogDto } from '@/dtos/OptimizationLog.update.dto';
 import { OptimizationLog } from '@shared/prisma';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('سجلات التحسين')
 @Controller('optimization-log')
 export class OptimizationLogController extends BaseController<OptimizationLog> {
@@ -15,36 +16,48 @@ export class OptimizationLogController extends BaseController<OptimizationLog> {
     }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة سجل تحسين جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة سجل التحسين بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة سجل تحسين جديد', 'create', CreateOptimizationLogDto, null, "سجلات التحسين")
     create(@Body() createOptimizationLogDto: CreateOptimizationLogDto): Promise<OptimizationLog> {
         return this.optimizationLogService.create(createOptimizationLogDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث سجل تحسين معين', 'update', UpdateOptimizationLogDto, null, "سجلات التحسين")
+    update(@Param('id') id: number, @Body() data: any): Promise<OptimizationLog> {
+        return this.optimizationLogService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع سجلات التحسين' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات التحسين بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع سجلات التحسين', 'none', null, null, "سجلات التحسين")
     findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<OptimizationLog>> {
         return this.optimizationLogService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل سجل تحسين معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل سجل التحسين بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل سجل تحسين معين', 'none', null, null, "سجلات التحسين")
     findOne(@Param('id') id: number): Promise<OptimizationLog> {
         return this.optimizationLogService.getLogProfile(id);
     }
 
     @Get('type/:type')
-    @ApiOperation({ summary: 'الحصول على سجلات التحسين حسب النوع' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات التحسين حسب النوع بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجلات التحسين حسب النوع', 'none', null, null, "سجلات التحسين")
     getLogsByType(@Param('type') type: string): Promise<OptimizationLog[]> {
         return this.optimizationLogService.getLogsByType(type);
     }
 
     @Get('date-range')
-    @ApiOperation({ summary: 'الحصول على سجلات التحسين في نطاق تاريخ معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب سجلات التحسين في النطاق الزمني بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على سجلات التحسين في نطاق تاريخ معين', 'none', null, null, "سجلات التحسين")
     getLogsByDateRange(
         @Query('startDate') startDate: Date,
         @Query('endDate') endDate: Date,

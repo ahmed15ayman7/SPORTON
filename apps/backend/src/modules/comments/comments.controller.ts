@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from '../../dtos/Comment.create.dto';
+import { UpdateCommentDto } from '../../dtos/Comment.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 @ApiTags('التعليقات')
 @Controller('comments')

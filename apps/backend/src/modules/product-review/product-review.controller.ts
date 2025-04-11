@@ -1,69 +1,89 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ProductReviewService } from './product-review.service';
-import { CreateProductReviewDto } from './dto/create-product-review.dto';
-import { UpdateProductReviewDto } from './dto/update-product-review.dto';
+import { CreateProductReviewDto } from '@/dtos/ProductReview.create.dto';
+import { UpdateProductReviewDto } from '@/dtos/ProductReview.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { ProductReview } from '@shared/prisma';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('تقييمات المنتجات')
 @Controller('product-review')
-export class ProductReviewController {
-    constructor(private readonly productReviewService: ProductReviewService) { }
+export class ProductReviewController extends BaseController<ProductReview> {
+    constructor(private readonly productReviewService: ProductReviewService) {
+        super(productReviewService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة تقييم منتج جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة تقييم منتج جديد', 'none', null, CreateProductReviewDto, 'تقييمات المنتجات')
     create(@Body() createProductReviewDto: CreateProductReviewDto) {
         return this.productReviewService.create(createProductReviewDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث تقييم منتج معين', 'none', UpdateProductReviewDto, null, 'تقييمات المنتجات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.productReviewService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع تقييمات المنتجات' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقييمات المنتجات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقييمات المنتجات', 'none', null, null, 'تقييمات المنتجات')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<ProductReview>> {
         return this.productReviewService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل تقييم منتج معين', 'none', null, null, 'تقييمات المنتجات')
     findOne(@Param('id') id: number): Promise<ProductReview> {
         return this.productReviewService.getReviewProfile(+id);
     }
 
     @Get('product/:productId')
-    @ApiOperation({ summary: 'الحصول على جميع تقييمات منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقييمات المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقييمات منتج معين', 'none', null, null, 'تقييمات المنتجات')
     getProductReviews(@Param('productId') productId: number): Promise<ProductReview[]> {
         return this.productReviewService.getProductReviews(+productId);
     }
 
     @Get('product/:productId/rating')
-    @ApiOperation({ summary: 'الحصول على متوسط تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب متوسط تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على متوسط تقييم منتج معين', 'none', null, null, 'تقييمات المنتجات')
     getProductAverageRating(@Param('productId') productId: number): Promise<number> {
         return this.productReviewService.getProductAverageRating(+productId);
     }
 
     @Get('user/:userId')
-    @ApiOperation({ summary: 'الحصول على جميع تقييمات مستخدم معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تقييمات المستخدم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع تقييمات مستخدم معين', 'none', null, null, 'تقييمات المنتجات')
     getUserReviews(@Param('userId') userId: number): Promise<ProductReview[]> {
         return this.productReviewService.getUserReviews(+userId);
     }
 
     @Patch(':id/verify')
-    @ApiOperation({ summary: 'تأكيد تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تأكيد تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تأكيد تقييم منتج معين', 'none', null, null, 'تقييمات المنتجات')
     verifyReview(@Param('id') id: number): Promise<ProductReview> {
         return this.productReviewService.verifyReview(+id);
     }
 
     @Patch(':id/images')
-    @ApiOperation({ summary: 'تحديث صور تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث صور تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث صور تقييم منتج معين', 'none', null, null, 'تقييمات المنتجات')
     updateReviewImages(
         @Param('id') id: string,
         @Body('images') images: string[],
@@ -71,19 +91,10 @@ export class ProductReviewController {
         return this.productReviewService.updateReviewImages(+id, images);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات تقييم المنتج بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateProductReviewDto: UpdateProductReviewDto,
-    ) {
-        return this.productReviewService.update(+id, updateProductReviewDto);
-    }
-
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف تقييم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف تقييم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف تقييم منتج معين', 'none', null, null, 'تقييمات المنتجات')
     remove(@Param('id') id: string) {
         return this.productReviewService.remove(+id);
     }

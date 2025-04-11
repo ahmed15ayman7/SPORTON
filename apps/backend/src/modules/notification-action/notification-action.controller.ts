@@ -1,62 +1,73 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { NotificationActionService } from './notification-action.service';
-import { CreateNotificationActionDto } from './dto/create-notification-action.dto';
-import { UpdateNotificationActionDto } from './dto/update-notification-action.dto';
+import { CreateNotificationActionDto } from '@/dtos/NotificationAction.create.dto';
+import { UpdateNotificationActionDto } from '@/dtos/NotificationAction.update.dto';
 import { NotificationAction } from '@shared/prisma';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 @ApiTags('إجراءات الإشعارات')
 @Controller('notification-actions')
-export class NotificationActionController {
-    constructor(private readonly notificationActionService: NotificationActionService) { }
+export class NotificationActionController extends BaseController<NotificationAction> {
+    constructor(private readonly notificationActionService: NotificationActionService) {
+        super(notificationActionService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء إجراء إشعار جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء إجراء الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء إجراء إشعار جديد', 'create', CreateNotificationActionDto, null, "إجراءات الإشعارات")
     async create(@Body() createNotificationActionDto: CreateNotificationActionDto): Promise<NotificationAction> {
         return this.notificationActionService.create(createNotificationActionDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث إجراء إشعار محدد', 'update', UpdateNotificationActionDto, null, "إجراءات الإشعارات")
+    async update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<NotificationAction> {
+        return this.notificationActionService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع إجراءات الإشعارات' })
-    @ApiResponse({ status: 200, description: 'تم جلب إجراءات الإشعارات بنجاح' })
-    async findAll(): Promise<NotificationAction[]> {
-        return this.notificationActionService.findAll();
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع إجراءات الإشعارات', 'none', null, null, "إجراءات الإشعارات")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<NotificationAction>> {
+        return this.notificationActionService.findAll(params);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على إجراء إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إجراء الإشعار بنجاح' })
-    async findOne(@Param('id') id: string): Promise<NotificationAction> {
-        return this.notificationActionService.findOne(+id);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إجراء إشعار محدد', 'none', null, null, "إجراءات الإشعارات")
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<NotificationAction> {
+        return this.notificationActionService.findOne(id);
     }
 
     @Get('notification/:notificationId')
-    @ApiOperation({ summary: 'الحصول على إجراء إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إجراء الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إجراء إشعار محدد', 'none', null, null, "إجراءات الإشعارات")
     async findByNotification(@Param('notificationId') notificationId: string): Promise<NotificationAction> {
         return this.notificationActionService.findByNotification(+notificationId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث إجراء إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث إجراء الإشعار بنجاح' })
-    async update(
-        @Param('id') id: string,
-        @Body() updateNotificationActionDto: UpdateNotificationActionDto,
-    ): Promise<NotificationAction> {
-        return this.notificationActionService.update(+id, updateNotificationActionDto);
-    }
 
     @Patch(':id/complete')
-    @ApiOperation({ summary: 'إكمال إجراء إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم إكمال إجراء الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إكمال إجراء إشعار محدد', 'update', UpdateNotificationActionDto, null, "إجراءات الإشعارات")
     async complete(@Param('id') id: string): Promise<NotificationAction> {
         return this.notificationActionService.complete(+id);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف إجراء إشعار محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف إجراء الإشعار بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف إجراء إشعار محدد', 'none', null, null, "إجراءات الإشعارات")
     async remove(@Param('id') id: string): Promise<NotificationAction> {
         return this.notificationActionService.remove(+id);
     }

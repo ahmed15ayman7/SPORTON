@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateTeamCategoryDto } from './dto/create-team-category.dto';
-import { UpdateTeamCategoryDto } from './dto/update-team-category.dto';
+import { CreateTeamCategoryDto } from '@/dtos/TeamCategory.create.dto';
+import { UpdateTeamCategoryDto } from '@/dtos/TeamCategory.update.dto';
 import { TeamCategory } from '@shared/prisma';
 import { BaseService } from '@/common/services/base.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';

@@ -4,7 +4,7 @@ import { OptimizationLog } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
 import { BaseService } from '@/common/services/base.service';
-import { UpdateOptimizationLogDto } from './dto/update-optimization-log.dto';
+import { UpdateOptimizationLogDto } from '@/dtos/OptimizationLog.update.dto';
 
 @Injectable()
 export class OptimizationLogService extends BaseService<OptimizationLog> {

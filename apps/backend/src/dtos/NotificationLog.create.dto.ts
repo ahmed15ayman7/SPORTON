@@ -1,0 +1,41 @@
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  Notification,
+  DeliveryStatus,
+  NotificationChannel,
+} from "@shared/prisma";
+
+import { Entity, Column } from "typeorm";
+@Entity()
+// This is the Create Entity for NotificationLog
+export class CreateNotificationLogDto {
+  @ApiProperty({ type: "number" })
+  // Field: notificationId, Type: number
+  @Column()
+  notificationId: number;
+
+  @ApiProperty({ enum: DeliveryStatus })
+  // Field: status, Type: DeliveryStatus
+  @Column()
+  status: DeliveryStatus;
+
+  @ApiProperty({ enum: NotificationChannel })
+  // Field: channel, Type: NotificationChannel
+  @Column()
+  channel: NotificationChannel;
+
+  @ApiProperty({ type: "number" })
+  // Field: attempts, Type: number
+  @Column()
+  attempts: number;
+
+  @ApiProperty({ type: "string" })
+  // Field: error, Type: string
+  @Column()
+  error?: string;
+
+  @ApiProperty({ type: "string", format: "date-time" })
+  // Field: sentAt, Type: Date
+  @Column()
+  sentAt: Date;
+}

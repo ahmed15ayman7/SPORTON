@@ -1,24 +1,52 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { SponsorshipsService } from './sponsorships.service';
 import { Sponsorship } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateSponsorshipDto } from './dto/create-sponsorship.dto';
-import { UpdateSponsorshipDto } from './dto/update-sponsorship.dto';
-
+import { CreateSponsorshipDto } from '@/dtos/Sponsorship.create.dto';
+import { UpdateSponsorshipDto } from '@/dtos/Sponsorship.update.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 @ApiTags('sponsorships')
 @Controller('sponsorships')
 export class SponsorshipsController extends BaseController<Sponsorship> {
     constructor(private readonly sponsorshipsService: SponsorshipsService) {
         super(sponsorshipsService);
     }
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء تعاون جديد', 'none', null, CreateSponsorshipDto, 'التعاونات')
+    create(@Body() createSponsorshipDto: CreateSponsorshipDto) {
+        return this.sponsorshipsService.create(createSponsorshipDto);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث تعاون محدد', 'none', UpdateSponsorshipDto, null, 'التعاونات')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+        return this.sponsorshipsService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع التعاونات', 'none', null, null, 'التعاونات')
+    @ApiQuery({ type: PaginationDto })
+    findAll(@Query() params: PaginationDto) {
+        return this.sponsorshipsService.findAll(params);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تعاون محدد', 'none', null, null, 'التعاونات')
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.sponsorshipsService.findOne(id);
+    }
 
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get sponsorship profile with all relations' })
-    @ApiResponse({ status: 200, description: 'Return sponsorship profile.' })
+    @CustomApiDocs('الحصول على تعاون معين بالتفاصيل', 'none', null, null, 'التعاونات')
     async getSponsorshipProfile(@Param('id', ParseIntPipe) id: number) {
         return this.sponsorshipsService.getSponsorshipProfile(id);
     }
@@ -26,8 +54,7 @@ export class SponsorshipsController extends BaseController<Sponsorship> {
     @Get('sponsor/:sponsorId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get sponsor sponsorships' })
-    @ApiResponse({ status: 200, description: 'Return sponsor sponsorships.' })
+    @CustomApiDocs('الحصول على تعاونات المساهم المحدد', 'none', null, null, 'التعاونات')
     async getSponsorSponsorships(@Param('sponsorId', ParseIntPipe) sponsorId: number) {
         return this.sponsorshipsService.getSponsorSponsorships(sponsorId);
     }
@@ -35,19 +62,16 @@ export class SponsorshipsController extends BaseController<Sponsorship> {
     @Get('athlete/:athleteId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get athlete sponsorships' })
-    @ApiResponse({ status: 200, description: 'Return athlete sponsorships.' })
+    @CustomApiDocs('الحصول على تعاونات المساهم المحدد', 'none', null, null, 'التعاونات')
     async getAthleteSponsorships(@Param('athleteId', ParseIntPipe) athleteId: number) {
         return this.sponsorshipsService.getAthleteSponsorships(athleteId);
     }
 
-    @Post()
+    @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create a new sponsorship' })
-    @ApiResponse({ status: 201, description: 'The sponsorship has been successfully created.' })
-    async create(@Body() createSponsorshipDto: CreateSponsorshipDto) {
-        return this.sponsorshipsService.create(createSponsorshipDto);
+    @CustomApiDocs('حذف تعاون محدد', 'none', null, null, 'التعاونات')
+    async remove(@Param('id', ParseIntPipe) id: number) {
+        return this.sponsorshipsService.remove(id);
     }
-
 } 

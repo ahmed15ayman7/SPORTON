@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../modules/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from '@shared/prisma';
-
+import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
     constructor(
@@ -28,6 +28,11 @@ export class AuthService {
             access_token: this.jwtService.sign(payload),
             refresh_token: this.generateRefreshToken(payload),
         };
+    }
+
+    async register(registerDto: RegisterDto) {
+        const user = await this.usersService.create(registerDto);
+        return this.login(user);
     }
 
     async refreshToken(token: string) {

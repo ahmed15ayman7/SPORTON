@@ -1,41 +1,50 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AdTargetingService } from './ad-targeting.service';
-import { CreateAdTargetingDto } from './dto/create-ad-targeting.dto';
-import { UpdateAdTargetingDto } from './dto/update-ad-targeting.dto';
+import { CreateAdTargetingDto } from '../../dtos/AdTargeting.create.dto';
+import { UpdateAdTargetingDto } from '../../dtos/AdTargeting.update.dto';
 import { AdTargeting } from '@shared/prisma';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
-import { BaseController } from '@/common/controllers/base.controller';
 @ApiTags('استهداف الإعلانات')
 @Controller('ad-targeting')
 export class AdTargetingController extends BaseController<AdTargeting> {
     constructor(private readonly adTargetingService: AdTargetingService) {
         super(adTargetingService);
     }
-
     @Post()
-    @ApiOperation({ summary: 'إضافة استهداف إعلان جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة استهداف الإعلان بنجاح' })
-    async create(@Body() createAdTargetingDto: CreateAdTargetingDto): Promise<AdTargeting> {
-        return this.adTargetingService.create(createAdTargetingDto);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateAdTargetingDto, "استهداف الإعلانات")
+    async create(@Body() data: any): Promise<AdTargeting> {
+        return this.adTargetingService.create(data);
     }
-
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateAdTargetingDto, null, "استهداف الإعلانات")
+    async update(@Param('id') id: number, @Body() data: any): Promise<AdTargeting> {
+        return this.adTargetingService.update(id, data);
+    }
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع استهدافات الإعلانات' })
-    @ApiResponse({ status: 200, description: 'تم جلب استهدافات الإعلانات بنجاح' })
-    async findAll(@Query('search') search: PaginationDto): Promise<PaginatedResponse<AdTargeting>> {
-        return this.adTargetingService.findAll(search);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "استهداف الإعلانات")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<AdTargeting>> {
+        return this.adTargetingService.findAll(params);
     }
-
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل استهداف إعلان معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل استهداف الإعلان بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "استهداف الإعلانات")
     async findOne(@Param('id') id: number): Promise<AdTargeting> {
-        return this.adTargetingService.getTargetingProfile(+id);
+        return this.adTargetingService.findOne(id);
     }
-
     @Get('ad/:adId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'الحصول على جميع استهدافات الإعلانات لإعلان معين' })
     @ApiResponse({ status: 200, description: 'تم جلب استهدافات الإعلانات بنجاح' })
     async getAdTargeting(@Param('adId') adId: number): Promise<AdTargeting[]> {
@@ -63,20 +72,4 @@ export class AdTargetingController extends BaseController<AdTargeting> {
         return this.adTargetingService.getTargetingPerformance(+id);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات استهداف إعلان معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات استهداف الإعلان بنجاح' })
-    async update(
-        @Param('id') id: number,
-        @Body() updateAdTargetingDto: UpdateAdTargetingDto,
-    ): Promise<AdTargeting> {
-        return this.adTargetingService.update(+id, updateAdTargetingDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف استهداف إعلان معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف استهداف الإعلان بنجاح' })
-    async remove(@Param('id') id: number): Promise<AdTargeting> {
-        return this.adTargetingService.remove(+id);
-    }
 } 

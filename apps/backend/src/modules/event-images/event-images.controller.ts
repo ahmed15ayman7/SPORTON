@@ -7,56 +7,77 @@ import {
     Param,
     Delete,
     Query,
+    UseGuards,
+    Put,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EventImagesService } from './event-images.service';
-import { CreateEventImageDto } from './dto/create-event-image.dto';
-import { UpdateEventImageDto } from './dto/update-event-image.dto';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { CreateEventImageDto } from '@/dtos/EventImage.create.dto';
+import { UpdateEventImageDto } from '@/dtos/EventImage.update.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { EventImage } from '@shared/prisma';
 
 @ApiTags('صور الفعاليات')
 @Controller('event-images')
-export class EventImagesController {
-    constructor(private readonly eventImagesService: EventImagesService) { }
+export class EventImagesController extends BaseController<EventImage> {
+    constructor(private readonly eventImagesService: EventImagesService) {
+        super(eventImagesService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة صورة جديدة للفعالية' })
-    @ApiResponse({ status: 201, description: 'تم إضافة الصورة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة صورة جديدة للفعالية', 'create', CreateEventImageDto, null, "صور الفعاليات")
     create(@Body() createEventImageDto: CreateEventImageDto) {
         return this.eventImagesService.create(createEventImageDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث صورة فعالية محددة', 'update', UpdateEventImageDto, null, "صور الفعاليات")
+    update(@Param('id') id: number, @Body() data: any) {
+        return this.eventImagesService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع صور الفعاليات' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع صور الفعاليات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع صور الفعاليات', 'none', null, null, "صور الفعاليات")
     findAll(@Query() query: PaginationDto) {
         return this.eventImagesService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل صورة محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع تفاصيل الصورة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل صورة محددة', 'none', null, null, "صور الفعاليات")
     getEventImageProfile(@Param('id') id: string) {
         return this.eventImagesService.getEventImageProfile(+id);
     }
 
     @Get('event/:eventId')
-    @ApiOperation({ summary: 'الحصول على صور فعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع صور الفعالية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على صور فعالية محددة', 'none', null, null, "صور الفعاليات")
     getEventImages(@Param('eventId') eventId: string) {
         return this.eventImagesService.getEventImages(+eventId);
     }
 
     @Get('event/:eventId/main')
-    @ApiOperation({ summary: 'الحصول على الصورة الرئيسية لفعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم استرجاع الصورة الرئيسية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الصورة الرئيسية لفعالية محددة', 'none', null, null, "صور الفعاليات")
     getMainEventImage(@Param('eventId') eventId: string) {
         return this.eventImagesService.getMainEventImage(+eventId);
     }
 
     @Patch(':id/set-main')
-    @ApiOperation({ summary: 'تعيين صورة كصورة رئيسية للفعالية' })
-    @ApiResponse({ status: 200, description: 'تم تعيين الصورة كصورة رئيسية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تعيين صورة كصورة رئيسية للفعالية', 'none', null, null, "صور الفعاليات")
     setMainImage(
         @Param('id') id: string,
         @Body('eventId') eventId: number,
@@ -64,17 +85,4 @@ export class EventImagesController {
         return this.eventImagesService.setMainImage(eventId, +id);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث صورة فعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث الصورة بنجاح' })
-    update(@Param('id') id: string, @Body() updateEventImageDto: UpdateEventImageDto) {
-        return this.eventImagesService.update(+id, updateEventImageDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف صورة فعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف الصورة بنجاح' })
-    remove(@Param('id') id: string) {
-        return this.eventImagesService.remove(+id);
-    }
 } 

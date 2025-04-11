@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateFacilityDto } from './dto/create-facility.dto';
-import { UpdateFacilityDto } from './dto/update-facility.dto';
+import { CreateFacilityDto } from '@/dtos/Facility.create.dto';
+import { UpdateFacilityDto } from '@/dtos/Facility.update.dto';
 import { Facility, FacilityType } from '@shared/prisma';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseService } from '@/common/services/base.service';
 @Injectable()
-export class FacilityService {
-    constructor(private prisma: PrismaService) { }
+export class FacilityService extends BaseService<Facility> {
+    constructor(protected prisma: PrismaService) {
+        super(prisma, 'facility');
+    }
 
     async create(createFacilityDto: CreateFacilityDto): Promise<Facility> {
         return this.prisma.facility.create({
@@ -23,8 +28,21 @@ export class FacilityService {
         });
     }
 
-    async findAll(): Promise<Facility[]> {
-        return this.prisma.facility.findMany();
+    async findAll(query: PaginationDto): Promise<PaginatedResponse<Facility>> {
+        const { take = 10, skip = 0 } = query;
+        const facilities = await this.prisma.facility.findMany({
+            skip: skip,
+            take: take
+        });
+        return {
+            data: facilities,
+            meta: {
+                total: facilities.length,
+                skip: skip || 0,
+                take: take || 10,
+                hasMore: facilities.length === take
+            }
+        };
     }
 
     async findOne(id: number): Promise<Facility> {

@@ -1,81 +1,104 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DiscountService } from './discount.service';
-import { CreateDiscountDto } from './dto/create-discount.dto';
-import { UpdateDiscountDto } from './dto/update-discount.dto';
+import { CreateDiscountDto } from '@/dtos/Discount.create.dto';
+import { UpdateDiscountDto } from '@/dtos/Discount.update.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Discount } from '@shared/prisma';
 
 @ApiTags('الخصومات')
 @Controller('discount')
-export class DiscountController {
-    constructor(private readonly discountService: DiscountService) { }
+export class DiscountController extends BaseController<Discount> {
+    constructor(private readonly discountService: DiscountService) {
+        super(discountService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إضافة خصم جديد' })
-    @ApiResponse({ status: 201, description: 'تم إضافة الخصم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إضافة خصم جديد', 'create', CreateDiscountDto, null, "الخصومات")
     create(@Body() createDiscountDto: CreateDiscountDto) {
         return this.discountService.create(createDiscountDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث خصم معين', 'update', UpdateDiscountDto, null, "الخصومات")
+    update(@Param('id') id: number, @Body() updateDiscountDto: UpdateDiscountDto) {
+        return this.discountService.update(+id, updateDiscountDto);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع الخصومات' })
-    @ApiResponse({ status: 200, description: 'تم جلب الخصومات بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع الخصومات', 'none', null, null, "الخصومات")
     findAll(@Query() paginationDto: PaginationDto) {
         return this.discountService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على تفاصيل خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب تفاصيل الخصم بنجاح' })
-    findOne(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على تفاصيل خصم معين', 'none', null, null, "الخصومات")
+    findOne(@Param('id') id: number) {
         return this.discountService.getDiscountProfile(+id);
     }
 
     @Get('product/:productId')
-    @ApiOperation({ summary: 'الحصول على خصم منتج معين' })
-    @ApiResponse({ status: 200, description: 'تم جلب خصم المنتج بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على خصم منتج معين', 'none', null, null, "الخصومات")
     getProductDiscount(@Param('productId') productId: string) {
         return this.discountService.getProductDiscount(+productId);
     }
 
     @Get('active')
-    @ApiOperation({ summary: 'الحصول على الخصومات النشطة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الخصومات النشطة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الخصومات النشطة', 'none', null, null, "الخصومات")
     getActiveDiscounts() {
         return this.discountService.getActiveDiscounts();
     }
 
     @Get('upcoming')
-    @ApiOperation({ summary: 'الحصول على الخصومات القادمة' })
-    @ApiResponse({ status: 200, description: 'تم جلب الخصومات القادمة بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الخصومات القادمة', 'none', null, null, "الخصومات")
     getUpcomingDiscounts() {
         return this.discountService.getUpcomingDiscounts();
     }
 
     @Get('expired')
-    @ApiOperation({ summary: 'الحصول على الخصومات المنتهية' })
-    @ApiResponse({ status: 200, description: 'تم جلب الخصومات المنتهية بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على الخصومات المنتهية', 'none', null, null, "الخصومات")
     getExpiredDiscounts() {
         return this.discountService.getExpiredDiscounts();
     }
 
     @Patch(':id/activate')
-    @ApiOperation({ summary: 'تفعيل خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم تفعيل الخصم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تفعيل خصم معين', 'none', null, null, "الخصومات")
     activateDiscount(@Param('id') id: string) {
         return this.discountService.activateDiscount(+id);
     }
 
     @Patch(':id/deactivate')
-    @ApiOperation({ summary: 'تعطيل خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم تعطيل الخصم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تعطيل خصم معين', 'none', null, null, "الخصومات")
     deactivateDiscount(@Param('id') id: string) {
         return this.discountService.deactivateDiscount(+id);
     }
 
     @Patch(':id/extend')
-    @ApiOperation({ summary: 'تمديد مدة خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم تمديد مدة الخصم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تمديد مدة خصم معين', 'none', null, null, "الخصومات")
     extendDiscount(
         @Param('id') id: string,
         @Body('endDate') endDate: Date,
@@ -84,8 +107,9 @@ export class DiscountController {
     }
 
     @Patch(':id/percentage')
-    @ApiOperation({ summary: 'تحديث نسبة خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث نسبة الخصم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث نسبة خصم معين', 'none', null, null, "الخصومات")
     updateDiscountPercentage(
         @Param('id') id: string,
         @Body('percentage') percentage: number,
@@ -93,20 +117,4 @@ export class DiscountController {
         return this.discountService.updateDiscountPercentage(+id, percentage);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث بيانات خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم تحديث بيانات الخصم بنجاح' })
-    update(
-        @Param('id') id: string,
-        @Body() updateDiscountDto: UpdateDiscountDto,
-    ) {
-        return this.discountService.update(+id, updateDiscountDto);
-    }
-
-    @Delete(':id')
-    @ApiOperation({ summary: 'حذف خصم معين' })
-    @ApiResponse({ status: 200, description: 'تم حذف الخصم بنجاح' })
-    remove(@Param('id') id: string) {
-        return this.discountService.remove(+id);
-    }
 } 

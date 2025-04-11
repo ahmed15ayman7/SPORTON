@@ -1,64 +1,74 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PlayerStatisticsService } from './player-statistics.service';
-import { CreatePlayerStatisticsDto } from './dto/create-player-statistics.dto';
-import { UpdatePlayerStatisticsDto } from './dto/update-player-statistics.dto';
+import { CreatePlayerStatisticsDto } from '@/dtos/PlayerStatistics.create.dto';
+import { UpdatePlayerStatisticsDto } from '@/dtos/PlayerStatistics.update.dto';
 import { PlayerStatistics } from '@shared/prisma';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { PaginatedResponse } from '@/common/interfaces/paginated-response.interface';
+import { BaseController, CustomApiDocs } from '@/common/controllers/base.controller';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @ApiTags('إحصائيات اللاعبين')
 @Controller('player-statistics')
-export class PlayerStatisticsController {
-    constructor(private readonly playerStatisticsService: PlayerStatisticsService) { }
+export class PlayerStatisticsController extends BaseController<PlayerStatistics> {
+    constructor(private readonly playerStatisticsService: PlayerStatisticsService) {
+        super(playerStatisticsService);
+    }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء إحصائيات لاعب جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء إحصائيات اللاعب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء إحصائيات لاعب جديدة', 'none', null, CreatePlayerStatisticsDto, 'إحصائيات اللاعبين')
     async create(@Body() createPlayerStatisticsDto: CreatePlayerStatisticsDto): Promise<PlayerStatistics> {
         return this.playerStatisticsService.create(createPlayerStatisticsDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث إحصائيات لاعب محدد', 'none', UpdatePlayerStatisticsDto, null, 'إحصائيات اللاعبين')
+    update(@Param('id', ParseIntPipe) id: number, @Body() data: any): Promise<PlayerStatistics> {
+        return this.playerStatisticsService.update(id, data);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع إحصائيات اللاعبين' })
-    @ApiResponse({ status: 200, description: 'تم جلب إحصائيات اللاعبين بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع إحصائيات اللاعبين', 'none', null, null, 'إحصائيات اللاعبين')
+    @ApiQuery({ type: PaginationDto })
     async findAll(@Query() query: PaginationDto): Promise<PaginatedResponse<PlayerStatistics>> {
         return this.playerStatisticsService.findAll(query);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على إحصائيات لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إحصائيات اللاعب بنجاح' })
-    async findOne(@Param('id') id: string): Promise<PlayerStatistics> {
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إحصائيات لاعب محدد', 'none', null, null, 'إحصائيات اللاعبين')
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<PlayerStatistics> {
         return this.playerStatisticsService.findOne(+id);
     }
 
     @Get('player/:playerId')
-    @ApiOperation({ summary: 'الحصول على إحصائيات لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إحصائيات اللاعب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إحصائيات لاعب محدد', 'none', null, null, 'إحصائيات اللاعبين')
     async findByPlayer(@Param('playerId') playerId: string): Promise<PlayerStatistics[]> {
         return this.playerStatisticsService.findByPlayer(+playerId);
     }
 
     @Get('season/:season')
-    @ApiOperation({ summary: 'الحصول على إحصائيات موسم محدد' })
-    @ApiResponse({ status: 200, description: 'تم جلب إحصائيات الموسم بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على إحصائيات موسم محدد', 'none', null, null, 'إحصائيات اللاعبين')
     async findBySeason(@Param('season') season: string): Promise<PlayerStatistics[]> {
         return this.playerStatisticsService.findBySeason(season);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث إحصائيات لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث إحصائيات اللاعب بنجاح' })
-    async update(
-        @Param('id') id: string,
-        @Body() updatePlayerStatisticsDto: UpdatePlayerStatisticsDto,
-    ): Promise<PlayerStatistics> {
-        return this.playerStatisticsService.update(+id, updatePlayerStatisticsDto);
-    }
+
 
     @Patch(':id/update-stats')
-    @ApiOperation({ summary: 'تحديث إحصائيات لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم تحديث إحصائيات اللاعب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث إحصائيات لاعب محدد', 'none', UpdatePlayerStatisticsDto, null, 'إحصائيات اللاعبين')
     async updateStats(
         @Param('id') id: string,
         @Body() stats: Partial<UpdatePlayerStatisticsDto>,
@@ -67,8 +77,9 @@ export class PlayerStatisticsController {
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف إحصائيات لاعب محدد' })
-    @ApiResponse({ status: 200, description: 'تم حذف إحصائيات اللاعب بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف إحصائيات لاعب محدد', 'none', null, null, 'إحصائيات اللاعبين')
     remove(@Param('id') id: string) {
         return this.playerStatisticsService.remove(+id);
     }

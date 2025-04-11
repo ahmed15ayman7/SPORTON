@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards, Put } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { StreamingInfoService } from './streaming-info.service';
-import { UpdateStreamingInfoDto } from './dto/update-streaming-info.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { UpdateStreamingInfoDto } from '@/dtos/StreamingInfo.update.dto';
 import { StreamingInfo } from '@shared/prisma';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { PaginationDto } from '../../common/dto/pagination.dto';
+import { CreateStreamingInfoDto } from '@/dtos/StreamingInfo.create.dto';
 @ApiTags('معلومات البث')
 @Controller('streaming-info')
 export class StreamingInfoController extends BaseController<StreamingInfo> {
@@ -13,53 +15,57 @@ export class StreamingInfoController extends BaseController<StreamingInfo> {
     }
 
     @Post()
-    @ApiOperation({ summary: 'إنشاء معلومات بث جديدة' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء معلومات البث بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء معلومات بث جديدة', 'none', null, CreateStreamingInfoDto, 'معلومات البث')
     create(@Body() createStreamingInfoDto: StreamingInfo) {
         return this.streamingInfoService.create(createStreamingInfoDto);
     }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث معلومات بث محددة', 'none', UpdateStreamingInfoDto, null, 'معلومات البث')
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateStreamingInfoDto: UpdateStreamingInfoDto) {
+        return this.streamingInfoService.update(id, updateStreamingInfoDto);
+    }
 
     @Get()
-    @ApiOperation({ summary: 'الحصول على جميع معلومات البث' })
-    @ApiResponse({ status: 200, description: 'تم جلب معلومات البث بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع معلومات البث', 'none', null, null, 'معلومات البث')
+    @ApiQuery({ type: PaginationDto })
     findAll(@Query() paginationDto: PaginationDto) {
         return this.streamingInfoService.findAll(paginationDto);
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'الحصول على معلومات بث محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب معلومات البث بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على معلومات بث محددة', 'none', null, null, 'معلومات البث')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.streamingInfoService.findOne(id);
     }
 
     @Get('event/:eventId')
-    @ApiOperation({ summary: 'الحصول على معلومات بث فعالية محددة' })
-    @ApiResponse({ status: 200, description: 'تم جلب معلومات البث بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على معلومات بث فعالية محددة', 'none', null, null, 'معلومات البث')
     findByEvent(@Param('eventId') eventId: string) {
         return this.streamingInfoService.findByEvent(+eventId);
     }
 
-    @Patch(':id')
-    @ApiOperation({ summary: 'تحديث معلومات بث محددة' })
-    @ApiResponse({ status: 200, description: 'تم تحديث معلومات البث بنجاح' })
-    update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateStreamingInfoDto: UpdateStreamingInfoDto,
-    ) {
-        return this.streamingInfoService.update(id, updateStreamingInfoDto);
-    }
-
     @Patch(':id/toggle-live')
-    @ApiOperation({ summary: 'تبديل حالة البث المباشر' })
-    @ApiResponse({ status: 200, description: 'تم تبديل حالة البث المباشر بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تبديل حالة البث المباشر', 'none', null, null, 'معلومات البث')
     toggleLive(@Param('id', ParseIntPipe) id: number) {
         return this.streamingInfoService.toggleLive(id);
     }
 
     @Delete(':id')
-    @ApiOperation({ summary: 'حذف معلومات بث محددة' })
-    @ApiResponse({ status: 200, description: 'تم حذف معلومات البث بنجاح' })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('حذف معلومات بث محددة', 'none', null, null, 'معلومات البث')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.streamingInfoService.remove(id);
     }

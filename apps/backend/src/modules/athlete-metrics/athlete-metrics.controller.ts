@@ -1,19 +1,47 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '../../common/controllers/base.controller';
+import { BaseController, CustomApiDocs } from '../../common/controllers/base.controller';
 import { AthleteMetricsService } from './athlete-metrics.service';
 import { AthleteMetrics } from '@shared/prisma';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { CreateAthleteMetricsDto } from './dto/create-athlete-metrics.dto';
-import { UpdateAthleteMetricsDto } from './dto/update-athlete-metrics.dto';
-
+import { CreateAthleteMetricsDto } from '../../dtos/AthleteMetrics.create.dto';
+import { UpdateAthleteMetricsDto } from '../../dtos/AthleteMetrics.update.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/interfaces/paginated-response.interface';
 @ApiTags('athlete-metrics')
 @Controller('athlete-metrics')
 export class AthleteMetricsController extends BaseController<AthleteMetrics> {
     constructor(private readonly athleteMetricsService: AthleteMetricsService) {
         super(athleteMetricsService);
     }
-
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('إنشاء', 'create', null, CreateAthleteMetricsDto, "مقاييس الرياضي")
+    async create(@Body() data: any): Promise<AthleteMetrics> {
+        return this.athleteMetricsService.create(data);
+    }
+    @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('تحديث', 'update', UpdateAthleteMetricsDto, null, "مقاييس الرياضي")
+    async update(@Param('id') id: number, @Body() data: any): Promise<AthleteMetrics> {
+        return this.athleteMetricsService.update(id, data);
+    }
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على جميع', 'none', null, null, "مقاييس الرياضي")
+    async findAll(@Query() params: PaginationDto): Promise<PaginatedResponse<AthleteMetrics>> {
+        return this.athleteMetricsService.findAll(params);
+    }
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @CustomApiDocs('الحصول على', 'none', null, null, "مقاييس الرياضي")
+    async findOne(@Param('id') id: number): Promise<AthleteMetrics> {
+        return this.athleteMetricsService.findOne(id);
+    }
     @Get('profile/:id')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -54,15 +82,6 @@ export class AthleteMetricsController extends BaseController<AthleteMetrics> {
         @Query('maxWeight', ParseIntPipe) maxWeight: number,
     ) {
         return this.athleteMetricsService.getAthletesByWeightRange(minWeight, maxWeight);
-    }
-
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'إنشاء مقاييس رياضي جديد' })
-    @ApiResponse({ status: 201, description: 'تم إنشاء مقاييس الرياضي بنجاح.' })
-    async create(@Body() createAthleteMetricsDto: CreateAthleteMetricsDto) {
-        return this.athleteMetricsService.create(createAthleteMetricsDto);
     }
 
 
