@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
-// import { Inter } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/ThemeProvider'
-import { AuthProvider } from '@/components/AuthProvider'
-import { ToastProvider } from '@/components/ui/toast'
+import { Providers } from '@/components/providers'
 
-// const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'SPORTON',
+    title: 'Sporton',
     description: 'منصة رياضية متكاملة',
 }
 
@@ -19,14 +17,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ar" dir="rtl">
-            <body>
-                <AuthProvider>
-                    <ThemeProvider>
-                        <ToastProvider>
-                            {children}
-                        </ToastProvider>
-                    </ThemeProvider>
-                </AuthProvider>
+            <body className={inter.className}>
+                <Providers>
+                    {children}
+                </Providers>
             </body>
         </html>
     )

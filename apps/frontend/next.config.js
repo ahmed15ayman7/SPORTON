@@ -2,7 +2,18 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        domains: ['avatars.githubusercontent.com', 'lh3.googleusercontent.com'],
+        domains: [
+            'avatars.githubusercontent.com',
+            'lh3.googleusercontent.com',
+            'localhost',
+            'sporton.com',
+        ],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**.sporton.com',
+            },
+        ],
     },
     i18n: {
         locales: ['ar', 'en'],
@@ -10,6 +21,8 @@ const nextConfig = {
     },
     experimental: {
         serverActions: true,
+        optimizeCss: true,
+        optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react'],
     },
     webpack: (config, { dev, isServer }) => {
         // إضافة Terser للضغط

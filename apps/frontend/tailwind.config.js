@@ -4,6 +4,10 @@ module.exports = {
         './pages/**/*.{js,ts,jsx,tsx,mdx}',
         './components/**/*.{js,ts,jsx,tsx,mdx}',
         './app/**/*.{js,ts,jsx,tsx,mdx}',
+        './features/**/*.{js,ts,jsx,tsx,mdx}',
+        './hooks/**/*.{js,ts,jsx,tsx,mdx}',
+        './services/**/*.{js,ts,jsx,tsx,mdx}',
+        './store/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     darkMode: 'class',
     theme: {
@@ -26,28 +30,47 @@ module.exports = {
                     light: '#FFA94D',
                     dark: '#E67E00',
                 },
-                glass: {
-                    light: 'rgba(239, 239, 239, 0.60)',
-                    dark: 'rgba(30, 30, 30, 0.60)',
-                },
                 background: {
-                    light: '#FFFFFF',
-                    dark: '#121212',
+                    DEFAULT: 'hsl(var(--background))',
+                    foreground: 'hsl(var(--foreground))',
                 },
-                text: {
-                    light: '#1A1A1A',
-                    dark: '#FFFFFF',
+                border: 'hsl(var(--border))',
+                input: 'hsl(var(--input))',
+                ring: 'hsl(var(--ring))',
+                destructive: {
+                    DEFAULT: 'hsl(var(--destructive))',
+                    foreground: 'hsl(var(--destructive-foreground))',
+                },
+                muted: {
+                    DEFAULT: 'hsl(var(--muted))',
+                    foreground: 'hsl(var(--muted-foreground))',
+                },
+                accent: {
+                    DEFAULT: 'hsl(var(--accent))',
+                    foreground: 'hsl(var(--accent-foreground))',
+                },
+                popover: {
+                    DEFAULT: 'hsl(var(--popover))',
+                    foreground: 'hsl(var(--popover-foreground))',
+                },
+                card: {
+                    DEFAULT: 'hsl(var(--card))',
+                    foreground: 'hsl(var(--card-foreground))',
                 },
             },
             fontFamily: {
                 sans: ['var(--font-cairo)'],
             },
-            backdropBlur: {
-                xs: '2px',
+            borderRadius: {
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)',
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-in-out',
                 'slide-in': 'slideIn 0.5s ease-in-out',
+                'accordion-down': 'accordion-down 0.2s ease-out',
+                'accordion-up': 'accordion-up 0.2s ease-out',
             },
             keyframes: {
                 fadeIn: {
@@ -58,8 +81,16 @@ module.exports = {
                     '0%': { transform: 'translateX(100%)' },
                     '100%': { transform: 'translateX(0)' },
                 },
+                'accordion-down': {
+                    from: { height: '0' },
+                    to: { height: 'var(--radix-accordion-content-height)' },
+                },
+                'accordion-up': {
+                    from: { height: 'var(--radix-accordion-content-height)' },
+                    to: { height: '0' },
+                },
             },
         },
     },
-    plugins: [],
+    plugins: [require('tailwindcss-animate')],
 } 

@@ -40,33 +40,6 @@ export function CustomApiDocs(action: string, type: 'create' | 'update' | 'none'
 
 
 export class BaseController<T> {
-    private _customSummary: string = 'السجلات';
-    private _apiBodyCreate: any;
-    private _apiBodyUpdate: any;
-
-    get customSummary(): string {
-        return this._customSummary;
-    }
-
-    set customSummary(value: string) {
-        this._customSummary = value;
-    }
-
-    get apiBodyCreate(): any {
-        return this._apiBodyCreate;
-    }
-
-    set apiBodyCreate(value: any) {
-        this._apiBodyCreate = value;
-    }
-
-    get apiBodyUpdate(): any {
-        return this._apiBodyUpdate;
-    }
-
-    set apiBodyUpdate(value: any) {
-        this._apiBodyUpdate = value;
-    }
     constructor(private readonly baseService: BaseService<T>) {
     }
     @Get()

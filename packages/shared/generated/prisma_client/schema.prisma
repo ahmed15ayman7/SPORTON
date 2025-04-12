@@ -3,7 +3,7 @@
 // Generator and Database Configuration
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
   output        = "../generated/prisma_client"
 }
 
@@ -14,16 +14,16 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-generator nestjsDto {
-  provider              = "prisma-generator-nestjs-dto"
-  output                = "../../../apps/backend/src/dto"
-  reExport              = true
-  classValidator        = true
-  swagger               = true
-  includeRelationFields = true
-  exposeAllFields       = true
-  includeJSON           = true
-}
+// generator nestjsDto {
+//   provider              = "prisma-generator-nestjs-dto"
+//   output                = "../../../apps/backend/src/dto"
+//   reExport              = true
+//   classValidator        = true
+//   swagger               = true
+//   includeRelationFields = true
+//   exposeAllFields       = true
+//   includeJSON           = true
+// }
 
 // Models
 
