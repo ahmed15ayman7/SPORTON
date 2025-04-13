@@ -10,6 +10,11 @@ async function bootstrap() {
 
   // Global pipes
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+  });
 
   // Security
   app.use(helmet());

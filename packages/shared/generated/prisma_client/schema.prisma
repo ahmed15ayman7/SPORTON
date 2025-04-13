@@ -3,15 +3,15 @@
 // Generator and Database Configuration
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.1.x", "linux-musl", "linux-arm64-openssl-3.0.x"]
   output        = "../generated/prisma_client"
 }
 
 datasource db {
-  provider  = "postgresql"
-  // url      = env("DATABASE_URL")
-  url       = env("POSTGRES_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // url       = env("POSTGRES_URL") // uses connection pooling
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 // generator nestjsDto {
@@ -858,7 +858,7 @@ model NotificationSettings {
   // إعدادات الوقت
   quietHoursStart DateTime? // بداية ساعات الهدوء
   quietHoursEnd   DateTime? // نهاية ساعات الهدوء
-  timezone        String    @default("UTC") // المنطقة الزمنية
+  timezone        String    @default("UTC") // المنطقة الزم��ية
 }
 
 model NotificationTemplate {
